@@ -314,3 +314,6 @@ const GameLobbyPage = () => {
       </div>
     </div>
   );
+};
+
+export default GameLobbyPage;
