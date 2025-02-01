@@ -70,16 +70,16 @@ const GameLobbyPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 pt-24">
+    <div className="container mx-auto p-6 pt-24 relative">
       <Link 
         to="/" 
-        className="absolute top-24 left-4 inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
+        className="fixed top-24 left-4 z-50 inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Games
       </Link>
       
-      <div className="flex gap-6">
+      <div className="flex gap-6 relative mt-8">
         {/* Players List - Left Side */}
         <div className="w-1/3">
           <PlayersList 
