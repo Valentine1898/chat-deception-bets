@@ -37,15 +37,20 @@ const PlayersList = ({ players, currentPlayerAddress }: PlayersListProps) => {
                   <Bot className="h-5 w-5 text-accent" />
                 )}
                 <span className="font-medium">
-                  {player.alias}
-                  {player.address === currentPlayerAddress && " (You)"}
+                  {player.type === 'human' ? (
+                    player.address && player.hasJoined ? (
+                      <>
+                        {player.address.slice(0, 6)}...{player.address.slice(-4)}
+                        {player.address === currentPlayerAddress && " (You)"}
+                      </>
+                    ) : (
+                      "Waiting for player..."
+                    )
+                  ) : (
+                    "AI Agent"
+                  )}
                 </span>
               </div>
-              {player.type === 'human' && player.address && player.hasJoined && (
-                <span className="text-sm text-muted-foreground font-mono">
-                  {player.address.slice(0, 6)}...{player.address.slice(-4)}
-                </span>
-              )}
             </div>
           ))}
         </div>
