@@ -7,7 +7,7 @@ import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
-import { GAME_TIMINGS, GameStage } from "@/config/gameConfig";
+import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
 import { Button } from "@/components/ui/button";
 
@@ -93,20 +93,20 @@ const GameLobbyPage = () => {
     setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
 
-  const getCurrentStage = (): GameStage => {
+  const getCurrentStage = () => {
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-      return "topic_review";
+      return "topic_review" as const;
     }
     if (chatCountdown !== null && chatCountdown > 0) {
-      return "chat";
+      return "chat" as const;
     }
     if (votingCountdown !== null && votingCountdown > 0) {
       return hasVoted ? "awaiting_votes" : "voting";
     }
     if (votingCountdown === 0) {
-      return "results";
+      return "results" as const;
     }
-    return "waiting";
+    return "waiting" as const;
   };
 
   const getCurrentCountdown = () => {
@@ -200,12 +200,6 @@ const GameLobbyPage = () => {
     }
   };
 
-  const handleVoteSubmit = (votes: Record<string, 'human' | 'ai'>) => {
-    setHasVoted(true);
-    // Here you would typically send the votes to your backend
-    console.log('Votes submitted:', votes);
-  };
-
   if (isGameStarted) {
     const stage = getCurrentStage();
     
@@ -244,8 +238,6 @@ const GameLobbyPage = () => {
               currentPlayerAddress={user?.wallet?.address}
               isInGame={true}
               showResults={stage === 'results'}
-              gamePhase={stage}
-              onVoteSubmit={handleVoteSubmit}
             />
           </div>
         </div>
@@ -284,7 +276,6 @@ const GameLobbyPage = () => {
             currentPlayerAddress={user?.wallet?.address}
             onGameStart={handleGameStart}
             isInGame={isGameStarted}
-            gamePhase="waiting"
           />
         </div>
       </div>

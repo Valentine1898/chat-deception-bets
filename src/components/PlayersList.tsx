@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import PlayerAvatar from "./PlayerAvatar";
-import { User, Bot } from "lucide-react";
-import { Button } from "./ui/button";
 
 type Player = {
   id: string;
@@ -19,8 +17,6 @@ type PlayersListProps = {
   onGameStart?: () => void;
   isInGame?: boolean;
   showResults?: boolean;
-  gamePhase?: 'waiting' | 'topic_review' | 'chat' | 'voting' | 'results';
-  onVoteSubmit?: (votes: Record<string, 'human' | 'ai'>) => void;
 };
 
 const PlayersList = ({ 
@@ -28,14 +24,11 @@ const PlayersList = ({
   currentPlayerAddress, 
   onGameStart, 
   isInGame = false,
-  showResults = false,
-  gamePhase = 'waiting',
-  onVoteSubmit
+  showResults = false 
 }: PlayersListProps) => {
   const { toast } = useToast();
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCountingDown, setIsCountingDown] = useState(false);
-  const [votes, setVotes] = useState<Record<string, 'human' | 'ai'>>({});
 
   const humanPlayers = players.filter(p => p.type === 'human' && p.hasJoined);
 
@@ -72,40 +65,8 @@ const PlayersList = ({
     };
   }, [countdown, onGameStart]);
 
-  const handleVoteChange = (playerId: string, isHuman: boolean) => {
-    setVotes(prev => ({
-      ...prev,
-      [playerId]: isHuman ? 'human' : 'ai'
-    }));
-  };
-
-  const handleVoteSubmit = () => {
-    if (!onVoteSubmit) return;
-    
-    const allPlayersVotedFor = players.every(player => 
-      player.id === currentPlayerAddress || votes[player.id]
-    );
-
-    if (!allPlayersVotedFor) {
-      toast({
-        title: "Cannot submit yet",
-        description: "Please classify all players before submitting",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    onVoteSubmit(votes);
-    toast({
-      title: "Votes submitted!",
-      description: "Your classification has been recorded",
-    });
-  };
-
-  const showVoting = gamePhase === 'voting';
-
   return (
-    <div className="w-[360px] bg-stone-900 rounded-2xl p-6 flex flex-col gap-5">
+    <div className="w-[360px] bg-stone-900 rounded-2xl p-6 flex flex-col gap-5 relative z-10">
       <div className="flex flex-col gap-4">
         <h2 className="text-[32px] font-normal text-white font-['Inria_Serif']">
           Classify Players
@@ -137,56 +98,14 @@ const PlayersList = ({
                 </span>
               </div>
               
-              {player.address === currentPlayerAddress ? (
+              {player.address === currentPlayerAddress && (
                 <span className="px-3 py-1 text-sm bg-[#00C951] text-[#1C1917] rounded-full font-medium">
                   You
                 </span>
-              ) : showVoting && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleVoteChange(player.id, true)}
-                    className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-colors ${
-                      votes[player.id] === 'human' 
-                        ? 'bg-stone-700 text-white' 
-                        : 'text-stone-400 hover:text-white'
-                    }`}
-                  >
-                    <User className="h-4 w-4" />
-                    <span className="text-sm">Human</span>
-                  </button>
-                  <button
-                    onClick={() => handleVoteChange(player.id, false)}
-                    className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-colors ${
-                      votes[player.id] === 'ai' 
-                        ? 'bg-stone-700 text-white' 
-                        : 'text-stone-400 hover:text-white'
-                    }`}
-                  >
-                    <Bot className="h-4 w-4" />
-                    <span className="text-sm">AI</span>
-                  </button>
-                </div>
               )}
             </div>
           ))}
         </div>
-
-        {showVoting && (
-          <div className="mt-4 space-y-4">
-            <div className="flex items-center gap-2 text-stone-400">
-              <span className="text-[#F59E0B]">i</span>
-              <span>You will make your final choice in</span>
-              <span className="text-white">Human detection</span>
-              <span>stage</span>
-            </div>
-            <Button 
-              onClick={handleVoteSubmit}
-              className="w-full bg-[#F59E0B] hover:bg-[#F59E0B]/90 text-[#1C1917] font-medium"
-            >
-              Confirm
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
