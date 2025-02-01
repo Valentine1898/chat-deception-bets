@@ -89,11 +89,23 @@ const GameLobby = () => {
   return (
     <div className="container max-w-4xl mx-auto p-6 mt-24">
       <div className="text-center mb-8">
-        <img 
-          src="/lovable-uploads/a79d497b-4457-44d5-ae6f-6af3390f246b.png" 
-          alt="Alan Turing" 
-          className="logo w-24 h-24 mx-auto mb-4"
-        />
+        <div className="inline-block bg-card p-4 rounded-2xl shadow-lg mb-6">
+          <div className="flex flex-col items-center gap-6">
+            <div className="relative">
+              <img 
+                src="/lovable-uploads/a79d497b-4457-44d5-ae6f-6af3390f246b.png" 
+                alt="Alan Turing" 
+                className="w-32 h-32 rounded-xl object-cover"
+              />
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              <img src="/avatars/1.svg" alt="" className="w-10 h-10" />
+              <img src="/avatars/2.svg" alt="" className="w-10 h-10" />
+              <img src="/avatars/3.svg" alt="" className="w-10 h-10" />
+              <img src="/avatars/4.svg" alt="" className="w-10 h-10" />
+            </div>
+          </div>
+        </div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Turing Arena</h1>
       </div>
 

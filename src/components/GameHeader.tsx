@@ -126,12 +126,24 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
       <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img 
-                src="/lovable-uploads/a79d497b-4457-44d5-ae6f-6af3390f246b.png" 
-                alt="Alan Turing" 
-                className="w-8 h-8"
-              />
+            <div className="flex items-center gap-6">
+              <div className="relative bg-card p-2 rounded-xl shadow-lg">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <img 
+                      src="/lovable-uploads/a79d497b-4457-44d5-ae6f-6af3390f246b.png" 
+                      alt="Alan Turing" 
+                      className="w-12 h-12 rounded-lg object-cover"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <img src="/avatars/1.svg" alt="" className="w-6 h-6" />
+                    <img src="/avatars/2.svg" alt="" className="w-6 h-6" />
+                    <img src="/avatars/3.svg" alt="" className="w-6 h-6" />
+                    <img src="/avatars/4.svg" alt="" className="w-6 h-6" />
+                  </div>
+                </div>
+              </div>
               <h1 className="text-lg font-bold text-foreground">Turing Arena</h1>
             </div>
 
