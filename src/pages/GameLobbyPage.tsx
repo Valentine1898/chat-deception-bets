@@ -5,7 +5,6 @@ import { useToast } from "@/hooks/use-toast";
 import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
-import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
 import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
@@ -110,7 +109,6 @@ const GameLobbyPage = () => {
     return null;
   };
 
-  // Topic reveal countdown
   useEffect(() => {
     let timer: NodeJS.Timeout;
     
@@ -215,7 +213,6 @@ const GameLobbyPage = () => {
                 gameId={gameId}
                 prizePool="0.0005"
               />
-              {isChatVisible && <GameChat />}
               
               {stage === 'results' && (
                 <div className="flex flex-col items-center justify-center mt-8">
