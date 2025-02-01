@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { User, Bot, CircleUser } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import PlayerAvatar from "./PlayerAvatar";
 
 type Player = {
   id: string;
@@ -81,17 +81,7 @@ const PlayersList = ({
               className="flex items-center justify-between p-2 rounded-lg bg-[#1C1917]"
             >
               <div className="flex items-center gap-2 mx-auto">
-                <div className="w-6 h-6 bg-[#0C0A09] rounded-full flex items-center justify-center">
-                  {isInGame ? (
-                    <CircleUser className="h-5 w-5 text-accent" />
-                  ) : (
-                    player.type === 'human' ? (
-                      <User className="h-5 w-5 text-accent" />
-                    ) : (
-                      <Bot className="h-5 w-5 text-accent" />
-                    )
-                  )}
-                </div>
+                <PlayerAvatar type={player.type} />
                 <span className="text-base font-medium text-white">
                   {player.alias}
                   {player.address === currentPlayerAddress && (
@@ -105,11 +95,9 @@ const PlayersList = ({
               {!isInGame && !showResults && (
                 <div className="flex gap-1 bg-[#1C1917] rounded-2xl p-0.5">
                   <button className="px-1.5 py-0.5 rounded-xl bg-[#F5F5F4] text-sm text-[#1C1917] flex items-center gap-1">
-                    <User className="h-3 w-3" />
                     Human
                   </button>
                   <button className="px-1.5 py-0.5 rounded-xl bg-[#44403B] text-sm text-[#E7E5E4] flex items-center gap-1">
-                    <Bot className="h-3 w-3" />
                     AI
                   </button>
                 </div>
