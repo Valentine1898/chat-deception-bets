@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Bot } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useParams } from "react-router-dom";
 
 type Player = {
   id: string;
@@ -17,12 +18,66 @@ type PlayersListProps = {
   onGameStart?: () => void;
 };
 
-const PlayersList = ({ players, currentPlayerAddress, onGameStart }: PlayersListProps) => {
+const WEBSOCKET_URL = 'ws://localhost:8080';
+
+const PlayersList = ({ players: initialPlayers, currentPlayerAddress, onGameStart }: PlayersListProps) => {
+  const { gameId } = useParams();
   const { toast } = useToast();
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCountingDown, setIsCountingDown] = useState(false);
+  const [players, setPlayers] = useState(initialPlayers);
+  const [ws, setWs] = useState<WebSocket | null>(null);
 
   const humanPlayers = players.filter(p => p.type === 'human' && p.hasJoined);
+
+  useEffect(() => {
+    const socket = new WebSocket(WEBSOCKET_URL);
+
+    socket.onopen = () => {
+      console.log('Connected to WebSocket server');
+      if (currentPlayerAddress && gameId) {
+        socket.send(JSON.stringify({
+          type: 'JOIN_GAME',
+          gameId,
+          playerAddress: currentPlayerAddress
+        }));
+      }
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'GAME_UPDATE') {
+        // Update players list with joined players
+        setPlayers(prevPlayers => {
+          return prevPlayers.map(player => {
+            if (player.type === 'human') {
+              const joinedPlayer = data.players.find((p: any) => p.address === player.address);
+              return {
+                ...player,
+                hasJoined: joinedPlayer?.hasJoined || false
+              };
+            }
+            return player;
+          });
+        });
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      toast({
+        title: "Connection Error",
+        description: "Failed to connect to game server",
+        variant: "destructive"
+      });
+    };
+
+    setWs(socket);
+
+    return () => {
+      socket.close();
+    };
+  }, [gameId, currentPlayerAddress, toast]);
 
   useEffect(() => {
     // Check if both human players have joined
