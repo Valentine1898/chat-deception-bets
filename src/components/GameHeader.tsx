@@ -131,8 +131,8 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <img 
-                      src="/lovable-uploads/a79d497b-4457-44d5-ae6f-6af3390f246b.png" 
-                      alt="Alan Turing" 
+                      src="/lovable-uploads/6afdfc38-7546-4743-8483-9dadaa0eb3a4.png" 
+                      alt="Historical figure" 
                       className="w-12 h-12 rounded-lg object-cover"
                     />
                   </div>
