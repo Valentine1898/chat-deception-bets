@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import GameStageTimer from "./GameStageTimer";
 import { GameStage } from "@/config/gameConfig";
@@ -118,7 +116,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
     <div className="fixed top-0 left-0 right-0 z-50">
       <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-[#1C1917]">
         <div className="container mx-auto">
-          <div className="flex flex-col items-start px-3 py-6 gap-1">
+          <div className="flex flex-col items-start px-3 py-6">
             <div className="flex justify-between items-center w-full">
               <div className="flex items-center gap-6">
                 <div className="relative w-[120px] h-[64px] rounded-xl border border-primary-foreground overflow-hidden">
@@ -181,16 +179,6 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                   </Button>
                 </div>
               </div>
-            </div>
-
-            <div className="w-full">
-              <Link 
-                to="/" 
-                className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm"
-              >
-                <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
-                Back to Games
-              </Link>
             </div>
           </div>
         </div>
