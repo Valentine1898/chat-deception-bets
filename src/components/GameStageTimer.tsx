@@ -18,35 +18,35 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
 
   const stages = [
     {
-      value: "topic_review",
+      value: "topic_discovery",
       label: "Topic discovery",
       number: 1,
-      status: stage === "topic_review" ? "active" : 
-              (["chat", "voting", "results"].includes(stage) ? "completed" : "pending")
+      status: stage === "topic_discovery" ? "active" : 
+              (["discussion", "human_detection", "awaiting_votes", "results"].includes(stage) ? "completed" : "pending")
     },
     {
-      value: "chat",
+      value: "discussion",
       label: "Discussion on arena",
       number: 2,
-      status: stage === "chat" ? "active" : 
-              (["voting", "results"].includes(stage) ? "completed" : "pending")
+      status: stage === "discussion" ? "active" : 
+              (["human_detection", "awaiting_votes", "results"].includes(stage) ? "completed" : "pending")
     },
     {
-      value: "voting",
+      value: "human_detection",
       label: "Human detection",
       number: 3,
-      status: stage === "voting" ? "active" : 
-              (stage === "results" ? "completed" : "pending")
+      status: stage === "human_detection" ? "active" : 
+              (["awaiting_votes", "results"].includes(stage) ? "completed" : "pending")
     }
   ];
 
   const getStageIndex = () => {
     switch (stage) {
-      case "topic_review":
+      case "topic_discovery":
         return "0";
-      case "chat":
+      case "discussion":
         return "1";
-      case "voting":
+      case "human_detection":
       case "awaiting_votes":
         return "2";
       case "results":
