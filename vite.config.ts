@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   server: {
     host: "::",
@@ -19,12 +18,13 @@ export default defineConfig({
       localsConvention: 'camelCase',
     },
   },
+  optimizeDeps: {
+    include: ['@chatscope/chat-ui-kit-react'],
+  },
   build: {
     rollupOptions: {
       external: [],
     },
   },
-  optimizeDeps: {
-    include: ['@chatscope/chat-ui-kit-react'],
-  },
+  assetsInclude: ['**/*.css'],
 })

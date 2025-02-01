@@ -8,9 +8,9 @@ import {
   Avatar,
   ConversationHeader,
 } from "@chatscope/chat-ui-kit-react";
-import "@chatscope/chat-ui-kit-react/dist/default.min.css";
 import { Reply } from "lucide-react";
 import { Button } from "./ui/button";
+import "@chatscope/chat-ui-kit-react/dist/default.min.css";
 
 type MessageType = {
   id: string;
