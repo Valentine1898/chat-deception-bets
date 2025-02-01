@@ -203,12 +203,25 @@ const GameLobbyPage = () => {
     });
   };
 
+  const simulatePlayerJoin = () => {
+    const newPlayer = {
+      id: `player_${Date.now()}`,
+      type: 'human' as const,
+      alias: generateAlias(),
+      address: `0x${Math.random().toString(16).slice(2, 10)}`,
+      hasJoined: true
+    };
+    setPlayers(current => [...current, newPlayer]);
+    toast({
+      title: "New player joined!",
+      description: `${newPlayer.alias} has joined the game.`,
+    });
+  };
+
   if (isGameStarted) {
     return (
       <div className="container mx-auto p-6 pt-24 relative">
         <GameHeader 
-          topicRevealCountdown={topicRevealCountdown}
-          chatCountdown={chatCountdown}
           stage={getCurrentStage()}
           countdown={getCurrentCountdown()}
         />
@@ -244,8 +257,8 @@ const GameLobbyPage = () => {
   return (
     <div className="container mx-auto p-6 pt-24 relative">
       <GameHeader 
-        topicRevealCountdown={topicRevealCountdown}
-        chatCountdown={chatCountdown}
+        stage="waiting"
+        countdown={null}
       />
       <div className="flex gap-6 relative mt-8">
         <div className="w-1/3">
@@ -257,25 +270,16 @@ const GameLobbyPage = () => {
           />
         </div>
         <div className="w-2/3">
-          {isGameStarted ? (
-            <GameTopic 
-              topic={selectedTopic}
-              topicRevealCountdown={topicRevealCountdown}
-              chatCountdown={chatCountdown}
-              isChatVisible={isChatVisible}
-            />
-          ) : (
-            <GameLobbyInfo 
-              authenticated={authenticated}
-              hasPlacedBet={hasPlacedBet}
-              isCreator={isCreator}
-              gameId={gameId || ''}
-              gameUrl={gameUrl}
-              mockGameData={mockGameData}
-              onPlaceBet={placeBet}
-              onSimulatePlayerJoin={simulatePlayerJoin}
-            />
-          )}
+          <GameLobbyInfo 
+            authenticated={authenticated}
+            hasPlacedBet={hasPlacedBet}
+            isCreator={isCreator}
+            gameId={gameId || ''}
+            gameUrl={gameUrl}
+            mockGameData={mockGameData}
+            onPlaceBet={placeBet}
+            onSimulatePlayerJoin={simulatePlayerJoin}
+          />
         </div>
       </div>
     </div>
