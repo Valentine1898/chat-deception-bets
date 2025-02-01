@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { User, Bot } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -93,14 +92,28 @@ const GameVoting = ({ players, currentPlayerAddress, onVoteSubmit }: GameVotingP
                   <span className="font-medium">{player.alias}</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <Checkbox
-                      checked={votes[player.id] === 'human'}
-                      onCheckedChange={(checked) => handleVoteChange(player.id, checked as boolean)}
-                    />
-                    <User className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Human</span>
-                  </label>
+                  <button
+                    onClick={() => handleVoteChange(player.id, true)}
+                    className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
+                      votes[player.id] === 'human' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'hover:bg-muted'
+                    }`}
+                  >
+                    <User className="h-5 w-5" />
+                    <span className="text-sm">Human</span>
+                  </button>
+                  <button
+                    onClick={() => handleVoteChange(player.id, false)}
+                    className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
+                      votes[player.id] === 'ai' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'hover:bg-muted'
+                    }`}
+                  >
+                    <Bot className="h-5 w-5" />
+                    <span className="text-sm">AI</span>
+                  </button>
                 </div>
               </div>
             )
