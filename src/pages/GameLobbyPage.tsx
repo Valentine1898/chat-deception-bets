@@ -11,6 +11,7 @@ import GameResults from "@/components/GameResults";
 import { generateAlias, shuffleArray } from "@/utils/playerUtils";
 import { useEffect, useState } from "react";
 import { GAME_TIMINGS } from "@/config/gameConfig";
+import EnhancedWalletWidget from "@/components/EnhancedWalletWidget";
 
 // Mock topics - in a real app these would come from an API
 const GAME_TOPICS = [
@@ -242,6 +243,7 @@ const GameLobbyPage = () => {
     
     return (
       <div className="container mx-auto p-6 pt-32 relative">
+        <EnhancedWalletWidget />
         <GameHeader 
           stage={currentStage}
           countdown={getCurrentCountdown()}
@@ -291,6 +293,7 @@ const GameLobbyPage = () => {
 
   return (
     <div className="container mx-auto p-6 pt-32 relative">
+      <EnhancedWalletWidget />
       <GameHeader 
         stage="waiting"
         countdown={null}

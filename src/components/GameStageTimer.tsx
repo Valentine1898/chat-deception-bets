@@ -57,7 +57,7 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimerProps) => {
   const stageInfo = getStageInfo();
 
   return (
-    <div className="flex items-center gap-4 bg-muted/30 px-4 py-2 rounded-lg">
+    <div className="absolute left-1/2 -translate-x-1/2 top-4 flex items-center gap-4 bg-muted/30 px-4 py-2 rounded-lg">
       <div>
         <h3 className="font-semibold text-foreground">{stageInfo.title}</h3>
         <p className="text-sm text-muted-foreground">{stageInfo.action}</p>
