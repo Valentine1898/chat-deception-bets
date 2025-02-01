@@ -3,29 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Play, Plus, Trophy, DollarSign, Loader2 } from "lucide-react";
+import { Play, Plus, Loader2 } from "lucide-react";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
-import { formatEther, parseEther } from "ethers";
+import { parseEther } from "ethers";
 import { v4 as uuidv4 } from 'uuid';
-
-// Mock data - in a real app this would come from a database
-const mockGames = [
-  { 
-    id: "game_9xkqp2m4r", 
-    status: "completed", 
-    createdAt: "2024-03-19",
-    result: "win",
-    winAmount: 100
-  },
-  { 
-    id: "game_5tkl8n3p", 
-    status: "completed", 
-    createdAt: "2024-03-18",
-    result: "loss",
-    winAmount: 0
-  }
-];
 
 const REQUIRED_BET = "0.1"; // ETH
 const ACTIVE_GAME_SESSION_KEY = "activeGameSession";
@@ -33,7 +14,6 @@ const ACTIVE_GAME_SESSION_KEY = "activeGameSession";
 const GameLobby = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [games] = useState(mockGames);
   const [isPlacingBet, setIsPlacingBet] = useState(false);
   const { wallets } = useWallets();
   const [activeGameSession, setActiveGameSession] = useState<string | null>(null);
@@ -45,8 +25,10 @@ const GameLobby = () => {
     }
   }, []);
 
-  const completedGames = games.filter(game => game.status === "completed");
-  const totalWinnings = completedGames.reduce((total, game) => total + (game.winAmount || 0), 0);
+  const clearGameSession = () => {
+    localStorage.removeItem(ACTIVE_GAME_SESSION_KEY);
+    setActiveGameSession(null);
+  };
 
   const createGame = async () => {
     if (!wallets?.[0]) {
@@ -157,57 +139,6 @@ const GameLobby = () => {
           </CardContent>
         </Card>
       )}
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-accent" />
-              Game History
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Result</TableHead>
-                  <TableHead className="text-right">Winnings</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {completedGames.map((game) => (
-                  <TableRow key={game.id}>
-                    <TableCell>{game.createdAt}</TableCell>
-                    <TableCell className="capitalize">
-                      <span className={game.result === 'win' ? 'text-green-500' : 'text-red-500'}>
-                        {game.result}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      ${game.winAmount || 0}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-accent" />
-              Total Winnings
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center h-[200px]">
-              <p className="text-4xl font-bold text-accent">${totalWinnings}</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };

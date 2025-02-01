@@ -9,6 +9,7 @@ import GameLobbyInfo from "@/components/GameLobbyInfo";
 import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const GAME_TOPICS = [
   {
@@ -177,6 +178,31 @@ const GameLobbyPage = () => {
     };
   }, [votingCountdown, toast]);
 
+  const handleClaimPrize = async () => {
+    try {
+      // Mock smart contract interaction for claiming prize
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Clear the game session from localStorage
+      localStorage.removeItem("activeGameSession");
+      
+      toast({
+        title: "Prize claimed successfully!",
+        description: "You can now start a new game.",
+      });
+      
+      // Redirect to home page
+      navigate('/');
+    } catch (error) {
+      console.error("Error claiming prize:", error);
+      toast({
+        title: "Error claiming prize",
+        description: "There was an error claiming your prize. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   if (isGameStarted) {
     const currentStage = getCurrentStage();
     
@@ -203,6 +229,27 @@ const GameLobbyPage = () => {
             />
             {isChatVisible && <GameChat />}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Add the claim prize button in the results stage
+  if (currentStage === 'results') {
+    return (
+      <div className="container mx-auto p-6 pt-32 relative">
+        <GameHeader 
+          stage={currentStage}
+          countdown={null}
+        />
+        <div className="flex flex-col items-center justify-center mt-8">
+          <h2 className="text-2xl font-bold mb-4">Game Results</h2>
+          <Button 
+            onClick={handleClaimPrize}
+            className="bg-accent hover:bg-accent/90"
+          >
+            Claim Prize
+          </Button>
         </div>
       </div>
     );
