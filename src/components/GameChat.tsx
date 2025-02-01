@@ -7,6 +7,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { wsService, ChatMessage } from "@/services/websocket";
 import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import PlayerAvatar from "./PlayerAvatar";
 
 export default function GameChat() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -95,30 +96,42 @@ export default function GameChat() {
               <div
                 key={message.id || index}
                 className={cn(
-                  "flex gap-2",
+                  "flex items-start gap-2",
                   isCurrentUser ? "flex-row-reverse" : "flex-row"
                 )}
               >
-                <div
-                  className={cn(
-                    "flex max-w-[80%] flex-col gap-1 rounded-lg px-4 py-2 text-sm",
-                    isCurrentUser
-                      ? "bg-[#FD9A00] text-[#1C1917]"
-                      : "bg-[#292524] text-white"
-                  )}
-                >
-                  <div className={cn(
-                    "flex items-center gap-2 text-xs",
-                    isCurrentUser ? "flex-row-reverse" : "flex-row"
-                  )}>
-                    <span className="font-medium">
+                <PlayerAvatar 
+                  type="human"
+                  variant={isCurrentUser ? 1 : (parseInt(message.playerId) % 6) + 1}
+                  className="flex-shrink-0"
+                />
+                <div className="flex flex-col gap-1 max-w-[80%]">
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 text-xs",
+                      isCurrentUser ? "flex-row-reverse" : "flex-row"
+                    )}
+                  >
+                    <span className={cn(
+                      "px-2 py-0.5 rounded-full text-xs font-medium",
+                      isCurrentUser ? "bg-accent text-background" : "bg-muted text-foreground"
+                    )}>
                       {isCurrentUser ? "You" : message.playerId}
                     </span>
-                    <span className="opacity-50">
+                    <span className="text-muted-foreground">
                       {timestamp}
                     </span>
                   </div>
-                  <p className="break-words">{message.message}</p>
+                  <div
+                    className={cn(
+                      "rounded-lg px-4 py-2 text-sm",
+                      isCurrentUser
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card text-card-foreground"
+                    )}
+                  >
+                    <p className="break-words">{message.message}</p>
+                  </div>
                 </div>
               </div>
             );
@@ -132,7 +145,7 @@ export default function GameChat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            className="min-h-[44px] w-full resize-none bg-[#292524] px-3 py-2 text-white placeholder:text-white/50"
+            className="min-h-[44px] w-full resize-none bg-card px-3 py-2 text-card-foreground placeholder:text-muted"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -143,7 +156,7 @@ export default function GameChat() {
           <Button 
             type="submit" 
             size="icon"
-            className="h-[44px] w-[44px] bg-[#FD9A00] text-[#1C1917] hover:bg-[#FD9A00]/90"
+            className="h-[44px] w-[44px] bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Send className="h-4 w-4" />
           </Button>
