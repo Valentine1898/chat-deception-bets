@@ -3,6 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Twitter } from "lucide-react";
+import WalletWidget from "@/components/WalletWidget";
 
 const GameLobbyPage = () => {
   const { gameId } = useParams();
@@ -33,6 +34,7 @@ const GameLobbyPage = () => {
 
   return (
     <div className="container max-w-2xl mx-auto p-6 min-h-screen flex items-center justify-center">
+      <WalletWidget />
       <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <CardHeader className="text-center space-y-2">
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
