@@ -200,6 +200,12 @@ const GameLobbyPage = () => {
     }
   };
 
+  const handleVoteSubmit = (votes: Record<string, 'human' | 'ai'>) => {
+    setHasVoted(true);
+    // Here you would typically send the votes to your backend
+    console.log('Votes submitted:', votes);
+  };
+
   if (isGameStarted) {
     const stage = getCurrentStage();
     
@@ -238,6 +244,8 @@ const GameLobbyPage = () => {
               currentPlayerAddress={user?.wallet?.address}
               isInGame={true}
               showResults={stage === 'results'}
+              gamePhase={stage}
+              onVoteSubmit={handleVoteSubmit}
             />
           </div>
         </div>
@@ -276,6 +284,7 @@ const GameLobbyPage = () => {
             currentPlayerAddress={user?.wallet?.address}
             onGameStart={handleGameStart}
             isInGame={isGameStarted}
+            gamePhase="waiting"
           />
         </div>
       </div>
