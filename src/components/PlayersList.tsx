@@ -66,7 +66,7 @@ const PlayersList = ({
   }, [countdown, onGameStart]);
 
   return (
-    <div className="w-[360px] bg-stone-900 rounded-2xl p-6 flex flex-col gap-5">
+    <div className="w-[360px] bg-stone-900 rounded-2xl p-6 flex flex-col gap-5 relative z-10">
       <div className="flex flex-col gap-4">
         <h2 className="text-[32px] font-normal text-white font-['Inria_Serif']">
           Classify Players
