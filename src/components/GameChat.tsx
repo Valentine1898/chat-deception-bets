@@ -16,6 +16,7 @@ export default function GameChat() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const processedMessageIds = useRef(new Set<string>());
+  const [currentPlayerId, setCurrentPlayerId] = useState<string>("");
 
   useEffect(() => {
     if (gameId) {
@@ -45,6 +46,13 @@ export default function GameChat() {
         setMessages(prev => [...prev, message]);
       });
 
+      const handleSessionInfo = (sessionInfo: any) => {
+        console.log('Received session info:', sessionInfo);
+        setCurrentPlayerId(sessionInfo.you);
+      };
+
+      wsService.onSessionInfo(handleSessionInfo);
+
       wsService.onDisconnect(() => {
         console.log('📴 Chat disconnected');
         toast({
@@ -52,7 +60,6 @@ export default function GameChat() {
           description: "Attempting to reconnect...",
           variant: "destructive",
         });
-        // Removed the wsService.disconnect() call to preserve messages
       });
 
       wsService.onReconnect(handleReconnect);
@@ -84,13 +91,16 @@ export default function GameChat() {
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
           {messages.map((message, index) => {
-            const isCurrentUser = message.playerId === "You";
+            const isCurrentUser = message.playerId === currentPlayerId;
             const timestamp = new Date().toLocaleTimeString('en-US', {
               hour12: false,
               hour: '2-digit',
               minute: '2-digit',
               second: '2-digit'
             });
+
+            const avatarVariant = isCurrentUser ? 1 : 
+              ((parseInt(message.playerId.replace(/\D/g, '')) % 5) + 2) as 1 | 2 | 3 | 4 | 5 | 6;
 
             return (
               <div
@@ -102,7 +112,7 @@ export default function GameChat() {
               >
                 <PlayerAvatar 
                   type="human"
-                  variant={isCurrentUser ? 1 : (parseInt(message.playerId) % 6) + 1}
+                  variant={avatarVariant}
                   className="flex-shrink-0"
                 />
                 <div className="flex flex-col gap-1 max-w-[80%]">
