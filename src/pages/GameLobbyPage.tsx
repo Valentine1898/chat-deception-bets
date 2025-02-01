@@ -74,7 +74,7 @@ const GameLobbyPage = () => {
     }
   }, [authenticated, user?.wallet?.address]);
 
-  // Topic reveal countdown
+  // Topic reveal countdown effect - reduced from 30 to 5 seconds
   useEffect(() => {
     let timer: NodeJS.Timeout;
     
@@ -84,7 +84,7 @@ const GameLobbyPage = () => {
       }, 1000);
     } else if (topicRevealCountdown === 0) {
       setIsChatVisible(true);
-      setChatCountdown(180); // 3 minutes in seconds
+      setChatCountdown(30); // Reduced from 180 to 30 seconds
     }
 
     return () => {
@@ -138,7 +138,7 @@ const GameLobbyPage = () => {
     setPlayers(shuffledPlayers);
     setSelectedTopic(GAME_TOPICS[Math.floor(Math.random() * GAME_TOPICS.length)]);
     setIsGameStarted(true);
-    setTopicRevealCountdown(30); // 30 seconds for topic reveal
+    setTopicRevealCountdown(5); // Reduced from 30 to 5 seconds
   };
 
   const placeBet = () => {
