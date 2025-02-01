@@ -18,22 +18,26 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        serif: ['Inria Serif', 'serif'],
+        sans: ['Instrument Sans', 'sans-serif'],
+      },
       colors: {
         primary: {
-          DEFAULT: "#FD9A00", // Orange color from the active tab
-          foreground: "#0C0A09", // Black text
+          DEFAULT: "#FD9A00",
+          foreground: "#0C0A09",
         },
         secondary: {
-          DEFAULT: "#292524", // Dark gray
-          foreground: "#FFFFFF", // White text
+          DEFAULT: "#292524",
+          foreground: "#FFFFFF",
         },
-        background: "#1C1917", // Dark background
-        foreground: "#E6D5BA", // Beige text
-        muted: "#44403B", // Muted gray
-        accent: "#05DF72", // Green for checkmarks
+        background: "#1C1917",
+        foreground: "#E6D5BA",
+        muted: "#44403B",
+        accent: "#05DF72",
         card: {
-          DEFAULT: "#292524", // Dark gray
-          foreground: "#FFFFFF", // White text
+          DEFAULT: "#292524",
+          foreground: "#FFFFFF",
         },
       },
       keyframes: {
