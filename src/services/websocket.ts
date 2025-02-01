@@ -3,6 +3,7 @@ import { toast } from "sonner";
 export type ChatMessage = {
   playerId: string;
   message: string;
+  id?: string; // Add message ID to help prevent duplicates
 };
 
 export type SessionInfo = {
@@ -23,6 +24,7 @@ export class WebSocketService {
   private ws: WebSocket | null = null;
   private messageHandlers: ((message: ChatMessage) => void)[] = [];
   private sessionInfoHandlers: ((info: SessionInfo) => void)[] = [];
+  private processedMessageIds = new Set<string>();
 
   connect(sessionId: string) {
     console.log('🌐 Connecting to WebSocket with sessionId:', sessionId);
@@ -35,11 +37,23 @@ export class WebSocketService {
         
         switch (data.type) {
           case 'chat':
+            // Generate a unique ID for the message if not provided
+            const messageId = data.content.id || `${data.sender}-${Date.now()}`;
+            
+            // Check if we've already processed this message
+            if (this.processedMessageIds.has(messageId)) {
+              console.log('🔄 Skipping duplicate message:', messageId);
+              return;
+            }
+            
             const chatMessage: ChatMessage = {
               playerId: data.sender || 'unknown',
-              message: data.content.message
+              message: data.content.message,
+              id: messageId
             };
-            console.log('💬 Processing chat message:', chatMessage);
+            
+            console.log('💬 Processing new chat message:', chatMessage);
+            this.processedMessageIds.add(messageId);
             this.messageHandlers.forEach(handler => handler(chatMessage));
             break;
 
@@ -103,6 +117,7 @@ export class WebSocketService {
       console.log('🔌 Disconnecting WebSocket');
       this.ws.close();
       this.ws = null;
+      this.processedMessageIds.clear(); // Clear the processed messages set on disconnect
     }
   }
 }

@@ -20,7 +20,14 @@ export default function GameChat() {
 
       const unsubscribe = wsService.onMessage((message) => {
         console.log('📩 Received chat message:', message);
-        setMessages(prev => [...prev, message]);
+        setMessages(prev => {
+          // Check if message with this ID already exists
+          if (message.id && prev.some(m => m.id === message.id)) {
+            console.log('🚫 Skipping duplicate message in state:', message.id);
+            return prev;
+          }
+          return [...prev, message];
+        });
       });
 
       return () => {
@@ -52,7 +59,7 @@ export default function GameChat() {
         <div className="space-y-4">
           {messages.map((message, index) => (
             <div
-              key={index}
+              key={message.id || index}
               className={cn(
                 "flex w-max max-w-[80%] flex-col gap-2 rounded-lg px-3 py-2 text-sm",
                 message.playerId === "You"
