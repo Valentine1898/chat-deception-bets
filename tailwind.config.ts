@@ -21,18 +21,18 @@ export default {
       colors: {
         primary: {
           DEFAULT: "#E6D5BA", // Beige color from the button
-          foreground: "#1A1A1A", // Dark text on beige
+          foreground: "rgb(28 25 23)", // stone-900
         },
         secondary: {
-          DEFAULT: "#2A2A2A", // Darker gray for secondary elements
+          DEFAULT: "rgb(68 64 60)", // stone-700
           foreground: "#E6D5BA", // Beige text on dark
         },
-        background: "#1A1A1A", // Dark background
+        background: "rgb(41 37 36)", // stone-800
         foreground: "#E6D5BA", // Beige text
-        muted: "#2A2A2A", // Darker gray for muted elements
+        muted: "rgb(68 64 60)", // stone-700
         accent: "#E6D5BA", // Beige for accents
         card: {
-          DEFAULT: "#2A2A2A", // Dark card background
+          DEFAULT: "rgb(68 64 60)", // stone-700
           foreground: "#E6D5BA", // Beige text on card
         },
       },
