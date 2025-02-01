@@ -128,7 +128,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                       <img 
                         src="/lovable-uploads/6afdfc38-7546-4743-8483-9dadaa0eb3a4.png" 
                         alt="Historical figure" 
-                        className="w-13 h-13 rounded-lg border border-black object-cover"
+                        className="w-[52px] h-[52px] rounded-lg border border-black object-cover"
                       />
                       <div className="grid grid-cols-2 gap-1">
                         {[1, 2, 3, 4].map((i) => (
@@ -140,7 +140,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                     </div>
                   </div>
                 </div>
-                <h1 className="text-3xl font-bold font-['Inria_Serif'] text-[#F5F5F4]">
+                <h1 className="text-[32px] leading-[38px] font-bold font-['Inria_Serif'] text-[#F5F5F4]">
                   Turing Arena
                 </h1>
               </div>
@@ -148,18 +148,25 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
               <div className="flex items-center gap-3">
                 <div className="flex items-center bg-[#1C1917] rounded-xl p-2">
                   <div className="flex items-center gap-2.5 px-2">
-                    <img src="/base.svg" alt="Base" className="w-3 h-3" />
-                    <span className="font-mono text-sm text-white">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <mask id="mask0_23_5268" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="12" height="12">
+                        <path d="M0 0H12V12H0V0Z" fill="white"/>
+                      </mask>
+                      <g mask="url(#mask0_23_5268)">
+                        <path d="M5.9895 12C9.309 12 12 9.31369 12 6C12 2.68631 9.309 0 5.9895 0C2.84016 0 0.256594 2.418 0 5.49563H7.94447V6.50437H0C0.256594 9.582 2.84016 12 5.9895 12Z" fill="#3A77F7"/>
+                      </g>
+                    </svg>
+                    <span className="font-['Chivo_Mono'] text-sm text-white">
                       {balance} ETH
                     </span>
                     <div className="w-px h-4 bg-[#292524]" />
-                    <span className="font-mono text-sm text-white">
+                    <span className="font-['Chivo_Mono'] text-sm text-white">
                       1.54M TURING
                     </span>
                     <div className="w-px h-4 bg-[#292524]" />
                     <div className="flex items-center gap-2">
                       <Wallet className="w-3 h-3 text-[#D6D3D1]" />
-                      <span className="font-mono text-sm text-primary">
+                      <span className="font-['Chivo_Mono'] text-sm text-primary">
                         {user?.wallet?.address ? shortenAddress(user.wallet.address) : "Not connected"}
                       </span>
                     </div>
