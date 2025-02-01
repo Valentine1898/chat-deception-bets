@@ -100,7 +100,7 @@ const GameLobby = () => {
               alt="Turing machine" 
               className="w-full h-48 object-cover rounded-xl mb-6"
             />
-            <h1 className="text-3xl font-serif text-white mb-8">Create new chatroom</h1>
+            <h1 className="text-3xl font-serif text-white mb-8">Create new turing</h1>
             
             <div className="space-y-6">
               <div>
