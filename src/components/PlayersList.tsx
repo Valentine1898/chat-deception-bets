@@ -66,44 +66,32 @@ const PlayersList = ({
   }, [countdown, onGameStart]);
 
   return (
-    <div className="w-[360px] h-[360px] bg-[#1C1917] border border-[#44403B]/50 rounded-2xl p-3 flex flex-col gap-5">
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-center items-center h-11 gap-1">
-          <h2 className="text-2xl font-normal text-white font-['Inria_Serif']">
-            Classify Players
-          </h2>
-        </div>
+    <div className="w-[360px] bg-[#1C1917] rounded-2xl p-6 flex flex-col gap-5">
+      <div className="flex flex-col gap-4">
+        <h2 className="text-[32px] font-normal text-white font-['Inria_Serif']">
+          Classify Players
+        </h2>
         
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           {players.map((player, index) => (
             <div
               key={player.id}
-              className="flex items-center justify-between p-2 rounded-lg bg-[#1C1917]"
+              className="flex items-center justify-between p-3 rounded-lg bg-[#292524] hover:bg-[#292524]/80 transition-colors"
             >
-              <div className="flex items-center gap-2 mx-auto">
+              <div className="flex items-center gap-3">
                 <PlayerAvatar 
                   type={player.type} 
                   variant={(index % 6 + 1) as 1 | 2 | 3 | 4 | 5 | 6}
                 />
-                <span className="text-base font-medium text-white">
+                <span className="text-[16px] font-medium text-white">
                   {player.alias}
-                  {player.address === currentPlayerAddress && (
-                    <span className="ml-2 px-1.5 py-0.5 text-sm bg-[#00C951] text-[#1C1917] rounded-xl">
-                      You
-                    </span>
-                  )}
                 </span>
               </div>
               
-              {!isInGame && !showResults && (
-                <div className="flex gap-1 bg-[#1C1917] rounded-2xl p-0.5">
-                  <button className="px-1.5 py-0.5 rounded-xl bg-[#F5F5F4] text-sm text-[#1C1917] flex items-center gap-1">
-                    Human
-                  </button>
-                  <button className="px-1.5 py-0.5 rounded-xl bg-[#44403B] text-sm text-[#E7E5E4] flex items-center gap-1">
-                    AI
-                  </button>
-                </div>
+              {player.address === currentPlayerAddress && (
+                <span className="px-3 py-1 text-sm bg-[#00C951] text-[#1C1917] rounded-full">
+                  You
+                </span>
               )}
             </div>
           ))}
