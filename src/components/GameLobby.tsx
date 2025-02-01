@@ -1,104 +1,80 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
-import { usePrivy } from "@privy-io/react-auth";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Play, Plus } from "lucide-react";
 
-// Mock contract functions
-const mockContractCalls = {
-  createGame: async (betAmount: string, walletAddress: string) => {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Simulate contract response
-    return {
-      gameId: `game_${Math.random().toString(36).substr(2, 9)}`,
-      betAmount,
-      creator: walletAddress,
-      timestamp: Date.now(),
-    };
-  }
-};
+// В реальному додатку ці дані мають зберігатися в базі даних
+const mockGames = [
+  { id: "game_7dgzpbxu9", status: "waiting", createdAt: "2024-03-20" },
+  { id: "game_9xkqp2m4r", status: "in_progress", createdAt: "2024-03-19" },
+];
 
 const GameLobby = () => {
-  const [betAmount, setBetAmount] = useState("");
-  const [isCreating, setIsCreating] = useState(false);
-  const { toast } = useToast();
-  const { user } = usePrivy();
   const navigate = useNavigate();
-  
-  const createGame = async () => {
-    if (!betAmount || parseFloat(betAmount) <= 0) {
-      toast({
-        title: "Invalid bet amount",
-        description: "Please enter a valid bet amount",
-        variant: "destructive",
-      });
-      return;
-    }
+  const { toast } = useToast();
+  const [games] = useState(mockGames);
 
-    try {
-      setIsCreating(true);
-      
-      // Call mock contract
-      const result = await mockContractCalls.createGame(
-        betAmount,
-        user?.wallet?.address || ""
-      );
-      
-      // Navigate to the game lobby
-      navigate(`/game/${result.gameId}`);
-      
-      // Reset form
-      setBetAmount("");
-      
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create game. Please try again.",
-        variant: "destructive",
-      });
-      console.error("Game creation error:", error);
-    } finally {
-      setIsCreating(false);
-    }
+  const createGame = () => {
+    const gameId = `game_${Math.random().toString(36).substr(2, 9)}`;
+    navigate(`/game/${gameId}`);
+  };
+
+  const joinGame = (gameId: string) => {
+    navigate(`/game/${gameId}`);
   };
 
   return (
-    <div className="container max-w-2xl mx-auto p-6 space-y-8">
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold">Create New Game</h2>
-        <p className="text-muted-foreground">
-          Set your bet amount and create a new game. Share the link with your opponent to start playing.
-        </p>
-      </div>
-      
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <label htmlFor="betAmount" className="text-sm font-medium">
-            Bet Amount (ETH)
-          </label>
-          <Input
-            id="betAmount"
-            type="number"
-            value={betAmount}
-            onChange={(e) => setBetAmount(e.target.value)}
-            placeholder="0.1"
-            min="0"
-            step="0.01"
-            className="w-full"
-          />
-        </div>
-        
-        <Button 
-          onClick={createGame}
-          className="w-full"
-          disabled={isCreating || !betAmount}
-        >
-          {isCreating ? "Creating..." : "Create Game"}
-        </Button>
-      </div>
+    <div className="container max-w-4xl mx-auto p-6">
+      <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-2xl font-bold">Your Games</CardTitle>
+          <Button onClick={createGame} className="bg-accent hover:bg-accent/90">
+            <Plus className="mr-2 h-4 w-4" />
+            New Game
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Game ID</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {games.map((game) => (
+                <TableRow key={game.id}>
+                  <TableCell className="font-mono">{game.id}</TableCell>
+                  <TableCell className="capitalize">{game.status.replace('_', ' ')}</TableCell>
+                  <TableCell>{game.createdAt}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => joinGame(game.id)}
+                      className="border-muted hover:bg-muted/50"
+                    >
+                      <Play className="mr-2 h-4 w-4" />
+                      Join
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          
+          {games.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              No games found. Create a new game to get started!
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

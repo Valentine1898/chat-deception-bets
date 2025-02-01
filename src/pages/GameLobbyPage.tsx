@@ -1,8 +1,8 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Copy, Twitter } from "lucide-react";
+import { Copy, Twitter, ArrowLeft } from "lucide-react";
 import WalletWidget from "@/components/WalletWidget";
 
 const GameLobbyPage = () => {
@@ -33,7 +33,15 @@ const GameLobbyPage = () => {
   };
 
   return (
-    <div className="container max-w-2xl mx-auto p-6 min-h-screen flex flex-col items-center justify-center">
+    <div className="container max-w-2xl mx-auto p-6 min-h-screen flex flex-col items-center justify-center relative">
+      <Link 
+        to="/" 
+        className="absolute top-4 left-4 inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Games
+      </Link>
+      
       <WalletWidget />
       
       <img 
