@@ -36,9 +36,9 @@ const PlayersList = ({ players, currentPlayerAddress, onGameStart }: PlayersList
         });
       }
 
-      // Start countdown
+      // Start countdown - changed from 10 to 3 seconds
       setIsCountingDown(true);
-      setCountdown(10);
+      setCountdown(3);
     }
   }, [humanPlayers.length, currentPlayerAddress, isCountingDown, toast]);
 

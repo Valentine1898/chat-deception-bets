@@ -137,7 +137,7 @@ const GameLobbyPage = () => {
     setPlayers(shuffledPlayers);
     setSelectedTopic(GAME_TOPICS[Math.floor(Math.random() * GAME_TOPICS.length)]);
     setIsGameStarted(true);
-    setTopicRevealCountdown(30); // 30 seconds for topic reveal
+    setTopicRevealCountdown(5); // Changed from 30 to 5 seconds
   };
 
   const placeBet = () => {
