@@ -20,17 +20,21 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#4F46E5",
-          foreground: "#FFFFFF",
+          DEFAULT: "#E6D5BA", // Beige color from the button
+          foreground: "#1A1A1A", // Dark text on beige
         },
         secondary: {
-          DEFAULT: "#06B6D4",
-          foreground: "#FFFFFF",
+          DEFAULT: "#2A2A2A", // Darker gray for secondary elements
+          foreground: "#E6D5BA", // Beige text on dark
         },
-        background: "#0F172A",
-        foreground: "#E2E8F0",
-        muted: "#334155",
-        accent: "#818CF8",
+        background: "#1A1A1A", // Dark background
+        foreground: "#E6D5BA", // Beige text
+        muted: "#2A2A2A", // Darker gray for muted elements
+        accent: "#E6D5BA", // Beige for accents
+        card: {
+          DEFAULT: "#2A2A2A", // Dark card background
+          foreground: "#E6D5BA", // Beige text on card
+        },
       },
       keyframes: {
         "fade-in": {
