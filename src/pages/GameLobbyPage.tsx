@@ -7,6 +7,7 @@ import GameTopic from "@/components/GameTopic";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
 import { generateAlias, shuffleArray } from "@/utils/playerUtils";
 import { useEffect, useState } from "react";
+import { GAME_TIMINGS } from "@/config/gameConfig";
 
 // Mock topics - in a real app these would come from an API
 const GAME_TOPICS = [
@@ -81,7 +82,7 @@ const GameLobbyPage = () => {
       timer = setTimeout(() => {
         setPlayers(current => [...current, AI_PLAYERS[aiPlayerIndex]]);
         setAiPlayerIndex(prev => prev + 1);
-      }, 1000); // Add an AI player every second
+      }, GAME_TIMINGS.AI_PLAYER_INTERVAL);
     }
 
     return () => {
@@ -99,7 +100,7 @@ const GameLobbyPage = () => {
       }, 1000);
     } else if (topicRevealCountdown === 0) {
       setIsChatVisible(true);
-      setChatCountdown(180); // 3 minutes in seconds
+      setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
     }
 
     return () => {
@@ -152,7 +153,7 @@ const GameLobbyPage = () => {
     setPlayers(shuffledPlayers);
     setSelectedTopic(GAME_TOPICS[Math.floor(Math.random() * GAME_TOPICS.length)]);
     setIsGameStarted(true);
-    setTopicRevealCountdown(5);
+    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
 
   const placeBet = () => {
