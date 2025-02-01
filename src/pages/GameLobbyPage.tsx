@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { usePrivy } from "@privy-io/react-auth";
 import { useToast } from "@/hooks/use-toast";
 import PlayersList from "@/components/PlayersList";
@@ -204,75 +204,79 @@ const GameLobbyPage = () => {
     const stage = getCurrentStage();
     
     return (
-      <div className="container mx-auto p-6 pt-32 relative">
+      <div className="min-h-screen">
         <GameHeader 
           stage={stage}
           countdown={getCurrentCountdown()}
         />
         
-        <div className="flex gap-6 relative mt-8">
-          <div className="w-1/3">
-            <PlayersList 
-              players={players}
-              currentPlayerAddress={user?.wallet?.address}
-              isInGame={true}
-              showResults={stage === 'results'}
-            />
+        <div className="container mx-auto p-6 mt-[140px]">
+          <div className="flex gap-6 relative">
+            <div className="w-1/3">
+              <PlayersList 
+                players={players}
+                currentPlayerAddress={user?.wallet?.address}
+                isInGame={true}
+                showResults={stage === 'results'}
+              />
+            </div>
+            <div className="w-2/3">
+              <GameTopic 
+                topic={selectedTopic}
+                isChatVisible={stage === 'chat' || stage === 'voting' || stage === 'awaiting_votes'}
+              />
+              {isChatVisible && <GameChat />}
+            </div>
           </div>
-          <div className="w-2/3">
-            <GameTopic 
-              topic={selectedTopic}
-              isChatVisible={stage === 'chat' || stage === 'voting' || stage === 'awaiting_votes'}
-            />
-            {isChatVisible && <GameChat />}
-          </div>
-        </div>
 
-        {stage === 'results' && (
-          <div className="flex flex-col items-center justify-center mt-8">
-            <h2 className="text-2xl font-bold mb-4">Game Results</h2>
-            <Button 
-              onClick={handleClaimPrize}
-              className="bg-accent hover:bg-accent/90"
-            >
-              Claim Prize
-            </Button>
-          </div>
-        )}
+          {stage === 'results' && (
+            <div className="flex flex-col items-center justify-center mt-8">
+              <h2 className="text-2xl font-bold mb-4">Game Results</h2>
+              <Button 
+                onClick={handleClaimPrize}
+                className="bg-accent hover:bg-accent/90"
+              >
+                Claim Prize
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 pt-32 relative">
+    <div className="min-h-screen">
       <GameHeader 
         stage="waiting"
         countdown={null}
       />
-      <div className="flex gap-6 relative mt-8">
-        <div className="w-1/3">
-          <PlayersList 
-            players={players}
-            currentPlayerAddress={user?.wallet?.address}
-            onGameStart={handleGameStart}
-            isInGame={isGameStarted}
-          />
-        </div>
-        <div className="w-2/3">
-          <GameLobbyInfo 
-            authenticated={authenticated}
-            hasPlacedBet={hasPlacedBet}
-            isCreator={isCreator}
-            gameId={gameId || ''}
-            gameUrl={gameUrl}
-            mockGameData={mockGameData}
-            onPlaceBet={() => {
-              toast({
-                title: "Placing bet...",
-                description: "This would trigger a smart contract call in production",
-              });
-            }}
-          />
+      <div className="container mx-auto p-6 mt-[140px]">
+        <div className="flex gap-6 relative">
+          <div className="w-1/3">
+            <PlayersList 
+              players={players}
+              currentPlayerAddress={user?.wallet?.address}
+              onGameStart={handleGameStart}
+              isInGame={isGameStarted}
+            />
+          </div>
+          <div className="w-2/3">
+            <GameLobbyInfo 
+              authenticated={authenticated}
+              hasPlacedBet={hasPlacedBet}
+              isCreator={isCreator}
+              gameId={gameId || ''}
+              gameUrl={gameUrl}
+              mockGameData={mockGameData}
+              onPlaceBet={() => {
+                toast({
+                  title: "Placing bet...",
+                  description: "This would trigger a smart contract call in production",
+                });
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
