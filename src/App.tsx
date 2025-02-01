@@ -9,9 +9,18 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// For development, we'll show a clear error if the Privy app ID is missing
+const PRIVY_APP_ID = import.meta.env.VITE_PRIVY_APP_ID;
+
+if (!PRIVY_APP_ID) {
+  console.error(
+    "Missing Privy App ID. Please set the VITE_PRIVY_APP_ID environment variable."
+  );
+}
+
 const App = () => (
   <PrivyProvider
-    appId="clsqxpj6800sfmm0h8mh5gj1x"
+    appId={PRIVY_APP_ID || ""}
     config={{
       loginMethods: ["wallet"],
       appearance: {
