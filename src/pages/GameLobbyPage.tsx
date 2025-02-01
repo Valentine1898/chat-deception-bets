@@ -7,7 +7,6 @@ import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameVoting from "@/components/GameVoting";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
-import GameResults from "@/components/GameResults";
 import { generateAlias, shuffleArray } from "@/utils/playerUtils";
 import { useEffect, useState } from "react";
 import { GAME_TIMINGS } from "@/config/gameConfig";
@@ -231,13 +230,6 @@ const GameLobbyPage = () => {
     return "waiting" as const;
   };
 
-  // Mock vote results for testing
-  const mockVoteResults = players.map(player => ({
-    player,
-    actualType: player.type,
-    votedAs: Math.random() > 0.5 ? 'human' as const : 'ai' as const
-  }));
-
   if (isGameStarted) {
     const currentStage = getCurrentStage();
     
@@ -249,42 +241,20 @@ const GameLobbyPage = () => {
           countdown={getCurrentCountdown()}
         />
         
-        {currentStage === 'results' && (
-          <Button onClick={cycleGameResult} className="mb-4">
-            Test Next Result
-          </Button>
-        )}
-
         <div className="flex gap-6 relative mt-8">
           <div className="w-1/3">
-            {currentStage === 'results' ? (
-              <PlayersList 
-                players={players}
-                currentPlayerAddress={user?.wallet?.address}
-                isInGame={true}
-              />
-            ) : (
-              <GameVoting 
-                players={players}
-                currentPlayerAddress={user?.wallet?.address}
-                onVoteSubmit={handleVoteSubmit}
-                showConfirmButton={currentStage === 'voting'}
-              />
-            )}
+            <PlayersList 
+              players={players}
+              currentPlayerAddress={user?.wallet?.address}
+              isInGame={true}
+              showResults={currentStage === 'results'}
+            />
           </div>
           <div className="w-2/3">
-            {currentStage === 'results' ? (
-              <GameResults
-                result={gameResult}
-                playerVotes={mockVoteResults}
-                currentPlayerAddress={user?.wallet?.address}
-              />
-            ) : (
-              <GameTopic 
-                topic={selectedTopic}
-                isChatVisible={currentStage === 'chat' || currentStage === 'voting' || currentStage === 'awaiting_votes'}
-              />
-            )}
+            <GameTopic 
+              topic={selectedTopic}
+              isChatVisible={currentStage === 'chat' || currentStage === 'voting' || currentStage === 'awaiting_votes'}
+            />
           </div>
         </div>
       </div>
