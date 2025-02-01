@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Bot, CheckCircle } from "lucide-react";
+import { User, Bot, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import PlayerAvatar from "./PlayerAvatar";
 
 type Player = {
   id: string;
@@ -34,21 +35,10 @@ const GameVoting = ({ players, currentPlayerAddress, onVoteSubmit, showConfirmBu
   }, [currentPlayerAddress]);
 
   const handleVoteChange = (playerId: string, isHuman: boolean) => {
-    const newVotes: Record<string, 'human' | 'ai'> = {
-      ...votes,
+    setVotes(prev => ({
+      ...prev,
       [playerId]: isHuman ? 'human' : 'ai'
-    };
-
-    // If marking as human, mark all others as AI (except current player)
-    if (isHuman) {
-      players.forEach(player => {
-        if (player.id !== playerId && player.id !== currentPlayerAddress) {
-          newVotes[player.id] = 'ai';
-        }
-      });
-    }
-
-    setVotes(newVotes);
+    }));
   };
 
   const canSubmit = () => {
@@ -74,68 +64,97 @@ const GameVoting = ({ players, currentPlayerAddress, onVoteSubmit, showConfirmBu
     });
   };
 
+  const getPlayerColor = (index: number) => {
+    const colors = [
+      'bg-[#E17100]',
+      'bg-[#7C3AED]',
+      'bg-[#00C951]',
+      'bg-[#3A77F7]',
+      'bg-[#FD9A00]',
+      'bg-[#E11D48]'
+    ];
+    return colors[index % colors.length];
+  };
+
   return (
-    <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
+    <Card className="w-full bg-stone-900 border-none">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <User className="h-5 w-5 text-accent" />
+        <CardTitle className="text-[32px] font-normal text-white font-['Inria_Serif']">
           Classify Players
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {players.map((player) => (
-            <div
-              key={player.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
-            >
-              <div className="flex items-center gap-3">
-                <span className="font-medium">{player.alias}</span>
-              </div>
-              <div className="flex items-center gap-4">
-                {player.id === currentPlayerAddress ? (
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-primary text-primary-foreground">
-                    <CheckCircle className="h-5 w-5" />
-                    <span className="text-sm">You (Human)</span>
-                  </div>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => handleVoteChange(player.id, true)}
-                      className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
-                        votes[player.id] === 'human' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'hover:bg-muted'
-                      }`}
-                    >
-                      <User className="h-5 w-5" />
-                      <span className="text-sm">Human</span>
-                    </button>
-                    <button
-                      onClick={() => handleVoteChange(player.id, false)}
-                      className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
-                        votes[player.id] === 'ai' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'hover:bg-muted'
-                      }`}
-                    >
-                      <Bot className="h-5 w-5" />
-                      <span className="text-sm">AI</span>
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-        {showConfirmButton && (
-          <Button
-            className="w-full mt-4"
-            onClick={handleSubmit}
-            disabled={!canSubmit()}
+      <CardContent className="space-y-4">
+        {players.map((player, index) => (
+          <div
+            key={player.id}
+            className={`flex items-center justify-between p-3 rounded-lg ${
+              player.id === currentPlayerAddress ? 'bg-stone-800' : 'bg-stone-800/50'
+            }`}
           >
-            Confirm Classifications
-          </Button>
+            <div className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getPlayerColor(index)}`}>
+                <PlayerAvatar 
+                  type={player.type} 
+                  variant={(index % 6 + 1) as 1 | 2 | 3 | 4 | 5 | 6}
+                  className="w-6 h-6"
+                />
+              </div>
+              <span className="text-[16px] font-medium text-white">
+                {player.alias}
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              {player.id === currentPlayerAddress ? (
+                <span className="px-3 py-1 text-sm bg-[#00C951] text-[#1C1917] rounded-full font-medium">
+                  You
+                </span>
+              ) : (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleVoteChange(player.id, true)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors ${
+                      votes[player.id] === 'human' 
+                        ? 'bg-white text-stone-900' 
+                        : 'bg-stone-900 text-white hover:bg-stone-800'
+                    }`}
+                  >
+                    <User className="h-4 w-4" />
+                    <span className="text-sm font-medium">Human</span>
+                  </button>
+                  <button
+                    onClick={() => handleVoteChange(player.id, false)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors ${
+                      votes[player.id] === 'ai' 
+                        ? 'bg-white text-stone-900' 
+                        : 'bg-stone-900 text-white hover:bg-stone-800'
+                    }`}
+                  >
+                    <Bot className="h-4 w-4" />
+                    <span className="text-sm font-medium">AI</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {showConfirmButton && (
+          <div className="pt-4 space-y-4">
+            <div className="flex items-start gap-3 text-stone-400">
+              <Info className="h-5 w-5 mt-0.5 shrink-0" />
+              <p className="text-lg">
+                You will make your final choice in <span className="text-white">Human detection</span> stage
+              </p>
+            </div>
+            <Button
+              onClick={handleSubmit}
+              disabled={!canSubmit()}
+              className="w-full h-14 text-lg font-medium bg-[#FD9A00] hover:bg-[#FD9A00]/90 text-stone-900"
+            >
+              Confirm
+            </Button>
+          </div>
         )}
       </CardContent>
     </Card>
