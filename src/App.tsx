@@ -12,7 +12,7 @@ const queryClient = new QueryClient();
 const PRIVY_APP_ID = import.meta.env.VITE_PRIVY_APP_ID;
 
 if (!PRIVY_APP_ID || PRIVY_APP_ID === "your_privy_app_id_here") {
-  console.error(
+  throw new Error(
     "Please set up your Privy App ID:\n" +
     "1. Create an account at https://console.privy.io/\n" +
     "2. Create a new application\n" +
@@ -23,7 +23,7 @@ if (!PRIVY_APP_ID || PRIVY_APP_ID === "your_privy_app_id_here") {
 
 const App = () => (
   <PrivyProvider
-    appId={PRIVY_APP_ID || ""}
+    appId={PRIVY_APP_ID}
     config={{
       loginMethods: ["wallet"],
       appearance: {
