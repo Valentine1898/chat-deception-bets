@@ -56,23 +56,23 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimerProps) => {
 
   const stageInfo = getStageInfo();
 
-  if (!countdown) return null;
-
   return (
     <div className="flex items-center gap-4 bg-muted/30 px-4 py-2 rounded-lg">
       <div>
         <h3 className="font-semibold text-foreground">{stageInfo.title}</h3>
         <p className="text-sm text-muted-foreground">{stageInfo.action}</p>
       </div>
-      <div
-        className={cn(
-          "px-3 py-1 rounded font-mono text-lg",
-          isBlinking && "animate-pulse text-red-500",
-          !isBlinking && "text-foreground"
-        )}
-      >
-        {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
-      </div>
+      {countdown !== null && (
+        <div
+          className={cn(
+            "px-3 py-1 rounded font-mono text-lg",
+            isBlinking && "animate-pulse text-red-500",
+            !isBlinking && "text-foreground"
+          )}
+        >
+          {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
+        </div>
+      )}
     </div>
   );
 };
