@@ -90,7 +90,7 @@ const GameLobby = () => {
     <div className="container max-w-4xl mx-auto p-6 mt-24">
       <div className="text-center mb-8">
         <img 
-          src="/lovable-uploads/a80f0ac3-8d80-48b2-9d4f-d311f160489f.png" 
+          src="/lovable-uploads/a79d497b-4457-44d5-ae6f-6af3390f246b.png" 
           alt="Alan Turing" 
           className="logo w-24 h-24 mx-auto mb-4"
         />
