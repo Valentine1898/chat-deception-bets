@@ -42,6 +42,7 @@ const GameLobbyPage = () => {
   const [chatCountdown, setChatCountdown] = useState<number | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<typeof GAME_TOPICS[0] | null>(null);
   const [isChatVisible, setIsChatVisible] = useState(false);
+  const [aiPlayerIndex, setAiPlayerIndex] = useState(0);
 
   const gameUrl = `${window.location.origin}/game/${gameId}`;
 
@@ -70,6 +71,23 @@ const GameLobbyPage = () => {
       setPlayers([currentPlayer]);
     }
   }, [authenticated, user?.wallet?.address]);
+
+  // Add AI players one by one
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    const humanPlayers = players.filter(p => p.type === 'human' && p.hasJoined);
+
+    if (humanPlayers.length === 2 && aiPlayerIndex < AI_PLAYERS.length) {
+      timer = setTimeout(() => {
+        setPlayers(current => [...current, AI_PLAYERS[aiPlayerIndex]]);
+        setAiPlayerIndex(prev => prev + 1);
+      }, 1000); // Add an AI player every second
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [players, aiPlayerIndex]);
 
   // Topic reveal countdown
   useEffect(() => {
@@ -130,8 +148,7 @@ const GameLobbyPage = () => {
   };
 
   const handleGameStart = () => {
-    const allPlayers = [...players, ...AI_PLAYERS];
-    const shuffledPlayers = shuffleArray(allPlayers);
+    const shuffledPlayers = shuffleArray(players);
     setPlayers(shuffledPlayers);
     setSelectedTopic(GAME_TOPICS[Math.floor(Math.random() * GAME_TOPICS.length)]);
     setIsGameStarted(true);
@@ -179,20 +196,29 @@ const GameLobbyPage = () => {
             players={players}
             currentPlayerAddress={user?.wallet?.address}
             onGameStart={handleGameStart}
-            isInGame={false}
+            isInGame={isGameStarted}
           />
         </div>
         <div className="w-2/3">
-          <GameLobbyInfo 
-            authenticated={authenticated}
-            hasPlacedBet={hasPlacedBet}
-            isCreator={isCreator}
-            gameId={gameId || ''}
-            gameUrl={gameUrl}
-            mockGameData={mockGameData}
-            onPlaceBet={placeBet}
-            onSimulatePlayerJoin={simulatePlayerJoin}
-          />
+          {isGameStarted ? (
+            <GameTopic 
+              topic={selectedTopic}
+              topicRevealCountdown={topicRevealCountdown}
+              chatCountdown={chatCountdown}
+              isChatVisible={isChatVisible}
+            />
+          ) : (
+            <GameLobbyInfo 
+              authenticated={authenticated}
+              hasPlacedBet={hasPlacedBet}
+              isCreator={isCreator}
+              gameId={gameId || ''}
+              gameUrl={gameUrl}
+              mockGameData={mockGameData}
+              onPlaceBet={placeBet}
+              onSimulatePlayerJoin={simulatePlayerJoin}
+            />
+          )}
         </div>
       </div>
     </div>
