@@ -7,7 +7,7 @@ import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
-import { GAME_TIMINGS } from "@/config/gameConfig";
+import { GAME_TIMINGS, GameStage } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
 import { Button } from "@/components/ui/button";
 
@@ -93,20 +93,20 @@ const GameLobbyPage = () => {
     setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
 
-  const getCurrentStage = () => {
+  const getCurrentStage = (): GameStage => {
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-      return "topic_review" as const;
+      return "topic_review";
     }
     if (chatCountdown !== null && chatCountdown > 0) {
-      return "chat" as const;
+      return "chat";
     }
     if (votingCountdown !== null && votingCountdown > 0) {
-      return hasVoted ? "awaiting_votes" as const : "voting" as const;
+      return hasVoted ? "awaiting_votes" : "voting";
     }
     if (votingCountdown === 0) {
-      return "results" as const;
+      return "results";
     }
-    return "waiting" as const;
+    return "waiting";
   };
 
   const getCurrentCountdown = () => {
