@@ -54,7 +54,7 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
   };
 
   return (
-    <div className="w-full bg-muted/30 border-b border-muted">
+    <div className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-muted">
       <div className="container mx-auto">
         <Tabs defaultValue={getStageIndex()} value={getStageIndex()} className="w-full">
           <TabsList className="w-full justify-start h-14 bg-transparent gap-1">
@@ -64,18 +64,18 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
                 value={index.toString()}
                 disabled
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-none border-b-2 data-[state=active]:border-primary data-[state=inactive]:border-transparent relative h-full",
-                  s.status === "completed" && "text-muted-foreground",
-                  s.status === "active" && "text-primary",
-                  s.status === "pending" && "text-muted-foreground/50"
+                  "flex items-center gap-2 px-4 py-2 rounded-full transition-all relative h-10 my-2",
+                  s.status === "completed" && "bg-muted/30 text-muted-foreground",
+                  s.status === "active" && "bg-primary text-primary-foreground",
+                  s.status === "pending" && "bg-muted/10 text-muted-foreground/50"
                 )}
               >
                 <div className="flex items-center gap-2">
                   <span className={cn(
                     "flex items-center justify-center w-6 h-6 rounded-full text-sm",
-                    s.status === "completed" && "bg-primary/20 text-primary",
-                    s.status === "active" && "bg-primary text-primary-foreground",
-                    s.status === "pending" && "bg-muted text-muted-foreground"
+                    s.status === "completed" && "bg-muted/20 text-accent",
+                    s.status === "active" && "bg-black/20 text-primary-foreground",
+                    s.status === "pending" && "bg-muted/20 text-muted-foreground"
                   )}>
                     {s.status === "completed" ? (
                       <Check className="h-4 w-4" />
@@ -85,10 +85,11 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
                   </span>
                   <span className="text-sm font-medium">{s.label}</span>
                 </div>
-                {s.status === "active" && countdown !== null && (
+                {countdown !== null && (
                   <div className={cn(
                     "flex items-center gap-1 ml-2 text-sm font-mono",
-                    isBlinking && "animate-pulse text-red-500"
+                    s.status === "active" && "bg-black/20 px-2 py-0.5 rounded-full",
+                    isBlinking && s.status === "active" && "animate-pulse text-red-500"
                   )}>
                     <Timer className="h-3.5 w-3.5" />
                     {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}

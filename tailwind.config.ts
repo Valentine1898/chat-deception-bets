@@ -20,7 +20,7 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#E6D5BA", // Beige color from the button
+          DEFAULT: "#F5A524", // Orange color from the active tab
           foreground: "rgb(28 25 23)", // stone-900
         },
         secondary: {
