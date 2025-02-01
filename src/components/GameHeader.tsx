@@ -8,6 +8,21 @@ import { LogOut, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatEther } from "ethers";
 import { BrowserProvider } from "ethers";
+import { useToast } from "@/hooks/use-toast";
+
+// Base network configuration
+const BASE_CHAIN_ID = "0x2105"; // Chain ID for Base network
+const BASE_NETWORK = {
+  chainId: BASE_CHAIN_ID,
+  chainName: "Base",
+  nativeCurrency: {
+    name: "ETH",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: ["https://mainnet.base.org"],
+  blockExplorerUrls: ["https://basescan.org"],
+};
 
 type GameHeaderProps = {
   stage: GameStage;
@@ -18,14 +33,77 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
   const { logout, user } = usePrivy();
   const { wallets } = useWallets();
   const [balance, setBalance] = useState<string>("0.00");
+  const { toast } = useToast();
+  const [currentChainId, setCurrentChainId] = useState<string | null>(null);
   
   const shortenAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  const checkAndSwitchNetwork = async () => {
+    if (wallets?.[0]) {
+      try {
+        const provider = await wallets[0].getEthereumProvider();
+        const chainId = await provider.request({ method: 'eth_chainId' });
+        setCurrentChainId(chainId);
+
+        if (chainId !== BASE_CHAIN_ID) {
+          try {
+            // Try to switch to Base network
+            await provider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: BASE_CHAIN_ID }],
+            });
+            toast({
+              title: "Network switched",
+              description: "Successfully switched to Base network",
+            });
+          } catch (switchError: any) {
+            // If the network is not added to the wallet, add it
+            if (switchError.code === 4902) {
+              try {
+                await provider.request({
+                  method: 'wallet_addEthereumChain',
+                  params: [BASE_NETWORK],
+                });
+                toast({
+                  title: "Network added",
+                  description: "Base network has been added to your wallet",
+                });
+              } catch (addError) {
+                console.error("Error adding network:", addError);
+                toast({
+                  title: "Error",
+                  description: "Failed to add Base network to your wallet",
+                  variant: "destructive",
+                });
+              }
+            } else {
+              console.error("Error switching network:", switchError);
+              toast({
+                title: "Error",
+                description: "Failed to switch to Base network",
+                variant: "destructive",
+              });
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error checking network:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkAndSwitchNetwork();
+    // Check network every 30 seconds
+    const interval = setInterval(checkAndSwitchNetwork, 30000);
+    return () => clearInterval(interval);
+  }, [wallets]);
+
   useEffect(() => {
     const fetchBalance = async () => {
-      if (wallets?.[0]) {
+      if (wallets?.[0] && currentChainId === BASE_CHAIN_ID) {
         try {
           const ethProvider = await wallets[0].getEthereumProvider();
           const provider = new BrowserProvider(ethProvider);
@@ -39,10 +117,9 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
     };
 
     fetchBalance();
-    const interval = setInterval(fetchBalance, 10000); // Update every 10 seconds
-
+    const interval = setInterval(fetchBalance, 10000);
     return () => clearInterval(interval);
-  }, [wallets]);
+  }, [wallets, currentChainId]);
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
@@ -73,6 +150,16 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                 </div>
                 <div className="text-sm font-mono text-foreground/60">
                   {balance} ETH
+                  {currentChainId !== BASE_CHAIN_ID && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={checkAndSwitchNetwork}
+                      className="ml-2 text-xs"
+                    >
+                      Switch to Base
+                    </Button>
+                  )}
                 </div>
                 <Button
                   variant="ghost"
