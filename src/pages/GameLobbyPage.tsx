@@ -241,7 +241,7 @@ const GameLobbyPage = () => {
     const currentStage = getCurrentStage();
     
     return (
-      <div className="container mx-auto p-6 pt-24 relative">
+      <div className="container mx-auto p-6 pt-32 relative">
         <GameHeader 
           stage={currentStage}
           countdown={getCurrentCountdown()}
@@ -290,7 +290,7 @@ const GameLobbyPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 pt-24 relative">
+    <div className="container mx-auto p-6 pt-32 relative">
       <GameHeader 
         stage="waiting"
         countdown={null}
