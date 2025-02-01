@@ -101,7 +101,7 @@ const GameLobbyPage = () => {
               <p className="text-lg font-mono text-accent">{gameId}</p>
             </div>
 
-            {isCreator && <ShareGameButtons gameUrl={gameUrl} />}
+            <ShareGameButtons gameUrl={gameUrl} />
 
             <div className="mt-8 text-center">
               <p className="text-sm text-muted-foreground">
