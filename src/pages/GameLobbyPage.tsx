@@ -6,11 +6,9 @@ import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
-import { generateAlias } from "@/utils/playerUtils";
-import { useEffect, useState } from "react";
 import { GAME_TIMINGS } from "@/config/gameConfig";
-import EnhancedWalletWidget from "@/components/EnhancedWalletWidget";
 import { wsService } from "@/services/websocket";
+import { useEffect, useState } from "react";
 
 const GAME_TOPICS = [
   {
@@ -92,18 +90,27 @@ const GameLobbyPage = () => {
     setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
 
+  const getCurrentStage = () => {
+    if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
+      return "topic_review" as const;
+    }
+    if (chatCountdown !== null && chatCountdown > 0) {
+      return "chat" as const;
+    }
+    if (votingCountdown !== null && votingCountdown > 0) {
+      return hasVoted ? "awaiting_votes" : "voting";
+    }
+    if (votingCountdown === 0) {
+      return "results" as const;
+    }
+    return "waiting" as const;
+  };
+
   const getCurrentCountdown = () => {
     if (topicRevealCountdown !== null) return topicRevealCountdown;
     if (chatCountdown !== null) return chatCountdown;
     if (votingCountdown !== null) return votingCountdown;
     return null;
-  };
-
-  const placeBet = () => {
-    toast({
-      title: "Placing bet...",
-      description: "This would trigger a smart contract call in production",
-    });
   };
 
   // Topic reveal countdown
@@ -175,7 +182,6 @@ const GameLobbyPage = () => {
     
     return (
       <div className="container mx-auto p-6 pt-32 relative">
-        <EnhancedWalletWidget />
         <GameHeader 
           stage={currentStage}
           countdown={getCurrentCountdown()}
@@ -204,7 +210,6 @@ const GameLobbyPage = () => {
 
   return (
     <div className="container mx-auto p-6 pt-32 relative">
-      <EnhancedWalletWidget />
       <GameHeader 
         stage="waiting"
         countdown={null}
@@ -226,28 +231,17 @@ const GameLobbyPage = () => {
             gameId={gameId || ''}
             gameUrl={gameUrl}
             mockGameData={mockGameData}
-            onPlaceBet={placeBet}
+            onPlaceBet={() => {
+              toast({
+                title: "Placing bet...",
+                description: "This would trigger a smart contract call in production",
+              });
+            }}
           />
         </div>
       </div>
     </div>
   );
-};
-
-const getCurrentStage = () => {
-  if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-    return "topic_review" as const;
-  }
-  if (chatCountdown !== null && chatCountdown > 0) {
-    return "chat" as const;
-  }
-  if (votingCountdown !== null && votingCountdown > 0) {
-    return hasVoted ? "awaiting_votes" : "voting";
-  }
-  if (votingCountdown === 0) {
-    return "results" as const;
-  }
-  return "waiting" as const;
 };
 
 export default GameLobbyPage;
