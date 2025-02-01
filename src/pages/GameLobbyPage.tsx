@@ -163,6 +163,7 @@ const GameLobbyPage = () => {
             <PlayersList 
               players={players}
               currentPlayerAddress={user?.wallet?.address}
+              isInGame={true}
             />
           </div>
           
@@ -219,12 +220,12 @@ const GameLobbyPage = () => {
       </Link>
       
       <div className="flex gap-6 relative mt-8">
-        {/* Players List - Left Side */}
         <div className="w-1/3">
           <PlayersList 
             players={players}
             currentPlayerAddress={user?.wallet?.address}
             onGameStart={handleGameStart}
+            isInGame={false}
           />
         </div>
 

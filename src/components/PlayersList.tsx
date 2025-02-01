@@ -15,9 +15,10 @@ type PlayersListProps = {
   players: Player[];
   currentPlayerAddress?: string;
   onGameStart?: () => void;
+  isInGame?: boolean;
 };
 
-const PlayersList = ({ players, currentPlayerAddress, onGameStart }: PlayersListProps) => {
+const PlayersList = ({ players, currentPlayerAddress, onGameStart, isInGame = false }: PlayersListProps) => {
   const { toast } = useToast();
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -25,9 +26,7 @@ const PlayersList = ({ players, currentPlayerAddress, onGameStart }: PlayersList
   const humanPlayers = players.filter(p => p.type === 'human' && p.hasJoined);
 
   useEffect(() => {
-    // Check if both human players have joined
     if (humanPlayers.length === 2 && !isCountingDown) {
-      // Notify about opponent joining
       const opponent = humanPlayers.find(p => p.address !== currentPlayerAddress);
       if (opponent) {
         toast({
@@ -50,7 +49,6 @@ const PlayersList = ({ players, currentPlayerAddress, onGameStart }: PlayersList
         setCountdown(countdown - 1);
       }, 1000);
     } else if (countdown === 0) {
-      // Game starts
       onGameStart?.();
     }
 
@@ -60,6 +58,36 @@ const PlayersList = ({ players, currentPlayerAddress, onGameStart }: PlayersList
       }
     };
   }, [countdown, onGameStart]);
+
+  const renderPlayerInfo = (player: Player) => {
+    if (isInGame) {
+      // In game: show aliases for all players
+      return (
+        <span className="font-medium">
+          {player.alias}
+          {player.address === currentPlayerAddress && " (You)"}
+        </span>
+      );
+    } else {
+      // In lobby: show wallet addresses for humans and "AI Agent" for bots
+      return (
+        <span className="font-medium">
+          {player.type === 'human' ? (
+            player.address && player.hasJoined ? (
+              <>
+                {player.address.slice(0, 6)}...{player.address.slice(-4)}
+                {player.address === currentPlayerAddress && " (You)"}
+              </>
+            ) : (
+              "Waiting for player..."
+            )
+          ) : (
+            "AI Agent"
+          )}
+        </span>
+      );
+    }
+  };
 
   return (
     <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
@@ -87,20 +115,7 @@ const PlayersList = ({ players, currentPlayerAddress, onGameStart }: PlayersList
                 ) : (
                   <Bot className="h-5 w-5 text-accent" />
                 )}
-                <span className="font-medium">
-                  {player.type === 'human' ? (
-                    player.address && player.hasJoined ? (
-                      <>
-                        {player.address.slice(0, 6)}...{player.address.slice(-4)}
-                        {player.address === currentPlayerAddress && " (You)"}
-                      </>
-                    ) : (
-                      "Waiting for player..."
-                    )
-                  ) : (
-                    "AI Agent"
-                  )}
-                </span>
+                {renderPlayerInfo(player)}
               </div>
             </div>
           ))}
