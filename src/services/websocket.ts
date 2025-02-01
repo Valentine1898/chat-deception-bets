@@ -12,7 +12,7 @@ export type SessionInfo = {
   session_id: string;
 };
 
-type MessageType = 'chat' | 'session_info' | 'error';
+type MessageType = 'chat' | 'session_info' | 'error' | 'session_pending' | 'session_started' | 'session_finished' | 'topic';
 
 type WebSocketMessage = {
   type: MessageType;
@@ -39,7 +39,7 @@ export class WebSocketService {
         
         switch (data.type) {
           case 'chat':
-            const messageId = data.content.id || `${data.sender}-${Date.now()}`;
+            const messageId = `${data.sender}-${Date.now()}`;
             
             if (this.processedMessageIds.has(messageId)) {
               console.log('🔄 Skipping duplicate message:', messageId);
@@ -58,14 +58,24 @@ export class WebSocketService {
             break;
 
           case 'session_info':
+          case 'session_started':
+          case 'session_finished':
             const sessionInfo: SessionInfo = data.content;
             console.log('ℹ️ Processing session info:', sessionInfo);
             this.sessionInfoHandlers.forEach(handler => handler(sessionInfo));
             break;
 
+          case 'session_pending':
+            toast.info("Waiting for other players to join...");
+            break;
+
           case 'error':
             console.error('❌ WebSocket error message:', data.content.message);
             toast.error(data.content.message);
+            break;
+
+          case 'topic':
+            // Topic handling will be implemented in the game component
             break;
         }
       } catch (error) {
@@ -96,11 +106,35 @@ export class WebSocketService {
 
   sendMessage(message: string) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      console.log('📤 Sending WebSocket message:', message);
-      this.ws.send(message);
+      console.log('📤 Sending chat message:', message);
+      const payload = JSON.stringify({
+        type: 'chat',
+        content: message
+      });
+      this.ws.send(payload);
     } else {
       console.error('❌ Cannot send message - WebSocket not ready. State:', this.ws?.readyState);
       toast.error("WebSocket connection not ready");
+    }
+  }
+
+  requestTopic() {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      console.log('📤 Requesting topic');
+      const payload = JSON.stringify({
+        type: 'get_topic'
+      });
+      this.ws.send(payload);
+    }
+  }
+
+  startSession() {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      console.log('📤 Starting session');
+      const payload = JSON.stringify({
+        type: 'start_session'
+      });
+      this.ws.send(payload);
     }
   }
 
