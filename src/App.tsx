@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <PrivyProvider
-    appId="clm..." // TODO: Replace with actual Privy app ID
+    appId="clsqxpj6800sfmm0h8mh5gj1x"
     config={{
       loginMethods: ["wallet"],
       appearance: {
