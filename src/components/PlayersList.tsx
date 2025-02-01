@@ -66,7 +66,7 @@ const PlayersList = ({
   }, [countdown, onGameStart]);
 
   return (
-    <div className="w-[360px] bg-stone-900 rounded-2xl p-6 flex flex-col gap-5">
+    <div className="w-[360px] bg-[#0C0A09] rounded-2xl p-6 flex flex-col gap-5">
       <div className="flex flex-col gap-4">
         <h2 className="text-[32px] font-normal text-white font-['Inria_Serif']">
           Classify Players
@@ -76,20 +76,30 @@ const PlayersList = ({
           {players.map((player, index) => (
             <div
               key={player.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-stone-800 hover:bg-stone-800/80 transition-colors"
+              className="flex items-center justify-between p-3 rounded-lg bg-[#1C1917] hover:bg-[#1C1917]/80 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <PlayerAvatar 
-                  type={player.type} 
-                  variant={(index % 6 + 1) as 1 | 2 | 3 | 4 | 5 | 6}
-                />
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  index === 0 ? 'bg-[#E17100]' : 
+                  index === 1 ? 'bg-[#7C3AED]' :
+                  index === 2 ? 'bg-[#00C951]' :
+                  index === 3 ? 'bg-[#3A77F7]' :
+                  index === 4 ? 'bg-[#FD9A00]' :
+                  'bg-[#E11D48]'
+                }`}>
+                  <PlayerAvatar 
+                    type={player.type} 
+                    variant={(index % 6 + 1) as 1 | 2 | 3 | 4 | 5 | 6}
+                    className="w-6 h-6"
+                  />
+                </div>
                 <span className="text-[16px] font-medium text-white">
                   {player.alias}
                 </span>
               </div>
               
               {player.address === currentPlayerAddress && (
-                <span className="px-3 py-1 text-sm bg-[#00C951] text-[#1C1917] rounded-full">
+                <span className="px-3 py-1 text-sm bg-[#00C951] text-[#1C1917] rounded-full font-medium">
                   You
                 </span>
               )}

@@ -11,7 +11,7 @@ const PlayerAvatar = ({ type, variant = 1, className }: PlayerAvatarProps) => {
     <img 
       src={`/avatars/${variant}.svg`}
       alt={`Player avatar ${variant}`}
-      className={cn("w-8 h-8", className)}
+      className={cn("w-8 h-8 rounded-full", className)}
     />
   );
 };
