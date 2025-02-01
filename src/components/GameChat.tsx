@@ -43,7 +43,15 @@ export default function GameChat() {
 
         console.log('📩 Received chat message:', message);
         processedMessageIds.current.add(message.id);
-        setMessages(prev => [...prev, message]);
+        setMessages(prev => [...prev, {
+          ...message,
+          timestamp: new Date().toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          })
+        }]);
       });
 
       const handleSessionInfo = (sessionInfo: any) => {
@@ -92,13 +100,6 @@ export default function GameChat() {
         <div className="space-y-4">
           {messages.map((message, index) => {
             const isCurrentUser = message.playerId === currentPlayerId;
-            const timestamp = new Date().toLocaleTimeString('en-US', {
-              hour12: false,
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit'
-            });
-
             const avatarVariant = isCurrentUser ? 1 : 
               ((parseInt(message.playerId.replace(/\D/g, '')) % 5) + 2) as 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -129,7 +130,7 @@ export default function GameChat() {
                       {isCurrentUser ? "You" : message.playerId}
                     </span>
                     <span className="text-muted-foreground">
-                      {timestamp}
+                      {message.timestamp}
                     </span>
                   </div>
                   <div
