@@ -4,58 +4,35 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "./ui/scroll-area";
-
-type Message = {
-  id: string;
-  content: string;
-  sender: string;
-  timestamp: Date;
-};
-
-const defaultMessages: Message[] = [
-  {
-    id: "1",
-    content: "I think AI has both positive and negative impacts on society.",
-    sender: "Player 1",
-    timestamp: new Date(Date.now() - 1000 * 60 * 5),
-  },
-  {
-    id: "2",
-    content: "True, but the benefits of AI in healthcare and education are undeniable.",
-    sender: "Player 2",
-    timestamp: new Date(Date.now() - 1000 * 60 * 4),
-  },
-  {
-    id: "3",
-    content: "We need to focus on responsible AI development and ethical guidelines.",
-    sender: "Player 3",
-    timestamp: new Date(Date.now() - 1000 * 60 * 3),
-  },
-  {
-    id: "4",
-    content: "What about AI's impact on job markets? That's a major concern.",
-    sender: "Player 4",
-    timestamp: new Date(Date.now() - 1000 * 60 * 2),
-  }
-];
+import { wsService, ChatMessage } from "@/services/websocket";
+import { useParams } from "react-router-dom";
 
 export default function GameChat() {
-  const [messages, setMessages] = useState<Message[]>(defaultMessages);
+  const { gameId } = useParams<{ gameId: string }>();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (gameId) {
+      wsService.connect(gameId);
+
+      const unsubscribe = wsService.onMessage((message) => {
+        setMessages(prev => [...prev, message]);
+      });
+
+      return () => {
+        unsubscribe();
+        wsService.disconnect();
+      };
+    }
+  }, [gameId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const newMessage: Message = {
-      id: crypto.randomUUID(),
-      content: input.trim(),
-      sender: "You",
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, newMessage]);
+    wsService.sendMessage(input.trim());
     setInput("");
   };
 
@@ -69,25 +46,22 @@ export default function GameChat() {
     <div className="flex h-[360px] flex-col justify-between box-border p-2 gap-10 w-[552px] bg-background/50 border border-muted rounded-lg">
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
-          {messages.map((message) => (
+          {messages.map((message, index) => (
             <div
-              key={message.id}
+              key={index}
               className={cn(
                 "flex w-max max-w-[80%] flex-col gap-2 rounded-lg px-3 py-2 text-sm",
-                message.sender === "You"
+                message.playerId === "You"
                   ? "ml-auto bg-primary text-primary-foreground"
                   : "bg-muted text-foreground"
               )}
             >
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium">
-                  {message.sender}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {message.timestamp.toLocaleTimeString()}
+                  {message.playerId}
                 </span>
               </div>
-              <p className="whitespace-pre-wrap">{message.content}</p>
+              <p className="whitespace-pre-wrap">{message.message}</p>
             </div>
           ))}
         </div>
