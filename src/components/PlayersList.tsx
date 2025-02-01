@@ -19,8 +19,6 @@ type PlayersListProps = {
   showResults?: boolean;
 };
 
-const AVATAR_VARIANTS = ['orange', 'green', 'yellow', 'blue', 'purple', 'pink'] as const;
-
 const PlayersList = ({ 
   players, 
   currentPlayerAddress, 
@@ -85,7 +83,7 @@ const PlayersList = ({
               <div className="flex items-center gap-2 mx-auto">
                 <PlayerAvatar 
                   type={player.type} 
-                  variant={AVATAR_VARIANTS[index % AVATAR_VARIANTS.length]}
+                  variant={(index % 6 + 1) as 1 | 2 | 3 | 4 | 5 | 6}
                 />
                 <span className="text-base font-medium text-white">
                   {player.alias}
