@@ -27,11 +27,17 @@ export class WebSocketService {
   private disconnectHandlers: (() => void)[] = [];
   private reconnectHandlers: (() => void)[] = [];
   private processedMessageIds = new Set<string>();
+  private isConnected = false;
 
   connect(sessionId: string) {
+    if (this.isConnected) {
+      console.log('🔄 Already connected to WebSocket');
+      return;
+    }
+
     console.log('🌐 Connecting to WebSocket with sessionId:', sessionId);
     this.ws = new WebSocket(`ws://localhost:8080?sessionId=${sessionId}`);
-
+    
     this.ws.onmessage = (event) => {
       try {
         const data: WebSocketMessage = JSON.parse(event.data);
@@ -86,21 +92,19 @@ export class WebSocketService {
     this.ws.onerror = (error) => {
       console.error('❌ WebSocket error:', error);
       toast.error("WebSocket connection error");
+      this.isConnected = false;
     };
 
     this.ws.onclose = () => {
       console.log('🔌 WebSocket connection closed');
+      this.isConnected = false;
       this.disconnectHandlers.forEach(handler => handler());
-      // Attempt to reconnect after a delay
-      setTimeout(() => {
-        console.log('🔄 Attempting to reconnect...');
-        this.reconnectHandlers.forEach(handler => handler());
-        this.connect(sessionId);
-      }, 3000);
+      toast.error("Connection lost. Please refresh the page to reconnect.");
     };
 
     this.ws.onopen = () => {
       console.log('✅ WebSocket connection established');
+      this.isConnected = true;
     };
   }
 
@@ -114,7 +118,7 @@ export class WebSocketService {
       this.ws.send(payload);
     } else {
       console.error('❌ Cannot send message - WebSocket not ready. State:', this.ws?.readyState);
-      toast.error("WebSocket connection not ready");
+      toast.error("Connection lost. Please refresh the page to reconnect.");
     }
   }
 
@@ -171,6 +175,7 @@ export class WebSocketService {
       console.log('🔌 Disconnecting WebSocket');
       this.ws.close();
       this.ws = null;
+      this.isConnected = false;
       this.processedMessageIds.clear();
     }
   }
