@@ -101,7 +101,7 @@ const GameLobbyPage = () => {
       return "chat" as const;
     }
     if (votingCountdown !== null && votingCountdown > 0) {
-      return hasVoted ? "awaiting_votes" : "voting";
+      return hasVoted ? "awaiting_votes" as const : "voting" as const;
     }
     if (votingCountdown === 0) {
       return "results" as const;
