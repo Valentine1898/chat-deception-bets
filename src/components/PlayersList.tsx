@@ -167,7 +167,11 @@ const PlayersList = ({
             <Button
               onClick={handleConfirm}
               disabled={!canConfirm()}
-              className="w-full h-12 bg-[#44403B] hover:bg-[#44403B]/90 text-[#1C1917] rounded-lg font-['Inria_Serif'] font-bold text-xl italic disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`w-full h-12 rounded-lg font-['Inria_Serif'] font-bold text-xl italic ${
+                canConfirm()
+                  ? 'bg-[#FD9A00] hover:bg-[#FD9A00]/90 text-[#1C1917]'
+                  : 'bg-[#44403B] text-[#1C1917] opacity-50 cursor-not-allowed'
+              }`}
             >
               Confirm
             </Button>
