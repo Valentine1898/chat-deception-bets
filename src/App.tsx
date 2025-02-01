@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { PrivyProvider } from "@privy-io/react-auth";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import GameLobbyPage from "./pages/GameLobbyPage";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/game/:gameId" element={<GameLobbyPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

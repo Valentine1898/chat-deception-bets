@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { usePrivy } from "@privy-io/react-auth";
+import { useNavigate } from "react-router-dom";
 
 // Mock contract functions
 const mockContractCalls = {
@@ -25,6 +26,7 @@ const GameLobby = () => {
   const [isCreating, setIsCreating] = useState(false);
   const { toast } = useToast();
   const { user } = usePrivy();
+  const navigate = useNavigate();
   
   const createGame = async () => {
     if (!betAmount || parseFloat(betAmount) <= 0) {
@@ -45,13 +47,8 @@ const GameLobby = () => {
         user?.wallet?.address || ""
       );
       
-      // Generate shareable link
-      const gameUrl = `${window.location.origin}/game/${result.gameId}`;
-      
-      toast({
-        title: "Game Created!",
-        description: "Share this link with your opponent: " + gameUrl,
-      });
+      // Navigate to the game lobby
+      navigate(`/game/${result.gameId}`);
       
       // Reset form
       setBetAmount("");
