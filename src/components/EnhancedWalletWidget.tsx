@@ -16,9 +16,10 @@ const EnhancedWalletWidget = () => {
 
   useEffect(() => {
     const fetchBalance = async () => {
-      if (wallets?.[0]?.provider) {
+      if (wallets?.[0]) {
         try {
-          const balance = await wallets[0].provider.getBalance(wallets[0].address);
+          const ethProvider = await wallets[0].getEthersProvider();
+          const balance = await ethProvider.getBalance(wallets[0].address);
           setBalance(parseFloat(formatEther(balance)).toFixed(4));
         } catch (error) {
           console.error("Error fetching balance:", error);
