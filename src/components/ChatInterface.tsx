@@ -6,7 +6,7 @@ import {
   Message,
   MessageInput,
 } from "@chatscope/chat-ui-kit-react";
-import "@chatscope/chat-ui-kit-react/dist/default.min.css";
+import styles from "@chatscope/chat-ui-kit-react/dist/default.min.css?inline";
 
 type Message = {
   id: string;
