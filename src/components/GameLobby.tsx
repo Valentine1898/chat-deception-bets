@@ -27,7 +27,16 @@ const GameLobby = () => {
   };
 
   return (
-    <div className="container max-w-4xl mx-auto p-6 pt-20">
+    <div className="container max-w-4xl mx-auto p-6 mt-24">
+      <div className="text-center mb-8">
+        <img 
+          src="/lovable-uploads/a80f0ac3-8d80-48b2-9d4f-d311f160489f.png" 
+          alt="Alan Turing" 
+          className="logo w-24 h-24 mx-auto mb-4"
+        />
+        <h1 className="text-3xl font-bold text-foreground mb-2">Turing Arena</h1>
+      </div>
+
       <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-2xl font-bold">Your Games</CardTitle>
