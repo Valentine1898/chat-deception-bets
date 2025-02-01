@@ -74,27 +74,12 @@ const PlayersList = ({
             {player.alias}
             {player.address === currentPlayerAddress && " (You)"}
           </span>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-stone-100 dark:bg-stone-800">
-              <span className="text-sm">Voted as:</span>
-              {player.votedAsHuman ? (
-                <div className="flex items-center gap-1 text-green-600">
-                  <User className="h-4 w-4" />
-                  <span className="text-sm">Human</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 text-purple-600">
-                  <Bot className="h-4 w-4" />
-                  <span className="text-sm">AI</span>
-                </div>
-              )}
+          {player.votedAsHuman && (
+            <div className="flex items-center gap-2 text-green-600">
+              <User className="h-4 w-4" />
+              <span className="text-sm">Voted Human</span>
             </div>
-            {player.type === 'human' ? (
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
-            ) : (
-              <XCircle className="h-5 w-5 text-red-600" />
-            )}
-          </div>
+          )}
         </div>
       );
     }
@@ -131,7 +116,7 @@ const PlayersList = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <User className="h-5 w-5 text-accent" />
-          {showResults ? "Game Results" : `Players (${players.length}/6)`}
+          {showResults ? "Voting Results" : `Players (${players.length}/6)`}
           {countdown !== null && countdown > 0 && (
             <span className="ml-auto text-sm font-normal text-muted-foreground">
               Game starts in {countdown}s
