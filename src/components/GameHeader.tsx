@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { formatEther } from "ethers";
 import { BrowserProvider } from "ethers";
 import { useToast } from "@/hooks/use-toast";
+import PlayerAvatar from "./PlayerAvatar";
 
 type GameHeaderProps = {
   stage: GameStage;
@@ -116,24 +117,25 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
-      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-[#1C1917]">
         <div className="container mx-auto">
           <div className="flex flex-col items-start px-3 py-6 gap-1">
             <div className="flex justify-between items-center w-full">
               <div className="flex items-center gap-6">
+                {/* Logo Container */}
                 <div className="relative w-[120px] h-[64px] rounded-xl border border-primary-foreground overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-[#4E2E25] to-[#372019]" />
                   <div className="absolute inset-0 flex items-end p-1.5">
                     <div className="flex gap-1">
                       <img 
-                        src="/lovable-uploads/6afdfc38-7546-4743-8483-9dadaa0eb3a4.png" 
+                        src="/lovable-uploads/9d95d958-49e7-4311-a7f6-5f466b528ea0.png" 
                         alt="Historical figure" 
                         className="w-13 h-13 rounded-lg border border-black object-cover"
                       />
                       <div className="grid grid-cols-2 gap-1">
                         {[1, 2, 3, 4].map((i) => (
                           <div key={i} className="w-6 h-6 rounded-full bg-[#0C0A09]/70 p-0.5">
-                            <img src={`/avatars/${i}.svg`} alt="" className="w-full h-full" />
+                            <PlayerAvatar type="ai" variant={i as 1 | 2 | 3 | 4} />
                           </div>
                         ))}
                       </div>
@@ -149,17 +151,17 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                 <div className="flex items-center bg-[#1C1917] rounded-xl p-2">
                   <div className="flex items-center gap-2.5 px-2">
                     <img src="/base.svg" alt="Base" className="w-3 h-3" />
-                    <span className="font-mono text-sm text-white">
+                    <span className="font-['Chivo_Mono'] text-sm text-white">
                       {balance} ETH
                     </span>
                     <div className="w-px h-4 bg-[#292524]" />
-                    <span className="font-mono text-sm text-white">
+                    <span className="font-['Chivo_Mono'] text-sm text-white">
                       1.54M TURING
                     </span>
                     <div className="w-px h-4 bg-[#292524]" />
                     <div className="flex items-center gap-2">
                       <Wallet className="w-3 h-3 text-[#D6D3D1]" />
-                      <span className="font-mono text-sm text-primary">
+                      <span className="font-['Chivo_Mono'] text-sm text-primary">
                         {user?.wallet?.address ? shortenAddress(user.wallet.address) : "Not connected"}
                       </span>
                     </div>

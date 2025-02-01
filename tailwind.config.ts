@@ -36,6 +36,10 @@ export default {
           foreground: "#FFFFFF", // White text
         },
       },
+      fontFamily: {
+        'inria': ['Inria Serif', 'serif'],
+        'chivo': ['Chivo Mono', 'monospace'],
+      },
       keyframes: {
         "fade-in": {
           "0%": { opacity: "0" },
