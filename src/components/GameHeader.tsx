@@ -123,7 +123,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
-      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-muted">
+      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -136,10 +136,6 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
             </div>
 
             <div className="flex items-center gap-3">
-              <GameStageTimer 
-                stage={stage}
-                countdown={countdown}
-              />
               <div className="flex items-center gap-2 bg-muted/20 px-3 py-1.5 rounded-lg text-xs">
                 <div className="flex items-center gap-1.5">
                   <Wallet className="h-3.5 w-3.5 text-accent" />
@@ -185,6 +181,8 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
           </Link>
         </div>
       </div>
+
+      <GameStageTimer stage={stage} countdown={countdown} />
     </div>
   );
 };
