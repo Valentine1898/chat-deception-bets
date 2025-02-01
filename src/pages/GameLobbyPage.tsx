@@ -25,10 +25,10 @@ const GameLobbyPage = () => {
             players={[
               { id: '1', type: 'human', address: user?.wallet?.address, hasJoined: true },
               { id: '2', type: 'human', address: undefined, hasJoined: false },
-              { id: '3', type: 'ai', alias: 'AI Agent' },
-              { id: '4', type: 'ai', alias: 'AI Agent' },
-              { id: '5', type: 'ai', alias: 'AI Agent' },
-              { id: '6', type: 'ai', alias: 'AI Agent' }
+              { id: '3', type: 'ai', type: 'ai' },
+              { id: '4', type: 'ai', type: 'ai' },
+              { id: '5', type: 'ai', type: 'ai' },
+              { id: '6', type: 'ai', type: 'ai' }
             ]}
             currentPlayerAddress={user?.wallet?.address}
           />

@@ -7,7 +7,6 @@ import { useParams } from "react-router-dom";
 type Player = {
   id: string;
   type: 'human' | 'ai';
-  alias: string;
   address?: string;
   hasJoined?: boolean;
 };

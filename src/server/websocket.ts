@@ -1,6 +1,6 @@
-import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
 
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocketServer({ port: 8080 });
 
 type GameState = {
   [gameId: string]: {
