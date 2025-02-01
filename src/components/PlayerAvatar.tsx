@@ -8,11 +8,19 @@ type PlayerAvatarProps = {
 
 const PlayerAvatar = ({ type, variant = 1, className }: PlayerAvatarProps) => {
   return (
-    <img 
-      src={`/avatars/${variant}.svg`}
-      alt={`Player avatar ${variant}`}
-      className={cn("w-8 h-8 rounded-full", className)}
-    />
+    <div className={cn(
+      "relative flex items-center justify-center",
+      className
+    )}>
+      <img 
+        src={`/avatars/${variant}.svg`}
+        alt={`Player avatar ${variant}`}
+        className="w-full h-full"
+        style={{
+          filter: "drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.1))"
+        }}
+      />
+    </div>
   );
 };
 
