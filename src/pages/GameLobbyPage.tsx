@@ -7,7 +7,6 @@ import { ArrowLeft, UserPlus } from "lucide-react";
 import WalletConnect from "@/components/WalletConnect";
 import ShareGameButtons from "@/components/ShareGameButtons";
 import PlayersList from "@/components/PlayersList";
-import ChatInterface from "@/components/ChatInterface";
 import { generateAlias, shuffleArray } from "@/utils/playerUtils";
 import { useEffect, useState } from "react";
 
@@ -74,7 +73,7 @@ const GameLobbyPage = () => {
     }
   }, [authenticated, user?.wallet?.address]);
 
-  // Topic reveal countdown effect - reduced from 30 to 5 seconds
+  // Topic reveal countdown
   useEffect(() => {
     let timer: NodeJS.Timeout;
     
@@ -84,7 +83,7 @@ const GameLobbyPage = () => {
       }, 1000);
     } else if (topicRevealCountdown === 0) {
       setIsChatVisible(true);
-      setChatCountdown(30); // Reduced from 180 to 30 seconds
+      setChatCountdown(180); // 3 minutes in seconds
     }
 
     return () => {
@@ -138,7 +137,7 @@ const GameLobbyPage = () => {
     setPlayers(shuffledPlayers);
     setSelectedTopic(GAME_TOPICS[Math.floor(Math.random() * GAME_TOPICS.length)]);
     setIsGameStarted(true);
-    setTopicRevealCountdown(5); // Reduced from 30 to 5 seconds
+    setTopicRevealCountdown(30); // 30 seconds for topic reveal
   };
 
   const placeBet = () => {
@@ -168,7 +167,7 @@ const GameLobbyPage = () => {
           </div>
           
           <div className="w-2/3">
-            <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted mb-6">
+            <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold text-foreground">
                   {selectedTopic?.title}
@@ -193,7 +192,9 @@ const GameLobbyPage = () => {
                   </div>
                 )}
                 {isChatVisible ? (
-                  <ChatInterface currentUserAddress={user?.wallet?.address || ""} />
+                  <div className="text-center text-muted-foreground">
+                    Chat interface will be implemented here
+                  </div>
                 ) : (
                   <div className="text-center text-muted-foreground animate-pulse">
                     Chat will be available after the topic review period
