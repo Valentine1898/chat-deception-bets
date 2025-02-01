@@ -37,7 +37,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
   const [currentChainId, setCurrentChainId] = useState<string | null>(null);
   
   const shortenAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    return `${address.slice(0, 4)}...${address.slice(-3)}`; // Showing fewer characters
   };
 
   const checkAndSwitchNetwork = async () => {
@@ -123,39 +123,38 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
-      {/* Main header */}
       <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-muted">
-        <div className="container mx-auto py-4">
+        <div className="container mx-auto py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <img 
                 src="/lovable-uploads/a80f0ac3-8d80-48b2-9d4f-d311f160489f.png" 
                 alt="Alan Turing" 
-                className="w-10 h-10"
+                className="w-8 h-8"
               />
-              <h1 className="text-xl font-bold text-foreground">Turing Arena</h1>
+              <h1 className="text-lg font-bold text-foreground">Turing Arena</h1>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <GameStageTimer 
                 stage={stage}
                 countdown={countdown}
               />
-              <div className="flex items-center gap-4 bg-muted/20 px-4 py-2 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Wallet className="h-4 w-4 text-accent" />
-                  <span className="text-sm font-mono text-foreground/80">
+              <div className="flex items-center gap-2 bg-muted/20 px-3 py-1.5 rounded-lg text-xs">
+                <div className="flex items-center gap-1.5">
+                  <Wallet className="h-3.5 w-3.5 text-accent" />
+                  <span className="font-mono text-foreground/80">
                     {user?.wallet?.address ? shortenAddress(user.wallet.address) : "Not connected"}
                   </span>
                 </div>
-                <div className="text-sm font-mono text-foreground/60">
+                <div className="font-mono text-foreground/60">
                   {balance} ETH
                   {currentChainId !== BASE_CHAIN_ID && (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={checkAndSwitchNetwork}
-                      className="ml-2 text-xs"
+                      className="ml-1.5 text-xs py-0.5 h-6"
                     >
                       Switch to Base
                     </Button>
@@ -165,9 +164,9 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                   variant="ghost"
                   size="sm"
                   onClick={logout}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground h-6 w-6 p-0"
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
@@ -175,14 +174,13 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
         </div>
       </div>
 
-      {/* Subheader */}
       <div className="bg-muted/50 backdrop-blur supports-[backdrop-filter]:bg-muted/30 border-b border-muted">
-        <div className="container mx-auto py-2">
+        <div className="container mx-auto py-1.5">
           <Link 
             to="/" 
-            className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors text-sm"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
             Back to Games
           </Link>
         </div>
