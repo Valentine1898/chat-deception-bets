@@ -3,8 +3,9 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Copy, Twitter, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import WalletConnect from "@/components/WalletConnect";
+import ShareGameButtons from "@/components/ShareGameButtons";
 
 const GameLobbyPage = () => {
   const { gameId } = useParams();
@@ -24,27 +25,6 @@ const GameLobbyPage = () => {
 
   const isCreator = authenticated && user?.wallet?.address === mockGameData.creatorAddress;
   const hasPlacedBet = mockGameData.yourBet > 0;
-
-  const copyInviteLink = async () => {
-    try {
-      await navigator.clipboard.writeText(gameUrl);
-      toast({
-        title: "Link Copied!",
-        description: "The game invitation link has been copied to your clipboard.",
-      });
-    } catch (err) {
-      toast({
-        title: "Failed to copy",
-        description: "Please try copying the link manually.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const shareOnTwitter = () => {
-    const tweetText = encodeURIComponent(`Join my game in Turing Arena! ${gameUrl}`);
-    window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, "_blank");
-  };
 
   const placeBet = () => {
     // This would integrate with your smart contract
@@ -121,31 +101,7 @@ const GameLobbyPage = () => {
               <p className="text-lg font-mono text-accent">{gameId}</p>
             </div>
 
-            {isCreator && (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground text-center">
-                  Share this game with your opponent:
-                </p>
-                <div className="flex gap-4 justify-center">
-                  <Button
-                    onClick={copyInviteLink}
-                    variant="outline"
-                    className="flex-1 max-w-[200px] border-muted hover:bg-muted/50"
-                  >
-                    <Copy className="mr-2 h-4 w-4" />
-                    Copy Link
-                  </Button>
-                  <Button
-                    onClick={shareOnTwitter}
-                    variant="outline"
-                    className="flex-1 max-w-[200px] border-muted hover:bg-muted/50"
-                  >
-                    <Twitter className="mr-2 h-4 w-4" />
-                    Share on Twitter
-                  </Button>
-                </div>
-              </div>
-            )}
+            {isCreator && <ShareGameButtons gameUrl={gameUrl} />}
 
             <div className="mt-8 text-center">
               <p className="text-sm text-muted-foreground">
