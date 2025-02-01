@@ -3,7 +3,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Twitter, ArrowLeft } from "lucide-react";
-import WalletWidget from "@/components/WalletWidget";
 
 const GameLobbyPage = () => {
   const { gameId } = useParams();
@@ -41,8 +40,6 @@ const GameLobbyPage = () => {
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Games
       </Link>
-      
-      <WalletWidget />
       
       <img 
         src="/lovable-uploads/a80f0ac3-8d80-48b2-9d4f-d311f160489f.png" 
