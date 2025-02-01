@@ -36,6 +36,21 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimerProps) => {
           title: "Waiting",
           action: "Waiting for players to join"
         };
+      case "awaiting_votes":
+        return {
+          title: "Awaiting Votes",
+          action: "Waiting for other players to vote"
+        };
+      case "results":
+        return {
+          title: "Results",
+          action: "Game results"
+        };
+      default:
+        return {
+          title: "Unknown Stage",
+          action: "Unknown action"
+        };
     }
   };
 
