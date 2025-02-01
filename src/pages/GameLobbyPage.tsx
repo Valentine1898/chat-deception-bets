@@ -6,6 +6,7 @@ import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameVoting from "@/components/GameVoting";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
+import GameResults from "@/components/GameResults";
 import { generateAlias, shuffleArray } from "@/utils/playerUtils";
 import { useEffect, useState } from "react";
 import { GAME_TIMINGS } from "@/config/gameConfig";
@@ -48,6 +49,8 @@ const GameLobbyPage = () => {
   const [isVotingVisible, setIsVotingVisible] = useState(false);
   const [aiPlayerIndex, setAiPlayerIndex] = useState(0);
   const [votes, setVotes] = useState<Record<string, boolean>>({});
+  const [gameResult, setGameResult] = useState<'win' | 'draw' | 'lose' | 'ai_win'>('win');
+  const [hasVoted, setHasVoted] = useState(false);
 
   const gameUrl = `${window.location.origin}/game/${gameId}`;
 
@@ -162,6 +165,23 @@ const GameLobbyPage = () => {
     }));
   };
 
+  const handleVoteSubmit = (votes: Record<string, 'human' | 'ai'>) => {
+    console.log('Submitting votes to contract:', votes);
+    setHasVoted(true);
+    toast({
+      title: "Votes submitted to contract",
+      description: "Waiting for other players to vote...",
+    });
+  };
+
+  // Test function to cycle through results
+  const cycleGameResult = () => {
+    const results: Array<'win' | 'draw' | 'lose' | 'ai_win'> = ['win', 'draw', 'lose', 'ai_win'];
+    const currentIndex = results.indexOf(gameResult);
+    const nextIndex = (currentIndex + 1) % results.length;
+    setGameResult(results[nextIndex]);
+  };
+
   const getCurrentStage = () => {
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
       return "topic_review" as const;
@@ -170,84 +190,68 @@ const GameLobbyPage = () => {
       return "chat" as const;
     }
     if (votingCountdown !== null && votingCountdown > 0) {
-      return "voting" as const;
+      return hasVoted ? "awaiting_votes" : "voting";
+    }
+    if (votingCountdown === 0) {
+      return "results" as const;
     }
     return "waiting" as const;
   };
 
-  const getCurrentCountdown = () => {
-    if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-      return topicRevealCountdown;
-    }
-    if (chatCountdown !== null && chatCountdown > 0) {
-      return chatCountdown;
-    }
-    if (votingCountdown !== null && votingCountdown > 0) {
-      return votingCountdown;
-    }
-    return null;
-  };
-
-  const handleGameStart = () => {
-    const shuffledPlayers = shuffleArray(players);
-    setPlayers(shuffledPlayers);
-    setSelectedTopic(GAME_TOPICS[Math.floor(Math.random() * GAME_TOPICS.length)]);
-    setIsGameStarted(true);
-    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
-  };
-
-  const placeBet = () => {
-    toast({
-      title: "Placing bet...",
-      description: "This feature will be implemented with smart contracts",
-    });
-  };
-
-  const simulatePlayerJoin = () => {
-    const newPlayer = {
-      id: `player_${Date.now()}`,
-      type: 'human' as const,
-      alias: generateAlias(),
-      address: `0x${Math.random().toString(16).slice(2, 10)}`,
-      hasJoined: true
-    };
-    setPlayers(current => [...current, newPlayer]);
-    toast({
-      title: "New player joined!",
-      description: `${newPlayer.alias} has joined the game.`,
-    });
-  };
-
-  const handleVoteSubmit = (votes: Record<string, 'human' | 'ai'>) => {
-    // Mock contract call
-    console.log('Submitting votes to contract:', votes);
-    toast({
-      title: "Votes submitted to contract",
-      description: "This would trigger a smart contract call in production",
-    });
-  };
+  // Mock vote results for testing
+  const mockVoteResults = players.map(player => ({
+    player,
+    actualType: player.type,
+    votedAs: Math.random() > 0.5 ? 'human' : 'ai'
+  }));
 
   if (isGameStarted) {
+    const currentStage = getCurrentStage();
+    
     return (
       <div className="container mx-auto p-6 pt-24 relative">
         <GameHeader 
-          stage={getCurrentStage()}
+          stage={currentStage}
           countdown={getCurrentCountdown()}
         />
+        
+        {/* Test controls - only for development */}
+        {currentStage === 'results' && (
+          <Button onClick={cycleGameResult} className="mb-4">
+            Test Next Result
+          </Button>
+        )}
+
         <div className="flex gap-6 relative mt-8">
           <div className="w-1/3">
-            <GameVoting 
-              players={players}
-              currentPlayerAddress={user?.wallet?.address}
-              onVoteSubmit={handleVoteSubmit}
-              showConfirmButton={getCurrentStage() === 'voting'}
-            />
+            {currentStage === 'results' ? (
+              <PlayersList 
+                players={players}
+                currentPlayerAddress={user?.wallet?.address}
+                isInGame={true}
+              />
+            ) : (
+              <GameVoting 
+                players={players}
+                currentPlayerAddress={user?.wallet?.address}
+                onVoteSubmit={handleVoteSubmit}
+                showConfirmButton={currentStage === 'voting'}
+              />
+            )}
           </div>
           <div className="w-2/3">
-            <GameTopic 
-              topic={selectedTopic}
-              isChatVisible={isChatVisible || isVotingVisible}
-            />
+            {currentStage === 'results' ? (
+              <GameResults
+                result={gameResult}
+                playerVotes={mockVoteResults}
+                currentPlayerAddress={user?.wallet?.address}
+              />
+            ) : (
+              <GameTopic 
+                topic={selectedTopic}
+                isChatVisible={currentStage === 'chat' || currentStage === 'voting' || currentStage === 'awaiting_votes'}
+              />
+            )}
           </div>
         </div>
       </div>

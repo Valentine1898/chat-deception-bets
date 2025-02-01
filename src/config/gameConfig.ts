@@ -5,4 +5,4 @@ export const GAME_TIMINGS = {
   AI_PLAYER_INTERVAL: 1000, // milliseconds between adding each AI player
 } as const;
 
-export type GameStage = "topic_review" | "chat" | "voting" | "waiting";
+export type GameStage = "topic_review" | "chat" | "voting" | "waiting" | "awaiting_votes" | "results";
