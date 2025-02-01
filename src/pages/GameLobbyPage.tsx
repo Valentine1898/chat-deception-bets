@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { usePrivy } from "@privy-io/react-auth";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
@@ -80,7 +81,39 @@ const GameLobbyPage = () => {
     }
   }, [authenticated, user?.wallet?.address]);
 
-  // Add AI players one by one
+  const handleGameStart = () => {
+    setIsGameStarted(true);
+    setSelectedTopic(GAME_TOPICS[Math.floor(Math.random() * GAME_TOPICS.length)]);
+    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
+  };
+
+  const getCurrentCountdown = () => {
+    if (topicRevealCountdown !== null) return topicRevealCountdown;
+    if (chatCountdown !== null) return chatCountdown;
+    if (votingCountdown !== null) return votingCountdown;
+    return null;
+  };
+
+  const placeBet = () => {
+    toast({
+      title: "Placing bet...",
+      description: "This would trigger a smart contract call in production",
+    });
+  };
+
+  const simulatePlayerJoin = () => {
+    if (players.length < 2) {
+      const newPlayer = {
+        id: `player${players.length + 1}`,
+        type: 'human' as const,
+        alias: generateAlias(),
+        address: `0x${Math.random().toString(16).slice(2, 10)}`,
+        hasJoined: true
+      };
+      setPlayers(current => [...current, newPlayer]);
+    }
+  };
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     const humanPlayers = players.filter(p => p.type === 'human' && p.hasJoined);
@@ -174,7 +207,6 @@ const GameLobbyPage = () => {
     });
   };
 
-  // Test function to cycle through results
   const cycleGameResult = () => {
     const results: Array<'win' | 'draw' | 'lose' | 'ai_win'> = ['win', 'draw', 'lose', 'ai_win'];
     const currentIndex = results.indexOf(gameResult);
@@ -202,7 +234,7 @@ const GameLobbyPage = () => {
   const mockVoteResults = players.map(player => ({
     player,
     actualType: player.type,
-    votedAs: Math.random() > 0.5 ? 'human' : 'ai'
+    votedAs: Math.random() > 0.5 ? 'human' as const : 'ai' as const
   }));
 
   if (isGameStarted) {
@@ -215,7 +247,6 @@ const GameLobbyPage = () => {
           countdown={getCurrentCountdown()}
         />
         
-        {/* Test controls - only for development */}
         {currentStage === 'results' && (
           <Button onClick={cycleGameResult} className="mb-4">
             Test Next Result
