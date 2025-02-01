@@ -11,21 +11,6 @@ import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
 import { Button } from "@/components/ui/button";
 
-const GAME_TOPICS = [
-  {
-    title: "The Future of Artificial Intelligence",
-    description: "Discuss the potential impact of AI on society, ethics, and human development in the next 50 years."
-  },
-  {
-    title: "Climate Change Solutions",
-    description: "Explore innovative approaches to combat global warming and create sustainable futures."
-  },
-  {
-    title: "Space Colonization",
-    description: "Debate the challenges and opportunities of establishing human settlements on Mars and beyond."
-  }
-];
-
 const GameLobbyPage = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
@@ -36,7 +21,7 @@ const GameLobbyPage = () => {
   const [topicRevealCountdown, setTopicRevealCountdown] = useState<number | null>(null);
   const [chatCountdown, setChatCountdown] = useState<number | null>(null);
   const [votingCountdown, setVotingCountdown] = useState<number | null>(null);
-  const [selectedTopic, setSelectedTopic] = useState<typeof GAME_TOPICS[0] | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<{ title: string; description: string } | null>(null);
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [isVotingVisible, setIsVotingVisible] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
@@ -80,8 +65,18 @@ const GameLobbyPage = () => {
         setPlayers([currentPlayer, ...otherPlayers]);
       });
 
+      // Add topic message handler
+      const unsubscribeTopicMessage = wsService.onTopicMessage((topic) => {
+        console.log('Received topic:', topic);
+        setSelectedTopic({
+          title: "Today's Topic",
+          description: topic
+        });
+      });
+
       return () => {
         unsubscribeSessionInfo();
+        unsubscribeTopicMessage();
         wsService.disconnect();
       };
     }
@@ -89,7 +84,7 @@ const GameLobbyPage = () => {
 
   const handleGameStart = () => {
     setIsGameStarted(true);
-    wsService.requestTopic(); // Request topic when game starts
+    wsService.requestTopic();
     setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
 

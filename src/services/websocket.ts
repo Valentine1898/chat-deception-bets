@@ -24,6 +24,7 @@ export class WebSocketService {
   private ws: WebSocket | null = null;
   private messageHandlers: ((message: ChatMessage) => void)[] = [];
   private sessionInfoHandlers: ((info: SessionInfo) => void)[] = [];
+  private topicMessageHandlers: ((topic: string) => void)[] = [];
   private disconnectHandlers: (() => void)[] = [];
   private reconnectHandlers: (() => void)[] = [];
   private processedMessageIds = new Set<string>();
@@ -63,6 +64,11 @@ export class WebSocketService {
             this.messageHandlers.forEach(handler => handler(chatMessage));
             break;
 
+          case 'topic':
+            console.log('📝 Processing topic message:', data.content);
+            this.topicMessageHandlers.forEach(handler => handler(data.content));
+            break;
+
           case 'session_info':
           case 'session_started':
           case 'session_finished':
@@ -78,10 +84,6 @@ export class WebSocketService {
           case 'error':
             console.error('❌ WebSocket error message:', data.content.message);
             toast.error(data.content.message);
-            break;
-
-          case 'topic':
-            // Topic handling will be implemented in the game component
             break;
         }
       } catch (error) {
@@ -153,6 +155,13 @@ export class WebSocketService {
     this.sessionInfoHandlers.push(handler);
     return () => {
       this.sessionInfoHandlers = this.sessionInfoHandlers.filter(h => h !== handler);
+    };
+  }
+
+  onTopicMessage(handler: (topic: string) => void) {
+    this.topicMessageHandlers.push(handler);
+    return () => {
+      this.topicMessageHandlers = this.topicMessageHandlers.filter(h => h !== handler);
     };
   }
 
