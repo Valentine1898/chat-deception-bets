@@ -39,6 +39,10 @@ export default {
           DEFAULT: "#292524",
           foreground: "#FFFFFF",
         },
+        stone: {
+          800: "#292524",
+          900: "#1C1917",
+        },
       },
       keyframes: {
         "fade-in": {
