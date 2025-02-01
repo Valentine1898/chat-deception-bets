@@ -15,6 +15,7 @@ export default function GameChat() {
 
   useEffect(() => {
     if (gameId) {
+      console.log('🎮 Initializing chat for game:', gameId);
       wsService.connect(gameId);
 
       const unsubscribe = wsService.onMessage((message) => {
@@ -23,6 +24,7 @@ export default function GameChat() {
       });
 
       return () => {
+        console.log('🔄 Cleaning up chat connection');
         unsubscribe();
         wsService.disconnect();
       };

@@ -39,11 +39,13 @@ export class WebSocketService {
               playerId: data.sender || 'unknown',
               message: data.content.message
             };
+            console.log('💬 Processing chat message:', chatMessage);
             this.messageHandlers.forEach(handler => handler(chatMessage));
             break;
 
           case 'session_info':
             const sessionInfo: SessionInfo = data.content;
+            console.log('ℹ️ Processing session info:', sessionInfo);
             this.sessionInfoHandlers.forEach(handler => handler(sessionInfo));
             break;
 
@@ -53,7 +55,7 @@ export class WebSocketService {
             break;
         }
       } catch (error) {
-        console.error('❌ Error parsing WebSocket message:', error);
+        console.error('❌ Error parsing WebSocket message:', error, 'Raw data:', event.data);
       }
     };
 
@@ -66,6 +68,10 @@ export class WebSocketService {
       console.log('🔌 WebSocket connection closed');
       toast.error("WebSocket connection closed");
     };
+
+    this.ws.onopen = () => {
+      console.log('✅ WebSocket connection established');
+    };
   }
 
   sendMessage(message: string) {
@@ -73,7 +79,7 @@ export class WebSocketService {
       console.log('📤 Sending WebSocket message:', message);
       this.ws.send(message);
     } else {
-      console.error('❌ Cannot send message - WebSocket not ready');
+      console.error('❌ Cannot send message - WebSocket not ready. State:', this.ws?.readyState);
       toast.error("WebSocket connection not ready");
     }
   }
