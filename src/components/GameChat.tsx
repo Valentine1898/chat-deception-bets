@@ -79,37 +79,60 @@ export default function GameChat() {
   }, [messages]);
 
   return (
-    <div className="flex h-[360px] flex-col justify-between box-border p-2 gap-10 w-[552px] bg-background/50 border border-muted rounded-lg">
+    <div className="flex h-[360px] flex-col justify-between box-border p-2 gap-10 w-[552px] bg-[#1C1917] border border-muted rounded-lg">
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
-          {messages.map((message, index) => (
-            <div
-              key={message.id || index}
-              className={cn(
-                "flex w-max max-w-[80%] flex-col gap-2 rounded-lg px-3 py-2 text-sm",
-                message.playerId === "You"
-                  ? "ml-auto bg-primary text-primary-foreground"
-                  : "bg-muted text-foreground"
-              )}
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium">
-                  {message.playerId}
-                </span>
+          {messages.map((message, index) => {
+            const isCurrentUser = message.playerId === "You";
+            const timestamp = new Date().toLocaleTimeString('en-US', {
+              hour12: false,
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
+            });
+
+            return (
+              <div
+                key={message.id || index}
+                className={cn(
+                  "flex gap-2",
+                  isCurrentUser ? "flex-row-reverse" : "flex-row"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex max-w-[80%] flex-col gap-1 rounded-lg px-4 py-2 text-sm",
+                    isCurrentUser
+                      ? "bg-[#FD9A00] text-[#1C1917]"
+                      : "bg-[#292524] text-white"
+                  )}
+                >
+                  <div className={cn(
+                    "flex items-center gap-2 text-xs",
+                    isCurrentUser ? "flex-row-reverse" : "flex-row"
+                  )}>
+                    <span className="font-medium">
+                      {isCurrentUser ? "You" : message.playerId}
+                    </span>
+                    <span className="opacity-50">
+                      {timestamp}
+                    </span>
+                  </div>
+                  <p className="break-words">{message.message}</p>
+                </div>
               </div>
-              <p className="whitespace-pre-wrap">{message.message}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </ScrollArea>
 
-      <form onSubmit={handleSubmit} className="border-t border-muted/50 p-4">
+      <form onSubmit={handleSubmit} className="p-2">
         <div className="flex gap-2">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            className="min-h-[44px] w-full resize-none bg-background/50 px-3 py-2 text-foreground"
+            className="min-h-[44px] w-full resize-none bg-[#292524] px-3 py-2 text-white placeholder:text-white/50"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -120,7 +143,7 @@ export default function GameChat() {
           <Button 
             type="submit" 
             size="icon"
-            className="h-[44px] w-[44px] bg-primary text-primary-foreground hover:bg-primary/90"
+            className="h-[44px] w-[44px] bg-[#FD9A00] text-[#1C1917] hover:bg-[#FD9A00]/90"
           >
             <Send className="h-4 w-4" />
           </Button>
