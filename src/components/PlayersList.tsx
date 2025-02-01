@@ -6,6 +6,7 @@ type Player = {
   type: 'human' | 'ai';
   alias: string;
   address?: string;
+  hasJoined?: boolean;
 };
 
 type PlayersListProps = {
@@ -40,7 +41,7 @@ const PlayersList = ({ players, currentPlayerAddress }: PlayersListProps) => {
                   {player.address === currentPlayerAddress && " (You)"}
                 </span>
               </div>
-              {player.type === 'human' && player.address && (
+              {player.type === 'human' && player.address && player.hasJoined && (
                 <span className="text-sm text-muted-foreground font-mono">
                   {player.address.slice(0, 6)}...{player.address.slice(-4)}
                 </span>
