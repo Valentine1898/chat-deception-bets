@@ -25,11 +25,13 @@ export class WebSocketService {
   private sessionInfoHandlers: ((info: SessionInfo) => void)[] = [];
 
   connect(sessionId: string) {
+    console.log('🌐 Connecting to WebSocket with sessionId:', sessionId);
     this.ws = new WebSocket(`ws://localhost:8080?sessionId=${sessionId}`);
 
     this.ws.onmessage = (event) => {
       try {
         const data: WebSocketMessage = JSON.parse(event.data);
+        console.log('📥 Received WebSocket message:', data);
         
         switch (data.type) {
           case 'chat':
@@ -46,29 +48,32 @@ export class WebSocketService {
             break;
 
           case 'error':
+            console.error('❌ WebSocket error message:', data.content.message);
             toast.error(data.content.message);
             break;
         }
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+        console.error('❌ Error parsing WebSocket message:', error);
       }
     };
 
     this.ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error('❌ WebSocket error:', error);
       toast.error("WebSocket connection error");
     };
 
     this.ws.onclose = () => {
-      console.log('WebSocket connection closed');
+      console.log('🔌 WebSocket connection closed');
       toast.error("WebSocket connection closed");
     };
   }
 
   sendMessage(message: string) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      console.log('📤 Sending WebSocket message:', message);
       this.ws.send(message);
     } else {
+      console.error('❌ Cannot send message - WebSocket not ready');
       toast.error("WebSocket connection not ready");
     }
   }
@@ -89,6 +94,7 @@ export class WebSocketService {
 
   disconnect() {
     if (this.ws) {
+      console.log('🔌 Disconnecting WebSocket');
       this.ws.close();
       this.ws = null;
     }
