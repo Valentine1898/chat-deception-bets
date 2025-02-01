@@ -103,7 +103,7 @@ const PlayersList = ({
               className="flex items-center justify-between p-2 rounded-lg bg-[#1C1917]"
             >
               <div className="flex items-center gap-2">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center bg-[#0C0A09] p-0.5 ${
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                   index === 0 ? 'bg-[#BF4E0C]' : 
                   index === 1 ? 'bg-[#5A0CBF]' :
                   index === 2 ? 'bg-[#36BF0C]' :
