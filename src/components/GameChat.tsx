@@ -19,7 +19,6 @@ export default function GameChat() {
   useEffect(() => {
     if (gameId) {
       console.log('🎮 Initializing chat for game:', gameId);
-      wsService.connect(gameId);
 
       const handleReconnect = () => {
         console.log('🔄 Reconnecting to chat...');

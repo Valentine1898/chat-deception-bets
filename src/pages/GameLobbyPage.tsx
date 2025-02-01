@@ -1,4 +1,5 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { usePrivy } from "@privy-io/react-auth";
 import { useToast } from "@/hooks/use-toast";
 import PlayersList from "@/components/PlayersList";
@@ -8,7 +9,6 @@ import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
 import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const GAME_TOPICS = [
@@ -55,15 +55,16 @@ const GameLobbyPage = () => {
   const hasPlacedBet = mockGameData.yourBet > 0;
 
   useEffect(() => {
-    if (gameId && authenticated && user?.wallet?.address) {
+    if (gameId && authenticated) {
       wsService.connect(gameId);
 
       const unsubscribeSessionInfo = wsService.onSessionInfo((sessionInfo) => {
+        console.log('Received session info:', sessionInfo);
         const currentPlayer = {
           id: sessionInfo.you,
-          type: 'human' as const,
+          type: 'human',
           alias: sessionInfo.you,
-          address: user.wallet.address,
+          address: user?.wallet?.address,
           hasJoined: true
         };
 
@@ -71,7 +72,7 @@ const GameLobbyPage = () => {
           .filter(playerId => playerId !== sessionInfo.you)
           .map(playerId => ({
             id: playerId,
-            type: 'human' as const,
+            type: 'human',
             alias: playerId,
             hasJoined: true
           }));
@@ -88,7 +89,7 @@ const GameLobbyPage = () => {
 
   const handleGameStart = () => {
     setIsGameStarted(true);
-    setSelectedTopic(GAME_TOPICS[Math.floor(Math.random() * GAME_TOPICS.length)]);
+    wsService.requestTopic(); // Request topic when game starts
     setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
 
@@ -127,6 +128,7 @@ const GameLobbyPage = () => {
       setIsChatVisible(true);
       setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
       setTopicRevealCountdown(null);
+      wsService.startSession(); // Start session when topic review ends
     }
 
     return () => {
@@ -181,18 +183,12 @@ const GameLobbyPage = () => {
 
   const handleClaimPrize = async () => {
     try {
-      // Mock smart contract interaction for claiming prize
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Clear the game session from localStorage
       localStorage.removeItem("activeGameSession");
-      
       toast({
         title: "Prize claimed successfully!",
         description: "You can now start a new game.",
       });
-      
-      // Redirect to home page
       navigate('/');
     } catch (error) {
       console.error("Error claiming prize:", error);
