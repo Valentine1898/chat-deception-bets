@@ -18,6 +18,7 @@ export default function GameChat() {
       wsService.connect(gameId);
 
       const unsubscribe = wsService.onMessage((message) => {
+        console.log('📩 Received chat message:', message);
         setMessages(prev => [...prev, message]);
       });
 
@@ -32,6 +33,7 @@ export default function GameChat() {
     e.preventDefault();
     if (!input.trim()) return;
 
+    console.log('✉️ User sending message:', input.trim());
     wsService.sendMessage(input.trim());
     setInput("");
   };
