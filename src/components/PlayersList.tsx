@@ -66,7 +66,7 @@ const PlayersList = ({
   }, [countdown, onGameStart]);
 
   return (
-    <div className="w-[360px] bg-[#0C0A09] rounded-2xl p-6 flex flex-col gap-5">
+    <div className="w-[360px] bg-stone-900 rounded-2xl p-6 flex flex-col gap-5">
       <div className="flex flex-col gap-4">
         <h2 className="text-[32px] font-normal text-white font-['Inria_Serif']">
           Classify Players
@@ -76,7 +76,7 @@ const PlayersList = ({
           {players.map((player, index) => (
             <div
               key={player.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-[#1C1917] hover:bg-[#1C1917]/80 transition-colors"
+              className="flex items-center justify-between p-3 rounded-lg bg-stone-800 hover:bg-stone-800/80 transition-colors"
             >
               <div className="flex items-center gap-3">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
