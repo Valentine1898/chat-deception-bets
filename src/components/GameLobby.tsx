@@ -4,7 +4,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Play, Plus, Trophy, DollarSign } from "lucide-react";
+import { Play, Plus, Trophy, DollarSign, Loader2 } from "lucide-react";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
+import { formatEther, parseEther } from "ethers";
 
 // Mock data - in a real app this would come from a database
 const mockGames = [
@@ -24,17 +26,56 @@ const mockGames = [
   }
 ];
 
+const REQUIRED_BET = "0.1"; // ETH
+
 const GameLobby = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [games] = useState(mockGames);
+  const [isPlacingBet, setIsPlacingBet] = useState(false);
+  const { wallets } = useWallets();
 
   const completedGames = games.filter(game => game.status === "completed");
   const totalWinnings = completedGames.reduce((total, game) => total + (game.winAmount || 0), 0);
 
-  const createGame = () => {
-    const gameId = `game_${Math.random().toString(36).substr(2, 9)}`;
-    navigate(`/game/${gameId}`);
+  const createGame = async () => {
+    if (!wallets?.[0]) {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your wallet to create a game",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      setIsPlacingBet(true);
+      
+      // Mock smart contract interaction
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate blockchain delay
+      
+      // In reality, this would be a smart contract call
+      // const contract = new ethers.Contract(address, abi, signer);
+      // await contract.createGame({ value: parseEther(REQUIRED_BET) });
+      
+      const gameId = `game_${Math.random().toString(36).substr(2, 9)}`;
+      
+      toast({
+        title: "Bet placed successfully!",
+        description: `Your bet of ${REQUIRED_BET} ETH has been placed.`,
+      });
+      
+      navigate(`/game/${gameId}`);
+    } catch (error) {
+      console.error("Error creating game:", error);
+      toast({
+        title: "Error creating game",
+        description: "There was an error placing your bet. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsPlacingBet(false);
+    }
   };
 
   const joinGame = (gameId: string) => {
@@ -76,14 +117,29 @@ const GameLobby = () => {
       ) : (
         <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted mb-8">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl font-bold">No Active Games</CardTitle>
-            <Button onClick={createGame} className="bg-accent hover:bg-accent/90">
-              <Plus className="mr-2 h-4 w-4" />
-              New Game
+            <CardTitle className="text-2xl font-bold">Start New Game</CardTitle>
+            <Button 
+              onClick={createGame} 
+              className="bg-accent hover:bg-accent/90"
+              disabled={isPlacingBet}
+            >
+              {isPlacingBet ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Placing Bet...
+                </>
+              ) : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Place {REQUIRED_BET} ETH Bet
+                </>
+              )}
             </Button>
           </CardHeader>
           <CardContent>
-            <p className="text-center text-muted-foreground">Start a new game to begin playing!</p>
+            <p className="text-center text-muted-foreground">
+              Place a bet of {REQUIRED_BET} ETH to start a new game
+            </p>
           </CardContent>
         </Card>
       )}
