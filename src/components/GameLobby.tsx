@@ -9,12 +9,6 @@ import { Play, Plus, Trophy, DollarSign } from "lucide-react";
 // Mock data - in a real app this would come from a database
 const mockGames = [
   { 
-    id: "game_7dgzpbxu9", 
-    status: "active", 
-    createdAt: "2024-03-20",
-    result: "pending"
-  },
-  { 
     id: "game_9xkqp2m4r", 
     status: "completed", 
     createdAt: "2024-03-19",
@@ -35,7 +29,6 @@ const GameLobby = () => {
   const { toast } = useToast();
   const [games] = useState(mockGames);
 
-  const activeGame = games.find(game => game.status === "active");
   const completedGames = games.filter(game => game.status === "completed");
   const totalWinnings = completedGames.reduce((total, game) => total + (game.winAmount || 0), 0);
 
@@ -47,6 +40,9 @@ const GameLobby = () => {
   const joinGame = (gameId: string) => {
     navigate(`/game/${gameId}`);
   };
+
+  // Simulated active game - in real app this would come from backend
+  const activeGame = null; // Set to null to test the "no active game" scenario
 
   return (
     <div className="container max-w-4xl mx-auto p-6 mt-24">
