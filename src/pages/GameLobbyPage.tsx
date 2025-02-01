@@ -7,6 +7,7 @@ import { ArrowLeft, UserPlus } from "lucide-react";
 import WalletConnect from "@/components/WalletConnect";
 import ShareGameButtons from "@/components/ShareGameButtons";
 import PlayersList from "@/components/PlayersList";
+import ChatInterface from "@/components/ChatInterface";
 import { generateAlias, shuffleArray } from "@/utils/playerUtils";
 import { useEffect, useState } from "react";
 
@@ -167,7 +168,7 @@ const GameLobbyPage = () => {
           </div>
           
           <div className="w-2/3">
-            <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
+            <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted mb-6">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold text-foreground">
                   {selectedTopic?.title}
@@ -192,9 +193,7 @@ const GameLobbyPage = () => {
                   </div>
                 )}
                 {isChatVisible ? (
-                  <div className="text-center text-muted-foreground">
-                    Chat interface will be implemented here
-                  </div>
+                  <ChatInterface currentUserAddress={user?.wallet?.address || ""} />
                 ) : (
                   <div className="text-center text-muted-foreground animate-pulse">
                     Chat will be available after the topic review period
