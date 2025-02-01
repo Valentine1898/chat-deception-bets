@@ -22,20 +22,20 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
       label: "Topic discovery",
       number: 1,
       status: stage === "topic_review" ? "active" : 
-              (["chat", "voting", "results"].includes(stage) ? "completed" : "pending")
+              (["chat", "voting", "awaiting_votes", "results"].includes(stage) ? "completed" : "pending")
     },
     {
       value: "chat",
       label: "Discussion on arena",
       number: 2,
       status: stage === "chat" ? "active" : 
-              (["voting", "results"].includes(stage) ? "completed" : "pending")
+              (["voting", "awaiting_votes", "results"].includes(stage) ? "completed" : "pending")
     },
     {
       value: "voting",
       label: "Human detection",
       number: 3,
-      status: stage === "voting" ? "active" : 
+      status: stage === "voting" || stage === "awaiting_votes" ? "active" : 
               (stage === "results" ? "completed" : "pending")
     }
   ];
