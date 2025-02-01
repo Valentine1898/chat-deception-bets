@@ -53,6 +53,10 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
     }
   };
 
+  const shouldShowCountdown = (stageStatus: string) => {
+    return stageStatus === "active" && countdown !== null;
+  };
+
   return (
     <div className="w-full bg-[#1C1917] border-b border-[#44403B]/50">
       <div className="container mx-auto">
@@ -85,7 +89,7 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
                   </span>
                   <span className="text-sm font-medium">{s.label}</span>
                 </div>
-                {countdown !== null && (
+                {shouldShowCountdown(s.status) && (
                   <div className={cn(
                     "flex items-center gap-1 ml-2 text-sm font-mono",
                     s.status === "active" && "bg-black px-2 py-0.5 rounded-full",
