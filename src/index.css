@@ -37,7 +37,7 @@
 }
 
 .cs-message-input__content-editor-wrapper {
-  @apply bg-muted;
+  @apply bg-muted/50;
 }
 
 .cs-message-input__content-editor {
@@ -62,4 +62,24 @@
 
 .cs-message-list {
   @apply bg-background;
+}
+
+.cs-conversation-header {
+  @apply bg-muted/50 border-b border-muted px-4 py-2;
+}
+
+.cs-message__content {
+  @apply rounded-lg p-3;
+}
+
+.cs-message-input__content-editor {
+  @apply min-h-[44px] py-2;
+}
+
+.cs-message__sender-name {
+  @apply text-sm font-medium text-foreground/80;
+}
+
+.cs-avatar {
+  @apply bg-accent text-white;
 }
