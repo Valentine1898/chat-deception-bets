@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { LogOut, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { formatEther } from "ethers";
+import { BrowserProvider } from "ethers";
 
 const EnhancedWalletWidget = () => {
   const { user, logout } = usePrivy();
@@ -19,7 +20,8 @@ const EnhancedWalletWidget = () => {
       if (wallets?.[0]) {
         try {
           const ethProvider = await wallets[0].getEthereumProvider();
-          const balance = await ethProvider.getBalance(wallets[0].address);
+          const provider = new BrowserProvider(ethProvider);
+          const balance = await provider.getBalance(wallets[0].address);
           setBalance(parseFloat(formatEther(balance)).toFixed(4));
         } catch (error) {
           console.error("Error fetching balance:", error);
