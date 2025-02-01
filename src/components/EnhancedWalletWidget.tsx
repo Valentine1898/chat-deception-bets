@@ -18,7 +18,7 @@ const EnhancedWalletWidget = () => {
     const fetchBalance = async () => {
       if (wallets?.[0]) {
         try {
-          const ethProvider = await wallets[0].getEthersProvider();
+          const ethProvider = await wallets[0].getEthereumProvider();
           const balance = await ethProvider.getBalance(wallets[0].address);
           setBalance(parseFloat(formatEther(balance)).toFixed(4));
         } catch (error) {
