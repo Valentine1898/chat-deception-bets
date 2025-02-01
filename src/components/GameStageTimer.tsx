@@ -19,37 +19,37 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimerProps) => {
       case "topic_review":
         return {
           title: "Topic Review",
-          action: "Review the topic and prepare for discussion"
+          action: "Review the topic"
         };
       case "chat":
         return {
           title: "Discussion",
-          action: "Participate in the discussion"
+          action: "Chat active"
         };
       case "voting":
         return {
           title: "Voting",
-          action: "Mark who you think is AI"
+          action: "Choose AI players"
         };
       case "waiting":
         return {
           title: "Waiting",
-          action: "Waiting for players to join"
+          action: "Players joining"
         };
       case "awaiting_votes":
         return {
           title: "Awaiting Votes",
-          action: "Waiting for other players to vote"
+          action: "Votes pending"
         };
       case "results":
         return {
           title: "Results",
-          action: "Game results"
+          action: "Game ended"
         };
       default:
         return {
-          title: "Unknown Stage",
-          action: "Unknown action"
+          title: "Unknown",
+          action: "Unknown"
         };
     }
   };
@@ -57,15 +57,15 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimerProps) => {
   const stageInfo = getStageInfo();
 
   return (
-    <div className="absolute left-1/2 -translate-x-1/2 top-4 flex items-center gap-4 bg-muted/30 px-4 py-2 rounded-lg">
+    <div className="flex items-center gap-3 bg-muted/20 px-3 py-1.5 rounded-lg">
       <div>
-        <h3 className="font-semibold text-foreground">{stageInfo.title}</h3>
-        <p className="text-sm text-muted-foreground">{stageInfo.action}</p>
+        <h3 className="text-sm font-medium text-foreground">{stageInfo.title}</h3>
+        <p className="text-xs text-muted-foreground">{stageInfo.action}</p>
       </div>
       {countdown !== null && (
         <div
           className={cn(
-            "px-3 py-1 rounded font-mono text-lg",
+            "px-2 py-0.5 rounded bg-muted/30 font-mono text-sm",
             isBlinking && "animate-pulse text-red-500",
             !isBlinking && "text-foreground"
           )}
