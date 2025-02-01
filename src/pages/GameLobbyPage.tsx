@@ -218,6 +218,15 @@ const GameLobbyPage = () => {
     });
   };
 
+  const handleVoteSubmit = (votes: Record<string, 'human' | 'ai'>) => {
+    // Mock contract call
+    console.log('Submitting votes to contract:', votes);
+    toast({
+      title: "Votes submitted to contract",
+      description: "This would trigger a smart contract call in production",
+    });
+  };
+
   if (isGameStarted) {
     return (
       <div className="container mx-auto p-6 pt-24 relative">
@@ -232,22 +241,21 @@ const GameLobbyPage = () => {
               currentPlayerAddress={user?.wallet?.address}
               isInGame={true}
             />
+            {isVotingVisible && (
+              <div className="mt-6">
+                <GameVoting 
+                  players={players}
+                  currentPlayerAddress={user?.wallet?.address}
+                  onVoteSubmit={handleVoteSubmit}
+                />
+              </div>
+            )}
           </div>
           <div className="w-2/3">
-            {isVotingVisible ? (
-              <GameVoting 
-                players={players}
-                currentPlayerAddress={user?.wallet?.address}
-                onVoteChange={handleVoteChange}
-              />
-            ) : (
-              <GameTopic 
-                topic={selectedTopic}
-                topicRevealCountdown={topicRevealCountdown}
-                chatCountdown={chatCountdown}
-                isChatVisible={isChatVisible}
-              />
-            )}
+            <GameTopic 
+              topic={selectedTopic}
+              isChatVisible={isChatVisible || isVotingVisible}
+            />
           </div>
         </div>
       </div>

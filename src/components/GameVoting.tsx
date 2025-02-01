@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User, Bot } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 type Player = {
   id: string;
@@ -13,15 +15,69 @@ type Player = {
 type GameVotingProps = {
   players: Player[];
   currentPlayerAddress?: string;
-  onVoteChange: (playerId: string, isAI: boolean) => void;
+  onVoteSubmit: (votes: Record<string, 'human' | 'ai'>) => void;
 };
 
-const GameVoting = ({ players, currentPlayerAddress, onVoteChange }: GameVotingProps) => {
+const GameVoting = ({ players, currentPlayerAddress, onVoteSubmit }: GameVotingProps) => {
+  const { toast } = useToast();
+  const [votes, setVotes] = React.useState<Record<string, 'human' | 'ai'>>({});
+
+  // Initialize current player as human
+  React.useEffect(() => {
+    if (currentPlayerAddress) {
+      setVotes(prev => ({
+        ...prev,
+        [currentPlayerAddress]: 'human'
+      }));
+    }
+  }, [currentPlayerAddress]);
+
+  const handleVoteChange = (playerId: string, isHuman: boolean) => {
+    const newVotes: Record<string, 'human' | 'ai'> = {
+      ...votes,
+      [playerId]: isHuman ? 'human' : 'ai'
+    };
+
+    // If marking as human, mark all others as AI
+    if (isHuman) {
+      players.forEach(player => {
+        if (player.id !== playerId && player.id !== currentPlayerAddress) {
+          newVotes[player.id] = 'ai';
+        }
+      });
+    }
+
+    setVotes(newVotes);
+  };
+
+  const canSubmit = () => {
+    return players.every(player => 
+      player.id === currentPlayerAddress || votes[player.id]
+    );
+  };
+
+  const handleSubmit = () => {
+    if (!canSubmit()) {
+      toast({
+        title: "Cannot submit yet",
+        description: "Please classify all players before submitting",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    onVoteSubmit(votes);
+    toast({
+      title: "Votes submitted!",
+      description: "Your classification has been recorded",
+    });
+  };
+
   return (
     <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold text-foreground">
-          Vote: Who is AI?
+          Classify Players
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -38,16 +94,24 @@ const GameVoting = ({ players, currentPlayerAddress, onVoteChange }: GameVotingP
                 <div className="flex items-center gap-4">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <Checkbox
-                      onCheckedChange={(checked) => onVoteChange(player.id, checked as boolean)}
+                      checked={votes[player.id] === 'human'}
+                      onCheckedChange={(checked) => handleVoteChange(player.id, checked as boolean)}
                     />
-                    <Bot className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">AI</span>
+                    <User className="h-5 w-5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Human</span>
                   </label>
                 </div>
               </div>
             )
           ))}
         </div>
+        <Button
+          className="w-full mt-4"
+          onClick={handleSubmit}
+          disabled={!canSubmit()}
+        >
+          Confirm Classifications
+        </Button>
       </CardContent>
     </Card>
   );
