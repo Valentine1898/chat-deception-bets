@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
 import ShareGameButtons from "@/components/ShareGameButtons";
 import WalletConnect from "@/components/WalletConnect";
 
@@ -14,7 +13,6 @@ type GameLobbyInfoProps = {
     betAmount: number;
   };
   onPlaceBet: () => void;
-  onSimulatePlayerJoin: () => void;
 };
 
 const GameLobbyInfo = ({
@@ -24,8 +22,7 @@ const GameLobbyInfo = ({
   gameId,
   gameUrl,
   mockGameData,
-  onPlaceBet,
-  onSimulatePlayerJoin
+  onPlaceBet
 }: GameLobbyInfoProps) => {
   if (!authenticated) {
     return (
@@ -81,16 +78,6 @@ const GameLobbyInfo = ({
         <div className="rounded-lg bg-muted/50 p-4 text-center border border-muted">
           <p className="text-sm font-medium text-muted-foreground mb-2">Game ID</p>
           <p className="text-lg font-mono text-accent">{gameId}</p>
-        </div>
-
-        <div className="flex justify-center">
-          <Button
-            onClick={onSimulatePlayerJoin}
-            className="bg-accent hover:bg-accent/90"
-          >
-            <UserPlus className="mr-2 h-4 w-4" />
-            Simulate Player Join
-          </Button>
         </div>
 
         <ShareGameButtons gameUrl={gameUrl} />

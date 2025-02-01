@@ -1,18 +1,17 @@
 import { useParams } from "react-router-dom";
 import { usePrivy } from "@privy-io/react-auth";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
-import GameVoting from "@/components/GameVoting";
+import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
-import { generateAlias, shuffleArray } from "@/utils/playerUtils";
+import { generateAlias } from "@/utils/playerUtils";
 import { useEffect, useState } from "react";
 import { GAME_TIMINGS } from "@/config/gameConfig";
 import EnhancedWalletWidget from "@/components/EnhancedWalletWidget";
+import { wsService } from "@/services/websocket";
 
-// Mock topics - in a real app these would come from an API
 const GAME_TOPICS = [
   {
     title: "The Future of Artificial Intelligence",
@@ -28,14 +27,6 @@ const GAME_TOPICS = [
   }
 ];
 
-// Mock data for AI players
-const AI_PLAYERS = [
-  { id: 'ai1', type: 'ai' as const, alias: generateAlias() },
-  { id: 'ai2', type: 'ai' as const, alias: generateAlias() },
-  { id: 'ai3', type: 'ai' as const, alias: generateAlias() },
-  { id: 'ai4', type: 'ai' as const, alias: generateAlias() },
-];
-
 const GameLobbyPage = () => {
   const { gameId } = useParams();
   const { toast } = useToast();
@@ -48,14 +39,10 @@ const GameLobbyPage = () => {
   const [selectedTopic, setSelectedTopic] = useState<typeof GAME_TOPICS[0] | null>(null);
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [isVotingVisible, setIsVotingVisible] = useState(false);
-  const [aiPlayerIndex, setAiPlayerIndex] = useState(0);
-  const [votes, setVotes] = useState<Record<string, boolean>>({});
-  const [gameResult, setGameResult] = useState<'win' | 'draw' | 'lose' | 'ai_win'>('win');
   const [hasVoted, setHasVoted] = useState(false);
 
   const gameUrl = `${window.location.origin}/game/${gameId}`;
 
-  // Mock data - in a real app this would come from your backend
   const mockGameData = {
     id: gameId,
     creatorAddress: "0x1234...5678",
@@ -68,18 +55,36 @@ const GameLobbyPage = () => {
   const hasPlacedBet = mockGameData.yourBet > 0;
 
   useEffect(() => {
-    if (authenticated && user?.wallet?.address) {
-      const currentPlayer = {
-        id: user.wallet.address,
-        type: 'human' as const,
-        alias: generateAlias(),
-        address: user.wallet.address,
-        hasJoined: true
-      };
+    if (gameId && authenticated && user?.wallet?.address) {
+      wsService.connect(gameId);
 
-      setPlayers([currentPlayer]);
+      const unsubscribeSessionInfo = wsService.onSessionInfo((sessionInfo) => {
+        const currentPlayer = {
+          id: sessionInfo.you,
+          type: 'human' as const,
+          alias: sessionInfo.you,
+          address: user.wallet.address,
+          hasJoined: true
+        };
+
+        const otherPlayers = sessionInfo.players
+          .filter(playerId => playerId !== sessionInfo.you)
+          .map(playerId => ({
+            id: playerId,
+            type: 'human' as const,
+            alias: playerId,
+            hasJoined: true
+          }));
+
+        setPlayers([currentPlayer, ...otherPlayers]);
+      });
+
+      return () => {
+        unsubscribeSessionInfo();
+        wsService.disconnect();
+      };
     }
-  }, [authenticated, user?.wallet?.address]);
+  }, [gameId, authenticated, user?.wallet?.address]);
 
   const handleGameStart = () => {
     setIsGameStarted(true);
@@ -100,35 +105,6 @@ const GameLobbyPage = () => {
       description: "This would trigger a smart contract call in production",
     });
   };
-
-  const simulatePlayerJoin = () => {
-    if (players.length < 2) {
-      const newPlayer = {
-        id: `player${players.length + 1}`,
-        type: 'human' as const,
-        alias: generateAlias(),
-        address: `0x${Math.random().toString(16).slice(2, 10)}`,
-        hasJoined: true
-      };
-      setPlayers(current => [...current, newPlayer]);
-    }
-  };
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    const humanPlayers = players.filter(p => p.type === 'human' && p.hasJoined);
-
-    if (humanPlayers.length === 2 && aiPlayerIndex < AI_PLAYERS.length) {
-      timer = setTimeout(() => {
-        setPlayers(current => [...current, AI_PLAYERS[aiPlayerIndex]]);
-        setAiPlayerIndex(prev => prev + 1);
-      }, GAME_TIMINGS.AI_PLAYER_INTERVAL);
-    }
-
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [players, aiPlayerIndex]);
 
   // Topic reveal countdown
   useEffect(() => {
@@ -194,45 +170,6 @@ const GameLobbyPage = () => {
     };
   }, [votingCountdown, toast]);
 
-  const handleVoteChange = (playerId: string, isAI: boolean) => {
-    setVotes(prev => ({
-      ...prev,
-      [playerId]: isAI
-    }));
-  };
-
-  const handleVoteSubmit = (votes: Record<string, 'human' | 'ai'>) => {
-    console.log('Submitting votes to contract:', votes);
-    setHasVoted(true);
-    toast({
-      title: "Votes submitted to contract",
-      description: "Waiting for other players to vote...",
-    });
-  };
-
-  const cycleGameResult = () => {
-    const results: Array<'win' | 'draw' | 'lose' | 'ai_win'> = ['win', 'draw', 'lose', 'ai_win'];
-    const currentIndex = results.indexOf(gameResult);
-    const nextIndex = (currentIndex + 1) % results.length;
-    setGameResult(results[nextIndex]);
-  };
-
-  const getCurrentStage = () => {
-    if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-      return "topic_review" as const;
-    }
-    if (chatCountdown !== null && chatCountdown > 0) {
-      return "chat" as const;
-    }
-    if (votingCountdown !== null && votingCountdown > 0) {
-      return hasVoted ? "awaiting_votes" : "voting";
-    }
-    if (votingCountdown === 0) {
-      return "results" as const;
-    }
-    return "waiting" as const;
-  };
-
   if (isGameStarted) {
     const currentStage = getCurrentStage();
     
@@ -258,6 +195,7 @@ const GameLobbyPage = () => {
               topic={selectedTopic}
               isChatVisible={currentStage === 'chat' || currentStage === 'voting' || currentStage === 'awaiting_votes'}
             />
+            {isChatVisible && <GameChat />}
           </div>
         </div>
       </div>
@@ -289,12 +227,27 @@ const GameLobbyPage = () => {
             gameUrl={gameUrl}
             mockGameData={mockGameData}
             onPlaceBet={placeBet}
-            onSimulatePlayerJoin={simulatePlayerJoin}
           />
         </div>
       </div>
     </div>
   );
+};
+
+const getCurrentStage = () => {
+  if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
+    return "topic_review" as const;
+  }
+  if (chatCountdown !== null && chatCountdown > 0) {
+    return "chat" as const;
+  }
+  if (votingCountdown !== null && votingCountdown > 0) {
+    return hasVoted ? "awaiting_votes" : "voting";
+  }
+  if (votingCountdown === 0) {
+    return "results" as const;
+  }
+  return "waiting" as const;
 };
 
 export default GameLobbyPage;
