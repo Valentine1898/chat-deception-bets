@@ -19,6 +19,8 @@ type PlayersListProps = {
   showResults?: boolean;
 };
 
+const AVATAR_VARIANTS = ['orange', 'green', 'yellow', 'blue', 'purple', 'pink'] as const;
+
 const PlayersList = ({ 
   players, 
   currentPlayerAddress, 
@@ -75,13 +77,16 @@ const PlayersList = ({
         </div>
         
         <div className="flex flex-col gap-3">
-          {players.map((player) => (
+          {players.map((player, index) => (
             <div
               key={player.id}
               className="flex items-center justify-between p-2 rounded-lg bg-[#1C1917]"
             >
               <div className="flex items-center gap-2 mx-auto">
-                <PlayerAvatar type={player.type} />
+                <PlayerAvatar 
+                  type={player.type} 
+                  variant={AVATAR_VARIANTS[index % AVATAR_VARIANTS.length]}
+                />
                 <span className="text-base font-medium text-white">
                   {player.alias}
                   {player.address === currentPlayerAddress && (
