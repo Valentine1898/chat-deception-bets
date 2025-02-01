@@ -30,3 +30,36 @@
            focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none;
   }
 }
+
+/* Chat UI Kit custom styles */
+.cs-message-input {
+  @apply bg-background border-t border-muted;
+}
+
+.cs-message-input__content-editor-wrapper {
+  @apply bg-muted;
+}
+
+.cs-message-input__content-editor {
+  @apply bg-transparent text-foreground;
+}
+
+.cs-message {
+  @apply bg-transparent;
+}
+
+.cs-message--outgoing .cs-message__content {
+  @apply bg-accent text-white;
+}
+
+.cs-message--incoming .cs-message__content {
+  @apply bg-muted text-foreground;
+}
+
+.cs-chat-container .cs-message-input {
+  @apply border-t border-muted;
+}
+
+.cs-message-list {
+  @apply bg-background;
+}

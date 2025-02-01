@@ -6,9 +6,9 @@ import {
   Message,
   MessageInput,
 } from "@chatscope/chat-ui-kit-react";
-import styles from "@chatscope/chat-ui-kit-react/dist/default.min.css?inline";
+import "@chatscope/chat-ui-kit-react/dist/default.min.css";
 
-type Message = {
+type MessageType = {
   id: string;
   text: string;
   sender: string;
@@ -20,12 +20,12 @@ type ChatInterfaceProps = {
 };
 
 const ChatInterface = ({ currentUserAddress }: ChatInterfaceProps) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<MessageType[]>([]);
 
   const handleSend = (text: string) => {
     if (!text.trim()) return;
 
-    const newMessage: Message = {
+    const newMessage: MessageType = {
       id: Date.now().toString(),
       text,
       sender: "You",
@@ -36,10 +36,10 @@ const ChatInterface = ({ currentUserAddress }: ChatInterfaceProps) => {
   };
 
   return (
-    <div className="h-[500px] rounded-lg border border-muted">
+    <div className="h-[500px] w-full bg-background rounded-lg border border-muted overflow-hidden">
       <MainContainer>
         <ChatContainer>
-          <MessageList>
+          <MessageList className="p-4">
             {messages.map((message) => (
               <Message
                 key={message.id}
@@ -49,13 +49,19 @@ const ChatInterface = ({ currentUserAddress }: ChatInterfaceProps) => {
                   direction: message.senderAddress === currentUserAddress ? "outgoing" : "incoming",
                   position: "single",
                 }}
+                className="mb-4"
               />
             ))}
           </MessageList>
           <MessageInput
-            placeholder="Type message here"
+            placeholder="Type your message here..."
             onSend={handleSend}
             attachButton={false}
+            className="border-t border-muted bg-background"
+            style={{
+              background: "var(--background)",
+              color: "var(--foreground)",
+            }}
           />
         </ChatContainer>
       </MainContainer>
