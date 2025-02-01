@@ -6,29 +6,55 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "./ui/scroll-area";
 import { wsService, ChatMessage } from "@/services/websocket";
 import { useParams } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 export default function GameChat() {
   const { gameId } = useParams<{ gameId: string }>();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  const processedMessageIds = useRef(new Set<string>());
 
   useEffect(() => {
     if (gameId) {
       console.log('🎮 Initializing chat for game:', gameId);
       wsService.connect(gameId);
 
+      const handleReconnect = () => {
+        console.log('🔄 Reconnecting to chat...');
+        toast({
+          title: "Reconnecting to chat...",
+          duration: 2000,
+        });
+      };
+
       const unsubscribe = wsService.onMessage((message) => {
+        if (!message.id) {
+          console.warn('⚠️ Received message without ID:', message);
+          return;
+        }
+
+        if (processedMessageIds.current.has(message.id)) {
+          console.log('🚫 Skipping duplicate message:', message.id);
+          return;
+        }
+
         console.log('📩 Received chat message:', message);
-        setMessages(prev => {
-          // Check if message with this ID already exists
-          if (message.id && prev.some(m => m.id === message.id)) {
-            console.log('🚫 Skipping duplicate message in state:', message.id);
-            return prev;
-          }
-          return [...prev, message];
+        processedMessageIds.current.add(message.id);
+        setMessages(prev => [...prev, message]);
+      });
+
+      wsService.onDisconnect(() => {
+        console.log('📴 Chat disconnected');
+        toast({
+          title: "Chat disconnected",
+          description: "Attempting to reconnect...",
+          variant: "destructive",
         });
       });
+
+      wsService.onReconnect(handleReconnect);
 
       return () => {
         console.log('🔄 Cleaning up chat connection');
@@ -36,7 +62,7 @@ export default function GameChat() {
         wsService.disconnect();
       };
     }
-  }, [gameId]);
+  }, [gameId, toast]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
