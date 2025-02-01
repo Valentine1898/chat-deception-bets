@@ -149,7 +149,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                 <div className="flex items-center bg-[#1C1917] rounded-xl p-2">
                   <div className="flex items-center gap-2.5 px-2">
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <mask id="mask0_23_5268" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="12" height="12">
+                      <mask id="mask0_23_5268" maskUnits="userSpaceOnUse" x="0" y="0" width="12" height="12">
                         <path d="M0 0H12V12H0V0Z" fill="white"/>
                       </mask>
                       <g mask="url(#mask0_23_5268)">
