@@ -20,20 +20,20 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#F5A524", // Orange color from the active tab
-          foreground: "rgb(28 25 23)", // stone-900
+          DEFAULT: "#FD9A00", // Orange color from the active tab
+          foreground: "#0C0A09", // Black text
         },
         secondary: {
-          DEFAULT: "rgb(68 64 60)", // stone-700
-          foreground: "#E6D5BA", // Beige text on dark
+          DEFAULT: "#292524", // Dark gray
+          foreground: "#FFFFFF", // White text
         },
-        background: "rgb(41 37 36)", // stone-800
+        background: "#1C1917", // Dark background
         foreground: "#E6D5BA", // Beige text
-        muted: "rgb(68 64 60)", // stone-700
-        accent: "#E6D5BA", // Beige for accents
+        muted: "#44403B", // Muted gray
+        accent: "#05DF72", // Green for checkmarks
         card: {
-          DEFAULT: "rgb(68 64 60)", // stone-700
-          foreground: "#E6D5BA", // Beige text on card
+          DEFAULT: "#292524", // Dark gray
+          foreground: "#FFFFFF", // White text
         },
       },
       keyframes: {
