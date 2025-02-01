@@ -19,9 +19,17 @@ const GameLobby = () => {
   const [activeGameSession, setActiveGameSession] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedSession = localStorage.getItem(ACTIVE_GAME_SESSION_KEY);
-    if (storedSession) {
-      setActiveGameSession(storedSession);
+    // Clear session on page load/refresh
+    localStorage.removeItem(ACTIVE_GAME_SESSION_KEY);
+    setActiveGameSession(null);
+
+    // Then check if there's a session in the URL that we should restore
+    const pathParts = window.location.pathname.split('/');
+    const gameIdFromUrl = pathParts[2]; // /game/:gameId
+    
+    if (gameIdFromUrl) {
+      setActiveGameSession(gameIdFromUrl);
+      localStorage.setItem(ACTIVE_GAME_SESSION_KEY, gameIdFromUrl);
     }
   }, []);
 
