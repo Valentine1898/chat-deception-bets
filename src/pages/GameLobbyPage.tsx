@@ -205,13 +205,15 @@ const GameLobbyPage = () => {
     
     return (
       <div className="min-h-screen">
-        <GameHeader 
-          stage={stage}
-          countdown={getCurrentCountdown()}
-        />
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <GameHeader 
+            stage={stage}
+            countdown={getCurrentCountdown()}
+          />
+        </div>
         
-        <div className="container mx-auto p-6 mt-[140px] relative z-10">
-          <div className="flex gap-6 relative">
+        <div className="container mx-auto p-6 mt-[140px] z-0">
+          <div className="flex gap-6">
             <div className="w-1/3">
               <PlayersList 
                 players={players}
@@ -247,12 +249,14 @@ const GameLobbyPage = () => {
 
   return (
     <div className="min-h-screen">
-      <GameHeader 
-        stage="waiting"
-        countdown={null}
-      />
-      <div className="container mx-auto p-6 mt-[140px] relative z-10">
-        <div className="flex gap-6 relative">
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <GameHeader 
+          stage="waiting"
+          countdown={null}
+        />
+      </div>
+      <div className="container mx-auto p-6 mt-[140px] z-0">
+        <div className="flex gap-6">
           <div className="w-1/3">
             <PlayersList 
               players={players}
