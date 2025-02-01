@@ -236,19 +236,12 @@ const GameLobbyPage = () => {
         />
         <div className="flex gap-6 relative mt-8">
           <div className="w-1/3">
-            {isVotingVisible ? (
-              <GameVoting 
-                players={players}
-                currentPlayerAddress={user?.wallet?.address}
-                onVoteSubmit={handleVoteSubmit}
-              />
-            ) : (
-              <PlayersList 
-                players={players}
-                currentPlayerAddress={user?.wallet?.address}
-                isInGame={true}
-              />
-            )}
+            <GameVoting 
+              players={players}
+              currentPlayerAddress={user?.wallet?.address}
+              onVoteSubmit={handleVoteSubmit}
+              showConfirmButton={getCurrentStage() === 'voting'}
+            />
           </div>
           <div className="w-2/3">
             <GameTopic 

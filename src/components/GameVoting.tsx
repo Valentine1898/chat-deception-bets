@@ -16,9 +16,10 @@ type GameVotingProps = {
   players: Player[];
   currentPlayerAddress?: string;
   onVoteSubmit: (votes: Record<string, 'human' | 'ai'>) => void;
+  showConfirmButton?: boolean;
 };
 
-const GameVoting = ({ players, currentPlayerAddress, onVoteSubmit }: GameVotingProps) => {
+const GameVoting = ({ players, currentPlayerAddress, onVoteSubmit, showConfirmButton = false }: GameVotingProps) => {
   const { toast } = useToast();
   const [votes, setVotes] = React.useState<Record<string, 'human' | 'ai'>>({});
 
@@ -127,13 +128,15 @@ const GameVoting = ({ players, currentPlayerAddress, onVoteSubmit }: GameVotingP
             </div>
           ))}
         </div>
-        <Button
-          className="w-full mt-4"
-          onClick={handleSubmit}
-          disabled={!canSubmit()}
-        >
-          Confirm Classifications
-        </Button>
+        {showConfirmButton && (
+          <Button
+            className="w-full mt-4"
+            onClick={handleSubmit}
+            disabled={!canSubmit()}
+          >
+            Confirm Classifications
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
