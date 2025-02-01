@@ -103,20 +103,11 @@ const PlayersList = ({
               className="flex items-center justify-between p-2 rounded-lg bg-[#1C1917]"
             >
               <div className="flex items-center gap-2">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  index === 0 ? 'bg-[#BF4E0C]' : 
-                  index === 1 ? 'bg-[#5A0CBF]' :
-                  index === 2 ? 'bg-[#36BF0C]' :
-                  index === 3 ? 'bg-[#0C9EBF]' :
-                  index === 4 ? 'bg-[#BF8F0C]' :
-                  'bg-[#BF0C66]'
-                }`}>
-                  <PlayerAvatar 
-                    type={player.type} 
-                    variant={(index % 6 + 1) as 1 | 2 | 3 | 4 | 5 | 6}
-                    className="w-5 h-5"
-                  />
-                </div>
+                <PlayerAvatar 
+                  type={player.type} 
+                  variant={(index % 6 + 1) as 1 | 2 | 3 | 4 | 5 | 6}
+                  className="w-6 h-6"
+                />
                 <span className="text-base font-medium text-white font-['Instrument_Sans']">
                   {player.alias}
                 </span>
