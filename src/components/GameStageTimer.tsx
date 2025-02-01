@@ -65,36 +65,42 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
       <div className="container mx-auto">
         <Tabs defaultValue={getStageIndex()} value={getStageIndex()} className="w-full">
           <TabsList className="flex flex-row items-start p-3 gap-5 h-[62px] bg-[#1C1917] border border-[#44403B]/50 rounded-2xl">
-            {stages.map((s, index) => (
+            {stages.map((s) => (
               <TabsTrigger
                 key={s.value}
-                value={index.toString()}
+                value={s.value}
                 disabled
                 className={cn(
-                  "flex-1 flex flex-row justify-between items-center p-2 h-[38px] rounded-lg font-['Instrument_Sans'] text-base font-medium",
+                  "flex-1 flex flex-row justify-between items-center p-2 h-[38px] rounded-lg",
                   s.status === "completed" && "bg-[#292524] text-white",
-                  s.status === "active" && "bg-[#FD9A00] text-[#0C0A09]",
+                  s.status === "active" && "bg-[#FD9A00]",
                   s.status === "pending" && "bg-[#292524] text-white"
                 )}
               >
-                <div className="flex items-center gap-2 mx-auto">
-                  <div className={cn(
-                    "flex items-center justify-center w-[22px] h-[22px] rounded-xl font-['Chivo_Mono'] text-sm",
-                    s.status === "completed" && "bg-[#0C0A09] text-[#57534D]",
-                    s.status === "active" && "bg-[#E17100] text-[#0C0A09]",
-                    s.status === "pending" && "bg-[#0C0A09] text-[#57534D]"
-                  )}>
-                    {s.number}
-                  </div>
-                  <span className="text-base">{s.label}</span>
-                  {shouldShowCountdown(s.status) && (
+                <div className="flex items-center gap-2 mx-auto w-[285px]">
+                  <div className="flex items-center gap-8">
                     <div className={cn(
-                      "flex items-center gap-1 px-1.5 py-0.5 h-[22px] bg-black rounded-xl",
-                      "font-['Chivo_Mono'] text-sm",
-                      isBlinking && s.status === "active" ? "text-[#FD9A00]" : "text-[#D6D3D1]"
+                      "flex items-center justify-center w-[22px] h-[22px] rounded-xl font-['Chivo_Mono'] text-sm",
+                      s.status === "completed" && "bg-[#0C0A09] text-[#57534D]",
+                      s.status === "active" && "bg-[#E17100] text-[#0C0A09]",
+                      s.status === "pending" && "bg-[#0C0A09] text-[#57534D]"
                     )}>
-                      <Timer className="h-3 w-3" />
-                      <span>{Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}</span>
+                      {s.number}
+                    </div>
+                    <span className={cn(
+                      "text-base font-['Instrument_Sans'] font-medium",
+                      s.status === "active" && "text-[#0C0A09]",
+                      s.status !== "active" && "text-white"
+                    )}>
+                      {s.label}
+                    </span>
+                  </div>
+                  {shouldShowCountdown(s.status) && (
+                    <div className="flex items-center gap-1 px-1.5 py-0.5 h-[22px] bg-black rounded-xl">
+                      <Timer className="h-3 w-3 text-[#E7E5E4]" />
+                      <span className="font-['Chivo_Mono'] text-sm text-[#FD9A00]">
+                        {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
+                      </span>
                     </div>
                   )}
                 </div>
