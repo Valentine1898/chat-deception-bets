@@ -78,7 +78,7 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
                 )}
               >
                 <div className="flex items-center gap-2 mx-auto w-[285px]">
-                  <div className="flex items-center gap-8">
+                  <div className="flex items-center gap-2">
                     <div className={cn(
                       "flex items-center justify-center w-[22px] h-[22px] rounded-xl font-['Chivo_Mono'] text-sm",
                       s.status === "completed" && "bg-[#0C0A09] text-[#57534D]",
@@ -87,22 +87,22 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
                     )}>
                       {s.number}
                     </div>
+                    {shouldShowCountdown(s.status) && (
+                      <div className="flex items-center gap-1 px-1.5 py-0.5 h-[22px] bg-black rounded-xl">
+                        <Timer className="h-3 w-3 text-[#E7E5E4]" />
+                        <span className="font-['Chivo_Mono'] text-sm text-[#FD9A00]">
+                          {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
+                        </span>
+                      </div>
+                    )}
                     <span className={cn(
-                      "text-base font-['Instrument_Sans'] font-medium",
+                      "text-base font-['Instrument_Sans'] font-medium ml-6",
                       s.status === "active" && "text-[#0C0A09]",
                       s.status !== "active" && "text-white"
                     )}>
                       {s.label}
                     </span>
                   </div>
-                  {shouldShowCountdown(s.status) && (
-                    <div className="flex items-center gap-1 px-1.5 py-0.5 h-[22px] bg-black rounded-xl">
-                      <Timer className="h-3 w-3 text-[#E7E5E4]" />
-                      <span className="font-['Chivo_Mono'] text-sm text-[#FD9A00]">
-                        {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
-                      </span>
-                    </div>
-                  )}
                 </div>
               </TabsTrigger>
             ))}
