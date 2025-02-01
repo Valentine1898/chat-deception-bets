@@ -65,7 +65,6 @@ const GameLobbyPage = () => {
         setPlayers([currentPlayer, ...otherPlayers]);
       });
 
-      // Add topic message handler
       const unsubscribeTopicMessage = wsService.onTopicMessage((topic) => {
         console.log('Received topic:', topic);
         setSelectedTopic({
@@ -213,6 +212,8 @@ const GameLobbyPage = () => {
               <GameTopic 
                 topic={selectedTopic}
                 isChatVisible={stage === 'chat' || stage === 'voting' || stage === 'awaiting_votes'}
+                gameId={gameId}
+                prizePool="0.0005"
               />
               {isChatVisible && <GameChat />}
               
