@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { formatEther } from "ethers";
 import { BrowserProvider } from "ethers";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 type GameHeaderProps = {
   stage: GameStage;
@@ -14,6 +15,7 @@ type GameHeaderProps = {
 };
 
 const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
+  const navigate = useNavigate();
   const { logout, user } = usePrivy();
   const { wallets } = useWallets();
   const [balance, setBalance] = useState<string>("0.00");
@@ -118,7 +120,10 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
         <div className="container mx-auto">
           <div className="flex flex-col items-start px-3 py-6">
             <div className="flex justify-between items-center w-full">
-              <div className="flex items-center gap-6">
+              <div 
+                className="flex items-center gap-6 cursor-pointer" 
+                onClick={() => navigate('/')}
+              >
                 <div className="relative w-[120px] h-[64px] rounded-xl border border-primary-foreground overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-[#4E2E25] to-[#372019]" />
                   <div className="absolute inset-0 flex items-end p-1.5">
