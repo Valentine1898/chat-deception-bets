@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Bot } from "lucide-react";
+import { User, Bot, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type Player = {
@@ -38,7 +38,7 @@ const GameVoting = ({ players, currentPlayerAddress, onVoteSubmit }: GameVotingP
       [playerId]: isHuman ? 'human' : 'ai'
     };
 
-    // If marking as human, mark all others as AI
+    // If marking as human, mark all others as AI (except current player)
     if (isHuman) {
       players.forEach(player => {
         if (player.id !== playerId && player.id !== currentPlayerAddress) {
@@ -75,48 +75,56 @@ const GameVoting = ({ players, currentPlayerAddress, onVoteSubmit }: GameVotingP
 
   return (
     <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold text-foreground">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <User className="h-5 w-5 text-accent" />
           Classify Players
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {players.map((player) => (
-            player.id !== currentPlayerAddress && (
-              <div
-                key={player.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="font-medium">{player.alias}</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => handleVoteChange(player.id, true)}
-                    className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
-                      votes[player.id] === 'human' 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'hover:bg-muted'
-                    }`}
-                  >
-                    <User className="h-5 w-5" />
-                    <span className="text-sm">Human</span>
-                  </button>
-                  <button
-                    onClick={() => handleVoteChange(player.id, false)}
-                    className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
-                      votes[player.id] === 'ai' 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'hover:bg-muted'
-                    }`}
-                  >
-                    <Bot className="h-5 w-5" />
-                    <span className="text-sm">AI</span>
-                  </button>
-                </div>
+            <div
+              key={player.id}
+              className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+            >
+              <div className="flex items-center gap-3">
+                <span className="font-medium">{player.alias}</span>
               </div>
-            )
+              <div className="flex items-center gap-4">
+                {player.id === currentPlayerAddress ? (
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-primary text-primary-foreground">
+                    <CheckCircle className="h-5 w-5" />
+                    <span className="text-sm">You (Human)</span>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleVoteChange(player.id, true)}
+                      className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
+                        votes[player.id] === 'human' 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'hover:bg-muted'
+                      }`}
+                    >
+                      <User className="h-5 w-5" />
+                      <span className="text-sm">Human</span>
+                    </button>
+                    <button
+                      onClick={() => handleVoteChange(player.id, false)}
+                      className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
+                        votes[player.id] === 'ai' 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'hover:bg-muted'
+                      }`}
+                    >
+                      <Bot className="h-5 w-5" />
+                      <span className="text-sm">AI</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           ))}
         </div>
         <Button
