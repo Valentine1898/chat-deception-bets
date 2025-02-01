@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { usePrivy } from "@privy-io/react-auth";
 import { useToast } from "@/hooks/use-toast";
 import PlayersList from "@/components/PlayersList";
@@ -28,6 +28,7 @@ const GAME_TOPICS = [
 
 const GameLobbyPage = () => {
   const { gameId } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { authenticated, user } = usePrivy();
   const [players, setPlayers] = useState<Array<any>>([]);
@@ -204,12 +205,12 @@ const GameLobbyPage = () => {
   };
 
   if (isGameStarted) {
-    const currentStage = getCurrentStage();
+    const stage = getCurrentStage();
     
     return (
       <div className="container mx-auto p-6 pt-32 relative">
         <GameHeader 
-          stage={currentStage}
+          stage={stage}
           countdown={getCurrentCountdown()}
         />
         
@@ -219,38 +220,29 @@ const GameLobbyPage = () => {
               players={players}
               currentPlayerAddress={user?.wallet?.address}
               isInGame={true}
-              showResults={currentStage === 'results'}
+              showResults={stage === 'results'}
             />
           </div>
           <div className="w-2/3">
             <GameTopic 
               topic={selectedTopic}
-              isChatVisible={currentStage === 'chat' || currentStage === 'voting' || currentStage === 'awaiting_votes'}
+              isChatVisible={stage === 'chat' || stage === 'voting' || stage === 'awaiting_votes'}
             />
             {isChatVisible && <GameChat />}
           </div>
         </div>
-      </div>
-    );
-  }
 
-  // Add the claim prize button in the results stage
-  if (currentStage === 'results') {
-    return (
-      <div className="container mx-auto p-6 pt-32 relative">
-        <GameHeader 
-          stage={currentStage}
-          countdown={null}
-        />
-        <div className="flex flex-col items-center justify-center mt-8">
-          <h2 className="text-2xl font-bold mb-4">Game Results</h2>
-          <Button 
-            onClick={handleClaimPrize}
-            className="bg-accent hover:bg-accent/90"
-          >
-            Claim Prize
-          </Button>
-        </div>
+        {stage === 'results' && (
+          <div className="flex flex-col items-center justify-center mt-8">
+            <h2 className="text-2xl font-bold mb-4">Game Results</h2>
+            <Button 
+              onClick={handleClaimPrize}
+              className="bg-accent hover:bg-accent/90"
+            >
+              Claim Prize
+            </Button>
+          </div>
+        )}
       </div>
     );
   }
