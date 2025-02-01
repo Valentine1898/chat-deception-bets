@@ -210,7 +210,7 @@ const GameLobbyPage = () => {
           countdown={getCurrentCountdown()}
         />
         
-        <div className="container mx-auto p-6 mt-[140px]">
+        <div className="container mx-auto p-6 mt-[140px] relative z-10">
           <div className="flex gap-6 relative">
             <div className="w-1/3">
               <PlayersList 
@@ -251,7 +251,7 @@ const GameLobbyPage = () => {
         stage="waiting"
         countdown={null}
       />
-      <div className="container mx-auto p-6 mt-[140px]">
+      <div className="container mx-auto p-6 mt-[140px] relative z-10">
         <div className="flex gap-6 relative">
           <div className="w-1/3">
             <PlayersList 
