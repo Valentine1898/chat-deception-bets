@@ -88,18 +88,18 @@ const GameLobbyPage = () => {
 
   const getCurrentStage = () => {
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-      return "topic_review" as const;
+      return "topic_discovery";
     }
     if (chatCountdown !== null && chatCountdown > 0) {
-      return "chat" as const;
+      return "discussion";
     }
     if (votingCountdown !== null && votingCountdown > 0) {
-      return hasVoted ? "awaiting_votes" : "voting";
+      return hasVoted ? "awaiting_votes" : "human_detection";
     }
     if (votingCountdown === 0) {
-      return "results" as const;
+      return "results";
     }
-    return "waiting" as const;
+    return "waiting";
   };
 
   const getCurrentCountdown = () => {
@@ -107,6 +107,15 @@ const GameLobbyPage = () => {
     if (chatCountdown !== null) return chatCountdown;
     if (votingCountdown !== null) return votingCountdown;
     return null;
+  };
+
+  const handleVoteSubmit = (votes: Record<string, 'human' | 'ai'>) => {
+    console.log('Submitting votes:', votes);
+    setHasVoted(true);
+    toast({
+      title: "Votes submitted",
+      description: "Your votes have been recorded.",
+    });
   };
 
   useEffect(() => {
@@ -209,7 +218,7 @@ const GameLobbyPage = () => {
             <div className="flex-1">
               <GameTopic 
                 topic={selectedTopic}
-                isChatVisible={stage === 'chat' || stage === 'voting' || stage === 'awaiting_votes'}
+                isChatVisible={stage === 'discussion' || stage === 'human_detection' || stage === 'awaiting_votes'}
                 gameId={gameId}
                 prizePool="0.0005"
               />
@@ -231,6 +240,8 @@ const GameLobbyPage = () => {
               currentPlayerAddress={user?.wallet?.address}
               isInGame={true}
               showResults={stage === 'results'}
+              stage={stage}
+              onVoteSubmit={handleVoteSubmit}
             />
           </div>
         </div>
