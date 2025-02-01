@@ -4,6 +4,7 @@ export type ChatMessage = {
   playerId: string;
   message: string;
   id?: string;
+  timestamp?: string;
 };
 
 export type SessionInfo = {
@@ -191,3 +192,4 @@ export class WebSocketService {
 }
 
 export const wsService = new WebSocketService();
+
