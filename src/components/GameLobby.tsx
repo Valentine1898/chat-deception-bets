@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Play, Plus, Trophy, DollarSign, Loader2 } from "lucide-react";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { formatEther, parseEther } from "ethers";
+import { v4 as uuidv4 } from 'uuid';
 
 // Mock data - in a real app this would come from a database
 const mockGames = [
@@ -27,6 +28,7 @@ const mockGames = [
 ];
 
 const REQUIRED_BET = "0.1"; // ETH
+const ACTIVE_GAME_SESSION_KEY = "activeGameSession";
 
 const GameLobby = () => {
   const navigate = useNavigate();
@@ -34,6 +36,14 @@ const GameLobby = () => {
   const [games] = useState(mockGames);
   const [isPlacingBet, setIsPlacingBet] = useState(false);
   const { wallets } = useWallets();
+  const [activeGameSession, setActiveGameSession] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedSession = localStorage.getItem(ACTIVE_GAME_SESSION_KEY);
+    if (storedSession) {
+      setActiveGameSession(storedSession);
+    }
+  }, []);
 
   const completedGames = games.filter(game => game.status === "completed");
   const totalWinnings = completedGames.reduce((total, game) => total + (game.winAmount || 0), 0);
@@ -58,14 +68,16 @@ const GameLobby = () => {
       // const contract = new ethers.Contract(address, abi, signer);
       // await contract.createGame({ value: parseEther(REQUIRED_BET) });
       
-      const gameId = `game_${Math.random().toString(36).substr(2, 9)}`;
+      const sessionId = uuidv4();
+      localStorage.setItem(ACTIVE_GAME_SESSION_KEY, sessionId);
+      setActiveGameSession(sessionId);
       
       toast({
         title: "Bet placed successfully!",
         description: `Your bet of ${REQUIRED_BET} ETH has been placed.`,
       });
       
-      navigate(`/game/${gameId}`);
+      navigate(`/game/${sessionId}`);
     } catch (error) {
       console.error("Error creating game:", error);
       toast({
@@ -78,12 +90,11 @@ const GameLobby = () => {
     }
   };
 
-  const joinGame = (gameId: string) => {
-    navigate(`/game/${gameId}`);
+  const joinGame = (sessionId: string) => {
+    localStorage.setItem(ACTIVE_GAME_SESSION_KEY, sessionId);
+    setActiveGameSession(sessionId);
+    navigate(`/game/${sessionId}`);
   };
-
-  // Simulated active game - in real app this would come from backend
-  const activeGame = null; // Set to null to test the "no active game" scenario
 
   return (
     <div className="container max-w-4xl mx-auto p-6 mt-24">
@@ -96,22 +107,25 @@ const GameLobby = () => {
         <h1 className="text-3xl font-bold text-foreground mb-2">Turing Arena</h1>
       </div>
 
-      {activeGame ? (
+      {activeGameSession ? (
         <Card className="bg-accent/10 backdrop-blur supports-[backdrop-filter]:bg-accent/5 border-accent mb-8 hover:bg-accent/20 transition-colors cursor-pointer"
-             onClick={() => joinGame(activeGame.id)}>
+             onClick={() => joinGame(activeGameSession)}>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-3xl font-bold text-accent">Active Game</CardTitle>
             <Button onClick={(e) => {
               e.stopPropagation();
-              joinGame(activeGame.id);
+              joinGame(activeGameSession);
             }} className="bg-accent hover:bg-accent/90">
               <Play className="mr-2 h-5 w-5" />
               Continue Game
             </Button>
           </CardHeader>
           <CardContent>
-            <p className="text-xl text-muted-foreground mb-2">Game ID: <span className="font-mono">{activeGame.id}</span></p>
-            <p className="text-lg text-muted-foreground">Started: {activeGame.createdAt}</p>
+            <p className="text-xl text-muted-foreground mb-2">Session ID: <span className="font-mono">{activeGameSession}</span></p>
+            <p className="text-lg text-muted-foreground">Share this link to invite players:</p>
+            <code className="block mt-2 p-2 bg-muted rounded text-sm">
+              {`${window.location.origin}/game/${activeGameSession}`}
+            </code>
           </CardContent>
         </Card>
       ) : (
