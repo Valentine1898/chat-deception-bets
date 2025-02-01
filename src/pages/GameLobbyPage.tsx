@@ -165,7 +165,10 @@ const GameLobbyPage = () => {
   if (isGameStarted) {
     return (
       <div className="container mx-auto p-6 pt-24 relative">
-        <GameHeader />
+        <GameHeader 
+          topicRevealCountdown={topicRevealCountdown}
+          chatCountdown={chatCountdown}
+        />
         <div className="flex gap-6 relative mt-8">
           <div className="w-1/3">
             <PlayersList 
@@ -189,7 +192,10 @@ const GameLobbyPage = () => {
 
   return (
     <div className="container mx-auto p-6 pt-24 relative">
-      <GameHeader />
+      <GameHeader 
+        topicRevealCountdown={topicRevealCountdown}
+        chatCountdown={chatCountdown}
+      />
       <div className="flex gap-6 relative mt-8">
         <div className="w-1/3">
           <PlayersList 
