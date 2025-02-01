@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Bot } from "lucide-react";
+import { User, Bot, CircleUser } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type Player = {
@@ -35,7 +35,6 @@ const PlayersList = ({ players, currentPlayerAddress, onGameStart, isInGame = fa
         });
       }
 
-      // Start countdown - changed from 10 to 3 seconds
       setIsCountingDown(true);
       setCountdown(3);
     }
@@ -61,7 +60,6 @@ const PlayersList = ({ players, currentPlayerAddress, onGameStart, isInGame = fa
 
   const renderPlayerInfo = (player: Player) => {
     if (isInGame) {
-      // In game: show aliases for all players
       return (
         <span className="font-medium">
           {player.alias}
@@ -69,7 +67,6 @@ const PlayersList = ({ players, currentPlayerAddress, onGameStart, isInGame = fa
         </span>
       );
     } else {
-      // In lobby: show wallet addresses for humans and "AI Agent" for bots
       return (
         <span className="font-medium">
           {player.type === 'human' ? (
@@ -110,10 +107,14 @@ const PlayersList = ({ players, currentPlayerAddress, onGameStart, isInGame = fa
               className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
             >
               <div className="flex items-center gap-3">
-                {player.type === 'human' ? (
-                  <User className="h-5 w-5 text-accent" />
+                {isInGame ? (
+                  <CircleUser className="h-5 w-5 text-accent" />
                 ) : (
-                  <Bot className="h-5 w-5 text-accent" />
+                  player.type === 'human' ? (
+                    <User className="h-5 w-5 text-accent" />
+                  ) : (
+                    <Bot className="h-5 w-5 text-accent" />
+                  )
                 )}
                 {renderPlayerInfo(player)}
               </div>
