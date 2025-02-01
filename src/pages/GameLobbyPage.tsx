@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
+import GameVoting from "@/components/GameVoting";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
 import { generateAlias, shuffleArray } from "@/utils/playerUtils";
 import { useEffect, useState } from "react";
@@ -41,9 +42,12 @@ const GameLobbyPage = () => {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [topicRevealCountdown, setTopicRevealCountdown] = useState<number | null>(null);
   const [chatCountdown, setChatCountdown] = useState<number | null>(null);
+  const [votingCountdown, setVotingCountdown] = useState<number | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<typeof GAME_TOPICS[0] | null>(null);
   const [isChatVisible, setIsChatVisible] = useState(false);
+  const [isVotingVisible, setIsVotingVisible] = useState(false);
   const [aiPlayerIndex, setAiPlayerIndex] = useState(0);
+  const [votes, setVotes] = useState<Record<string, boolean>>({});
 
   const gameUrl = `${window.location.origin}/game/${gameId}`;
 
@@ -117,9 +121,12 @@ const GameLobbyPage = () => {
         setChatCountdown(chatCountdown - 1);
       }, 1000);
     } else if (chatCountdown === 0) {
+      setIsChatVisible(false);
+      setIsVotingVisible(true);
+      setVotingCountdown(GAME_TIMINGS.VOTING);
       toast({
-        title: "Time's up!",
-        description: "The discussion has ended.",
+        title: "Discussion ended!",
+        description: "Time to vote on who you think is AI.",
       });
     }
 
@@ -128,24 +135,57 @@ const GameLobbyPage = () => {
     };
   }, [chatCountdown, toast]);
 
-  const simulatePlayerJoin = () => {
-    const mockPlayer = {
-      id: 'player2',
-      type: 'human' as const,
-      alias: generateAlias(),
-      address: '0x7890...1234',
-      hasJoined: true
+  // Voting countdown
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
+    if (votingCountdown !== null && votingCountdown > 0) {
+      timer = setTimeout(() => {
+        setVotingCountdown(votingCountdown - 1);
+      }, 1000);
+    } else if (votingCountdown === 0) {
+      toast({
+        title: "Voting ended!",
+        description: "Results will be revealed soon.",
+      });
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
     };
+  }, [votingCountdown, toast]);
 
-    setPlayers(current => {
-      const updatedPlayers = [...current, mockPlayer];
-      return updatedPlayers;
-    });
+  const handleVoteChange = (playerId: string, isAI: boolean) => {
+    setVotes(prev => ({
+      ...prev,
+      [playerId]: isAI
+    }));
+  };
 
-    toast({
-      title: "Player joined!",
-      description: "Starting countdown...",
-    });
+  const getCurrentStage = () => {
+    if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
+      return "topic_review" as const;
+    }
+    if (chatCountdown !== null && chatCountdown > 0) {
+      return "chat" as const;
+    }
+    if (votingCountdown !== null && votingCountdown > 0) {
+      return "voting" as const;
+    }
+    return "waiting" as const;
+  };
+
+  const getCurrentCountdown = () => {
+    if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
+      return topicRevealCountdown;
+    }
+    if (chatCountdown !== null && chatCountdown > 0) {
+      return chatCountdown;
+    }
+    if (votingCountdown !== null && votingCountdown > 0) {
+      return votingCountdown;
+    }
+    return null;
   };
 
   const handleGameStart = () => {
@@ -169,6 +209,8 @@ const GameLobbyPage = () => {
         <GameHeader 
           topicRevealCountdown={topicRevealCountdown}
           chatCountdown={chatCountdown}
+          stage={getCurrentStage()}
+          countdown={getCurrentCountdown()}
         />
         <div className="flex gap-6 relative mt-8">
           <div className="w-1/3">
@@ -179,12 +221,20 @@ const GameLobbyPage = () => {
             />
           </div>
           <div className="w-2/3">
-            <GameTopic 
-              topic={selectedTopic}
-              topicRevealCountdown={topicRevealCountdown}
-              chatCountdown={chatCountdown}
-              isChatVisible={isChatVisible}
-            />
+            {isVotingVisible ? (
+              <GameVoting 
+                players={players}
+                currentPlayerAddress={user?.wallet?.address}
+                onVoteChange={handleVoteChange}
+              />
+            ) : (
+              <GameTopic 
+                topic={selectedTopic}
+                topicRevealCountdown={topicRevealCountdown}
+                chatCountdown={chatCountdown}
+                isChatVisible={isChatVisible}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -1,33 +1,14 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import GameStageTimer from "./GameStageTimer";
+import { GameStage } from "@/config/gameConfig";
 
 type GameHeaderProps = {
-  topicRevealCountdown: number | null;
-  chatCountdown: number | null;
+  stage: GameStage;
+  countdown: number | null;
 };
 
-const GameHeader = ({ topicRevealCountdown, chatCountdown }: GameHeaderProps) => {
-  const getStage = () => {
-    if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-      return "topic_review" as const;
-    }
-    if (chatCountdown !== null && chatCountdown > 0) {
-      return "chat" as const;
-    }
-    return "waiting" as const;
-  };
-
-  const getCurrentCountdown = () => {
-    if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-      return topicRevealCountdown;
-    }
-    if (chatCountdown !== null && chatCountdown > 0) {
-      return chatCountdown;
-    }
-    return null;
-  };
-
+const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-muted p-4">
       <div className="container mx-auto flex items-center justify-between">
@@ -49,8 +30,8 @@ const GameHeader = ({ topicRevealCountdown, chatCountdown }: GameHeaderProps) =>
         </div>
 
         <GameStageTimer 
-          stage={getStage()}
-          countdown={getCurrentCountdown()}
+          stage={stage}
+          countdown={countdown}
         />
       </div>
     </div>

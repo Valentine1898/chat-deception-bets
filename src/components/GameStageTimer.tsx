@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { GameStage } from "@/config/gameConfig";
 
 type GameStageTimerProps = {
-  stage: "topic_review" | "chat" | "waiting";
+  stage: GameStage;
   countdown: number | null;
 };
 
@@ -24,6 +25,11 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimerProps) => {
         return {
           title: "Discussion",
           action: "Participate in the discussion"
+        };
+      case "voting":
+        return {
+          title: "Voting",
+          action: "Mark who you think is AI"
         };
       case "waiting":
         return {
