@@ -204,7 +204,7 @@ const GameLobbyPage = () => {
     const stage = getCurrentStage();
     
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-stone-800">
         <div className="fixed top-0 left-0 right-0 z-50">
           <GameHeader 
             stage={stage}
@@ -212,7 +212,7 @@ const GameLobbyPage = () => {
           />
         </div>
         
-        <div className="container mx-auto p-6 mt-[140px] z-0">
+        <div className="container mx-auto p-6 mt-[200px]">
           <div className="flex gap-6">
             <div className="w-1/3">
               <PlayersList 
@@ -248,14 +248,14 @@ const GameLobbyPage = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-stone-800">
       <div className="fixed top-0 left-0 right-0 z-50">
         <GameHeader 
           stage="waiting"
           countdown={null}
         />
       </div>
-      <div className="container mx-auto p-6 mt-[140px] z-0">
+      <div className="container mx-auto p-6 mt-[200px]">
         <div className="flex gap-6">
           <div className="w-1/3">
             <PlayersList 
