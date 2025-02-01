@@ -88,65 +88,67 @@ const PlayersList = ({
   const showVoting = stage === 'discussion' || stage === 'human_detection';
 
   return (
-    <div className="w-[360px] bg-stone-900 rounded-2xl p-6 flex flex-col gap-5 relative z-10">
-      <div className="flex flex-col gap-4">
-        <h2 className="text-[32px] font-normal text-white font-['Inria_Serif']">
-          Classify Players
-        </h2>
+    <div className="box-border w-[360px] flex flex-col items-start p-3 gap-5 bg-[#1C1917] border border-[#44403B]/50 rounded-2xl">
+      <div className="w-full flex flex-col items-start gap-2">
+        <div className="flex flex-row justify-center items-center p-2 gap-1">
+          <h2 className="font-['Inria_Serif'] font-normal text-2xl leading-7 text-white">
+            Classify Players
+          </h2>
+        </div>
         
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1 w-full">
           {players.map((player, index) => (
             <div
               key={player.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-stone-800/50 hover:bg-stone-800/80 transition-colors"
+              className="flex items-center justify-between p-2 rounded-lg bg-[#1C1917]"
             >
-              <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  index === 0 ? 'bg-[#E17100]' : 
-                  index === 1 ? 'bg-[#7C3AED]' :
-                  index === 2 ? 'bg-[#00C951]' :
-                  index === 3 ? 'bg-[#3A77F7]' :
-                  index === 4 ? 'bg-[#FD9A00]' :
-                  'bg-[#E11D48]'
+              <div className="flex items-center gap-2">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center bg-[#0C0A09] p-0.5 ${
+                  index === 0 ? 'bg-[#BF4E0C]' : 
+                  index === 1 ? 'bg-[#5A0CBF]' :
+                  index === 2 ? 'bg-[#36BF0C]' :
+                  index === 3 ? 'bg-[#0C9EBF]' :
+                  index === 4 ? 'bg-[#BF8F0C]' :
+                  'bg-[#BF0C66]'
                 }`}>
                   <PlayerAvatar 
                     type={player.type} 
                     variant={(index % 6 + 1) as 1 | 2 | 3 | 4 | 5 | 6}
-                    className="w-6 h-6"
+                    className="w-5 h-5"
                   />
                 </div>
-                <span className="text-[16px] font-medium text-white">
+                <span className="text-base font-medium text-white font-['Instrument_Sans']">
                   {player.alias}
                 </span>
               </div>
               
               {player.address === currentPlayerAddress ? (
-                <span className="px-3 py-1 text-sm bg-[#00C951] text-[#1C1917] rounded-full font-medium">
+                <span className="px-1.5 py-0.5 text-sm bg-[#00C951] text-[#1C1917] rounded-xl font-medium font-['Instrument_Sans']">
                   You
                 </span>
               ) : showVoting && (
-                <div className="flex gap-2">
+                <div className="flex gap-0.5 p-0.5 bg-[#1C1917] rounded-2xl">
                   <button
                     onClick={() => handleVoteChange(player.id, 'human')}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors ${
+                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded-xl transition-colors ${
                       votes[player.id] === 'human' 
-                        ? 'bg-white text-stone-900' 
-                        : 'bg-stone-900 text-white hover:bg-stone-800'
+                        ? 'bg-[#F5F5F4] text-[#1C1917]' 
+                        : 'text-[#D6D3D1] hover:bg-[#44403B]'
                     }`}
                   >
-                    <User className="h-4 w-4" />
-                    <span className="text-sm font-medium">Human</span>
+                    <User className="h-3 w-3" />
+                    <span className="text-sm font-medium font-['Instrument_Sans']">Human</span>
                   </button>
                   <button
                     onClick={() => handleVoteChange(player.id, 'ai')}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors ${
+                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded-xl transition-colors ${
                       votes[player.id] === 'ai' 
-                        ? 'bg-white text-stone-900' 
-                        : 'bg-stone-900 text-white hover:bg-stone-800'
+                        ? 'bg-[#44403B] text-[#E7E5E4]' 
+                        : 'text-[#D6D3D1] hover:bg-[#44403B]'
                     }`}
                   >
-                    <Bot className="h-4 w-4" />
-                    <span className="text-sm font-medium">AI</span>
+                    <Bot className="h-3 w-3" />
+                    <span className="text-sm font-medium font-['Instrument_Sans']">AI</span>
                   </button>
                 </div>
               )}
@@ -155,16 +157,16 @@ const PlayersList = ({
         </div>
 
         {showVoting && (
-          <div className="mt-4 space-y-4">
-            <div className="flex items-start gap-3 text-stone-400">
-              <Info className="h-5 w-5 mt-0.5 shrink-0" />
-              <p className="text-sm">
+          <div className="mt-4 space-y-4 w-full">
+            <div className="flex items-start gap-3 p-1">
+              <Info className="h-5 w-5 text-[#FD9A00]" />
+              <p className="text-xs font-medium text-[#79716B] font-['Instrument_Sans'] leading-[140%]">
                 You will make your final choice in <span className="text-white">Human detection</span> stage
               </p>
             </div>
             <Button
               onClick={handleConfirm}
-              className="w-full h-12 text-lg font-medium bg-stone-800 hover:bg-stone-700 text-white"
+              className="w-full h-12 bg-[#44403B] hover:bg-[#44403B]/90 text-[#1C1917] rounded-lg font-['Inria_Serif'] font-bold text-xl italic"
             >
               Confirm
             </Button>
