@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import GameChat from "./GameChat";
 
 type GameTopicProps = {
   topic: {
