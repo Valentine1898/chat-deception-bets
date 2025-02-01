@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Bot, CircleUser, CheckCircle2, XCircle } from "lucide-react";
+import { User, Bot, CircleUser } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type Player = {
@@ -66,88 +65,60 @@ const PlayersList = ({
     };
   }, [countdown, onGameStart]);
 
-  const renderPlayerInfo = (player: Player) => {
-    if (showResults) {
-      return (
-        <div className="flex items-center justify-between w-full">
-          <span className="font-medium">
-            {player.alias}
-            {player.address === currentPlayerAddress && " (You)"}
-          </span>
-          {player.votedAsHuman && (
-            <div className="flex items-center gap-2 text-green-600">
-              <User className="h-4 w-4" />
-              <span className="text-sm">Voted Human</span>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    if (isInGame) {
-      return (
-        <span className="font-medium">
-          {player.alias}
-          {player.address === currentPlayerAddress && " (You)"}
-        </span>
-      );
-    }
-
-    return (
-      <span className="font-medium">
-        {player.type === 'human' ? (
-          player.address && player.hasJoined ? (
-            <>
-              {player.address.slice(0, 6)}...{player.address.slice(-4)}
-              {player.address === currentPlayerAddress && " (You)"}
-            </>
-          ) : (
-            "Waiting for player..."
-          )
-        ) : (
-          "AI Agent"
-        )}
-      </span>
-    );
-  };
-
   return (
-    <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <User className="h-5 w-5 text-accent" />
-          {showResults ? "Voting Results" : `Players (${players.length}/6)`}
-          {countdown !== null && countdown > 0 && (
-            <span className="ml-auto text-sm font-normal text-muted-foreground">
-              Game starts in {countdown}s
-            </span>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
+    <div className="w-[360px] h-[360px] bg-[#1C1917] border border-[#44403B]/50 rounded-2xl p-3 flex flex-col gap-5">
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-center items-center h-11 gap-1">
+          <h2 className="text-2xl font-normal text-white font-['Inria_Serif']">
+            Classify Players
+          </h2>
+        </div>
+        
+        <div className="flex flex-col gap-3">
           {players.map((player) => (
             <div
               key={player.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+              className="flex items-center justify-between p-2 rounded-lg bg-[#1C1917]"
             >
-              <div className="flex items-center gap-3 w-full">
-                {isInGame ? (
-                  <CircleUser className="h-5 w-5 text-accent" />
-                ) : (
-                  player.type === 'human' ? (
-                    <User className="h-5 w-5 text-accent" />
+              <div className="flex items-center gap-2 mx-auto">
+                <div className="w-6 h-6 bg-[#0C0A09] rounded-full flex items-center justify-center">
+                  {isInGame ? (
+                    <CircleUser className="h-5 w-5 text-accent" />
                   ) : (
-                    <Bot className="h-5 w-5 text-accent" />
-                  )
-                )}
-                {renderPlayerInfo(player)}
+                    player.type === 'human' ? (
+                      <User className="h-5 w-5 text-accent" />
+                    ) : (
+                      <Bot className="h-5 w-5 text-accent" />
+                    )
+                  )}
+                </div>
+                <span className="text-base font-medium text-white">
+                  {player.alias}
+                  {player.address === currentPlayerAddress && (
+                    <span className="ml-2 px-1.5 py-0.5 text-sm bg-[#00C951] text-[#1C1917] rounded-xl">
+                      You
+                    </span>
+                  )}
+                </span>
               </div>
+              
+              {!isInGame && !showResults && (
+                <div className="flex gap-1 bg-[#1C1917] rounded-2xl p-0.5">
+                  <button className="px-1.5 py-0.5 rounded-xl bg-[#F5F5F4] text-sm text-[#1C1917] flex items-center gap-1">
+                    <User className="h-3 w-3" />
+                    Human
+                  </button>
+                  <button className="px-1.5 py-0.5 rounded-xl bg-[#44403B] text-sm text-[#E7E5E4] flex items-center gap-1">
+                    <Bot className="h-3 w-3" />
+                    AI
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
