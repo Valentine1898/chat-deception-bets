@@ -51,6 +51,7 @@ export default function GameChat() {
           description: "Attempting to reconnect...",
           variant: "destructive",
         });
+        // Removed the wsService.disconnect() call to preserve messages
       });
 
       wsService.onReconnect(handleReconnect);
@@ -58,7 +59,6 @@ export default function GameChat() {
       return () => {
         console.log('🔄 Cleaning up chat connection');
         unsubscribe();
-        wsService.disconnect();
       };
     }
   }, [gameId, toast]);
