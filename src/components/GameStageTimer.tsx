@@ -64,7 +64,7 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
     <div className="w-full bg-[#1C1917] border-b border-[#44403B]/50">
       <div className="container mx-auto">
         <Tabs defaultValue={getStageIndex()} value={getStageIndex()} className="w-full">
-          <TabsList className="flex flex-row items-start p-3 gap-5 h-[62px] bg-[#1C1917] border border-[#44403B]/50 rounded-2xl">
+          <TabsList className="flex flex-row items-start p-3 gap-5 h-[62px] bg-stone-900">
             {stages.map((s) => (
               <TabsTrigger
                 key={s.value}
