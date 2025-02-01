@@ -213,35 +213,33 @@ const GameLobbyPage = () => {
         </div>
         
         <div className="container mx-auto p-6 mt-[200px]">
-          <div className="flex gap-6">
-            <div className="w-1/3">
-              <PlayersList 
-                players={players}
-                currentPlayerAddress={user?.wallet?.address}
-                isInGame={true}
-                showResults={stage === 'results'}
-              />
-            </div>
-            <div className="w-2/3">
+          <div className="flex gap-6 justify-between">
+            <div className="flex-1">
               <GameTopic 
                 topic={selectedTopic}
                 isChatVisible={stage === 'chat' || stage === 'voting' || stage === 'awaiting_votes'}
               />
               {isChatVisible && <GameChat />}
+              
+              {stage === 'results' && (
+                <div className="flex flex-col items-center justify-center mt-8">
+                  <h2 className="text-2xl font-bold mb-4">Game Results</h2>
+                  <Button 
+                    onClick={handleClaimPrize}
+                    className="bg-accent hover:bg-accent/90"
+                  >
+                    Claim Prize
+                  </Button>
+                </div>
+              )}
             </div>
+            <PlayersList 
+              players={players}
+              currentPlayerAddress={user?.wallet?.address}
+              isInGame={true}
+              showResults={stage === 'results'}
+            />
           </div>
-
-          {stage === 'results' && (
-            <div className="flex flex-col items-center justify-center mt-8">
-              <h2 className="text-2xl font-bold mb-4">Game Results</h2>
-              <Button 
-                onClick={handleClaimPrize}
-                className="bg-accent hover:bg-accent/90"
-              >
-                Claim Prize
-              </Button>
-            </div>
-          )}
         </div>
       </div>
     );
@@ -256,16 +254,8 @@ const GameLobbyPage = () => {
         />
       </div>
       <div className="container mx-auto p-6 mt-[200px]">
-        <div className="flex gap-6">
-          <div className="w-1/3">
-            <PlayersList 
-              players={players}
-              currentPlayerAddress={user?.wallet?.address}
-              onGameStart={handleGameStart}
-              isInGame={isGameStarted}
-            />
-          </div>
-          <div className="w-2/3">
+        <div className="flex gap-6 justify-between">
+          <div className="flex-1">
             <GameLobbyInfo 
               authenticated={authenticated}
               hasPlacedBet={hasPlacedBet}
@@ -281,6 +271,12 @@ const GameLobbyPage = () => {
               }}
             />
           </div>
+          <PlayersList 
+            players={players}
+            currentPlayerAddress={user?.wallet?.address}
+            onGameStart={handleGameStart}
+            isInGame={isGameStarted}
+          />
         </div>
       </div>
     </div>
