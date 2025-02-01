@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { GameStage } from "@/config/gameConfig";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, Timer } from "lucide-react";
+import { Timer } from "lucide-react";
 
 type GameStageTimer = {
   stage: GameStage;
@@ -20,18 +20,21 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
     {
       value: "topic_review",
       label: "Topic discovery",
+      number: 1,
       status: stage === "topic_review" ? "active" : 
               (["chat", "voting", "results"].includes(stage) ? "completed" : "pending")
     },
     {
       value: "chat",
       label: "Discussion on arena",
+      number: 2,
       status: stage === "chat" ? "active" : 
               (["voting", "results"].includes(stage) ? "completed" : "pending")
     },
     {
       value: "voting",
       label: "Human detection",
+      number: 3,
       status: stage === "voting" ? "active" : 
               (stage === "results" ? "completed" : "pending")
     }
@@ -76,25 +79,22 @@ const GameStageTimer = ({ stage, countdown }: GameStageTimer) => {
               >
                 <div className="flex items-center gap-2 mx-auto">
                   <div className={cn(
-                    "flex items-center justify-center w-[22px] h-[22px] rounded-full font-['Chivo_Mono'] text-sm",
+                    "flex items-center justify-center w-[22px] h-[22px] rounded-xl font-['Chivo_Mono'] text-sm",
                     s.status === "completed" && "bg-[#0C0A09] text-[#57534D]",
                     s.status === "active" && "bg-[#E17100] text-[#0C0A09]",
                     s.status === "pending" && "bg-[#0C0A09] text-[#57534D]"
                   )}>
-                    {s.status === "completed" ? (
-                      <Check className="h-3 w-3" />
-                    ) : (
-                      (index + 1)
-                    )}
+                    {s.number}
                   </div>
-                  <span>{s.label}</span>
+                  <span className="text-base">{s.label}</span>
                   {shouldShowCountdown(s.status) && (
                     <div className={cn(
-                      "flex items-center gap-1 px-1.5 py-0.5 h-[22px] bg-black rounded-xl font-['Chivo_Mono'] text-sm",
+                      "flex items-center gap-1 px-1.5 py-0.5 h-[22px] bg-black rounded-xl",
+                      "font-['Chivo_Mono'] text-sm",
                       isBlinking && s.status === "active" ? "text-[#FD9A00]" : "text-[#D6D3D1]"
                     )}>
                       <Timer className="h-3 w-3" />
-                      {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
+                      <span>{Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}</span>
                     </div>
                   )}
                 </div>
