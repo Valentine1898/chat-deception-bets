@@ -33,11 +33,18 @@ const GameLobbyPage = () => {
   };
 
   return (
-    <div className="container max-w-2xl mx-auto p-6 min-h-screen flex items-center justify-center">
+    <div className="container max-w-2xl mx-auto p-6 min-h-screen flex flex-col items-center justify-center">
       <WalletWidget />
-      <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      
+      <img 
+        src="/lovable-uploads/a80f0ac3-8d80-48b2-9d4f-d311f160489f.png" 
+        alt="Alan Turing" 
+        className="logo mb-8 w-24 h-24 object-cover"
+      />
+      
+      <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
         <CardHeader className="text-center space-y-2">
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold text-foreground">
             Game Lobby
           </CardTitle>
           <p className="text-xl text-muted-foreground animate-pulse">
@@ -45,9 +52,9 @@ const GameLobbyPage = () => {
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="rounded-lg bg-muted/50 p-4 text-center">
+          <div className="rounded-lg bg-muted/50 p-4 text-center border border-muted">
             <p className="text-sm font-medium text-muted-foreground mb-2">Game ID</p>
-            <p className="text-lg font-mono">{gameId}</p>
+            <p className="text-lg font-mono text-accent">{gameId}</p>
           </div>
 
           <div className="space-y-4">
@@ -58,7 +65,7 @@ const GameLobbyPage = () => {
               <Button
                 onClick={copyInviteLink}
                 variant="outline"
-                className="flex-1 max-w-[200px]"
+                className="flex-1 max-w-[200px] border-muted hover:bg-muted/50"
               >
                 <Copy className="mr-2 h-4 w-4" />
                 Copy Link
@@ -66,7 +73,7 @@ const GameLobbyPage = () => {
               <Button
                 onClick={shareOnTwitter}
                 variant="outline"
-                className="flex-1 max-w-[200px]"
+                className="flex-1 max-w-[200px] border-muted hover:bg-muted/50"
               >
                 <Twitter className="mr-2 h-4 w-4" />
                 Share on Twitter

@@ -10,12 +10,12 @@
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
+  border-radius: 50%;
+  filter: grayscale(100%) contrast(120%);
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: grayscale(0%) drop-shadow(0 0 2em #646cffaa);
 }
 
 @keyframes logo-spin {
