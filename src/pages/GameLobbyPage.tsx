@@ -141,6 +141,7 @@ const GameLobbyPage = () => {
     } else if (topicRevealCountdown === 0) {
       setIsChatVisible(true);
       setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
+      setTopicRevealCountdown(null);
     }
 
     return () => {
@@ -160,6 +161,7 @@ const GameLobbyPage = () => {
       setIsChatVisible(false);
       setIsVotingVisible(true);
       setVotingCountdown(GAME_TIMINGS.VOTING);
+      setChatCountdown(null);
       toast({
         title: "Discussion ended!",
         description: "Time to vote on who you think is AI.",
@@ -180,6 +182,7 @@ const GameLobbyPage = () => {
         setVotingCountdown(votingCountdown - 1);
       }, 1000);
     } else if (votingCountdown === 0) {
+      setVotingCountdown(null);
       toast({
         title: "Voting ended!",
         description: "Results will be revealed soon.",
