@@ -12,8 +12,35 @@ type Message = {
   timestamp: Date;
 };
 
+const defaultMessages: Message[] = [
+  {
+    id: "1",
+    content: "I think AI has both positive and negative impacts on society.",
+    sender: "Player 1",
+    timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+  },
+  {
+    id: "2",
+    content: "True, but the benefits of AI in healthcare and education are undeniable.",
+    sender: "Player 2",
+    timestamp: new Date(Date.now() - 1000 * 60 * 4), // 4 minutes ago
+  },
+  {
+    id: "3",
+    content: "We need to focus on responsible AI development and ethical guidelines.",
+    sender: "Player 3",
+    timestamp: new Date(Date.now() - 1000 * 60 * 3), // 3 minutes ago
+  },
+  {
+    id: "4",
+    content: "What about AI's impact on job markets? That's a major concern.",
+    sender: "Player 4",
+    timestamp: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
+  }
+];
+
 export default function GameChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [input, setInput] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
