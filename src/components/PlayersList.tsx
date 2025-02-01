@@ -79,8 +79,17 @@ const PlayersList = ({
     }));
   };
 
+  const canConfirm = () => {
+    if (stage !== 'human_detection') return false;
+    
+    // Check if all players (except current user) have been voted on
+    return players
+      .filter(player => player.address !== currentPlayerAddress)
+      .every(player => votes[player.id]);
+  };
+
   const handleConfirm = () => {
-    if (onVoteSubmit) {
+    if (onVoteSubmit && canConfirm()) {
       onVoteSubmit(votes);
     }
   };
@@ -157,7 +166,8 @@ const PlayersList = ({
             </div>
             <Button
               onClick={handleConfirm}
-              className="w-full h-12 bg-[#44403B] hover:bg-[#44403B]/90 text-[#1C1917] rounded-lg font-['Inria_Serif'] font-bold text-xl italic"
+              disabled={!canConfirm()}
+              className="w-full h-12 bg-[#44403B] hover:bg-[#44403B]/90 text-[#1C1917] rounded-lg font-['Inria_Serif'] font-bold text-xl italic disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Confirm
             </Button>
