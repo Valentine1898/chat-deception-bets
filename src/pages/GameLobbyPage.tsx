@@ -18,12 +18,32 @@ const AI_PLAYERS = [
   { id: 'ai4', type: 'ai' as const, alias: generateAlias() },
 ];
 
+// Mock topics - in a real app these would come from an API
+const GAME_TOPICS = [
+  {
+    title: "The Future of Artificial Intelligence",
+    description: "Discuss the potential impact of AI on society, ethics, and human development in the next 50 years."
+  },
+  {
+    title: "Climate Change Solutions",
+    description: "Explore innovative approaches to combat global warming and create sustainable futures."
+  },
+  {
+    title: "Space Colonization",
+    description: "Debate the challenges and opportunities of establishing human settlements on Mars and beyond."
+  }
+];
+
 const GameLobbyPage = () => {
   const { gameId } = useParams();
   const { toast } = useToast();
   const { authenticated, user } = usePrivy();
   const [players, setPlayers] = useState<Array<any>>([]);
   const [isGameStarted, setIsGameStarted] = useState(false);
+  const [topicRevealCountdown, setTopicRevealCountdown] = useState<number | null>(null);
+  const [chatCountdown, setChatCountdown] = useState<number | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<typeof GAME_TOPICS[0] | null>(null);
+  const [isChatVisible, setIsChatVisible] = useState(false);
 
   const gameUrl = `${window.location.origin}/game/${gameId}`;
 
@@ -53,6 +73,44 @@ const GameLobbyPage = () => {
     }
   }, [authenticated, user?.wallet?.address]);
 
+  // Topic reveal countdown
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
+    if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
+      timer = setTimeout(() => {
+        setTopicRevealCountdown(topicRevealCountdown - 1);
+      }, 1000);
+    } else if (topicRevealCountdown === 0) {
+      setIsChatVisible(true);
+      setChatCountdown(180); // 3 minutes in seconds
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [topicRevealCountdown]);
+
+  // Chat countdown
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
+    if (chatCountdown !== null && chatCountdown > 0) {
+      timer = setTimeout(() => {
+        setChatCountdown(chatCountdown - 1);
+      }, 1000);
+    } else if (chatCountdown === 0) {
+      toast({
+        title: "Time's up!",
+        description: "The discussion has ended.",
+      });
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [chatCountdown, toast]);
+
   const simulatePlayerJoin = () => {
     const mockPlayer = {
       id: 'player2',
@@ -77,7 +135,9 @@ const GameLobbyPage = () => {
     const allPlayers = [...players, ...AI_PLAYERS];
     const shuffledPlayers = shuffleArray(allPlayers);
     setPlayers(shuffledPlayers);
+    setSelectedTopic(GAME_TOPICS[Math.floor(Math.random() * GAME_TOPICS.length)]);
     setIsGameStarted(true);
+    setTopicRevealCountdown(30); // 30 seconds for topic reveal
   };
 
   const placeBet = () => {
@@ -110,13 +170,36 @@ const GameLobbyPage = () => {
             <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold text-foreground">
-                  Game Started!
+                  {selectedTopic?.title}
                 </CardTitle>
+                {topicRevealCountdown !== null && topicRevealCountdown > 0 && (
+                  <p className="text-muted-foreground mt-2">
+                    Time to review the topic: {topicRevealCountdown}s
+                  </p>
+                )}
+                {chatCountdown !== null && chatCountdown > 0 && (
+                  <p className="text-muted-foreground mt-2">
+                    Time remaining: {Math.floor(chatCountdown / 60)}:{(chatCountdown % 60).toString().padStart(2, '0')}
+                  </p>
+                )}
               </CardHeader>
               <CardContent>
-                <p className="text-center text-muted-foreground">
-                  Chat and game interface will be implemented here
-                </p>
+                {selectedTopic && (
+                  <div className="text-center mb-6">
+                    <p className="text-lg text-muted-foreground">
+                      {selectedTopic.description}
+                    </p>
+                  </div>
+                )}
+                {isChatVisible ? (
+                  <div className="text-center text-muted-foreground">
+                    Chat interface will be implemented here
+                  </div>
+                ) : (
+                  <div className="text-center text-muted-foreground animate-pulse">
+                    Chat will be available after the topic review period
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -231,6 +314,3 @@ const GameLobbyPage = () => {
       </div>
     </div>
   );
-};
-
-export default GameLobbyPage;
