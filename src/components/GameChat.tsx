@@ -17,25 +17,25 @@ const defaultMessages: Message[] = [
     id: "1",
     content: "I think AI has both positive and negative impacts on society.",
     sender: "Player 1",
-    timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+    timestamp: new Date(Date.now() - 1000 * 60 * 5),
   },
   {
     id: "2",
     content: "True, but the benefits of AI in healthcare and education are undeniable.",
     sender: "Player 2",
-    timestamp: new Date(Date.now() - 1000 * 60 * 4), // 4 minutes ago
+    timestamp: new Date(Date.now() - 1000 * 60 * 4),
   },
   {
     id: "3",
     content: "We need to focus on responsible AI development and ethical guidelines.",
     sender: "Player 3",
-    timestamp: new Date(Date.now() - 1000 * 60 * 3), // 3 minutes ago
+    timestamp: new Date(Date.now() - 1000 * 60 * 3),
   },
   {
     id: "4",
     content: "What about AI's impact on job markets? That's a major concern.",
     sender: "Player 4",
-    timestamp: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
+    timestamp: new Date(Date.now() - 1000 * 60 * 2),
   }
 ];
 
@@ -66,7 +66,7 @@ export default function GameChat() {
   }, [messages]);
 
   return (
-    <div className="flex h-[600px] flex-col rounded-lg border border-accent/10 bg-secondary/80 backdrop-blur-sm">
+    <div className="flex h-[360px] flex-col justify-between box-border p-2 gap-10 w-[552px] bg-background/50 border border-muted rounded-lg">
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
           {messages.map((message) => (
@@ -93,13 +93,13 @@ export default function GameChat() {
         </div>
       </ScrollArea>
 
-      <form onSubmit={handleSubmit} className="border-t border-accent/10 p-4">
+      <form onSubmit={handleSubmit} className="border-t border-muted/50 p-4">
         <div className="flex gap-2">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            className="min-h-[44px] w-full resize-none bg-secondary px-3 py-2 text-foreground"
+            className="min-h-[44px] w-full resize-none bg-background/50 px-3 py-2 text-foreground"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
