@@ -3,7 +3,7 @@ import { toast } from "sonner";
 export type ChatMessage = {
   playerId: string;
   message: string;
-  id?: string; // Add message ID to help prevent duplicates
+  id?: string;
 };
 
 export type SessionInfo = {
@@ -24,6 +24,8 @@ export class WebSocketService {
   private ws: WebSocket | null = null;
   private messageHandlers: ((message: ChatMessage) => void)[] = [];
   private sessionInfoHandlers: ((info: SessionInfo) => void)[] = [];
+  private disconnectHandlers: (() => void)[] = [];
+  private reconnectHandlers: (() => void)[] = [];
   private processedMessageIds = new Set<string>();
 
   connect(sessionId: string) {
@@ -37,10 +39,8 @@ export class WebSocketService {
         
         switch (data.type) {
           case 'chat':
-            // Generate a unique ID for the message if not provided
             const messageId = data.content.id || `${data.sender}-${Date.now()}`;
             
-            // Check if we've already processed this message
             if (this.processedMessageIds.has(messageId)) {
               console.log('🔄 Skipping duplicate message:', messageId);
               return;
@@ -80,7 +80,13 @@ export class WebSocketService {
 
     this.ws.onclose = () => {
       console.log('🔌 WebSocket connection closed');
-      toast.error("WebSocket connection closed");
+      this.disconnectHandlers.forEach(handler => handler());
+      // Attempt to reconnect after a delay
+      setTimeout(() => {
+        console.log('🔄 Attempting to reconnect...');
+        this.reconnectHandlers.forEach(handler => handler());
+        this.connect(sessionId);
+      }, 3000);
     };
 
     this.ws.onopen = () => {
@@ -112,12 +118,26 @@ export class WebSocketService {
     };
   }
 
+  onDisconnect(handler: () => void) {
+    this.disconnectHandlers.push(handler);
+    return () => {
+      this.disconnectHandlers = this.disconnectHandlers.filter(h => h !== handler);
+    };
+  }
+
+  onReconnect(handler: () => void) {
+    this.reconnectHandlers.push(handler);
+    return () => {
+      this.reconnectHandlers = this.reconnectHandlers.filter(h => h !== handler);
+    };
+  }
+
   disconnect() {
     if (this.ws) {
       console.log('🔌 Disconnecting WebSocket');
       this.ws.close();
       this.ws = null;
-      this.processedMessageIds.clear(); // Clear the processed messages set on disconnect
+      this.processedMessageIds.clear();
     }
   }
 }
