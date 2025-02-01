@@ -43,7 +43,8 @@ export default function GameChat() {
 
         console.log('📩 Received chat message:', message);
         processedMessageIds.current.add(message.id);
-        setMessages(prev => [...prev, {
+        
+        const newMessage: ChatMessage = {
           ...message,
           timestamp: new Date().toLocaleTimeString('en-US', {
             hour12: false,
@@ -51,7 +52,9 @@ export default function GameChat() {
             minute: '2-digit',
             second: '2-digit'
           })
-        }]);
+        };
+        
+        setMessages(prev => [...prev, newMessage]);
       });
 
       const handleSessionInfo = (sessionInfo: any) => {
