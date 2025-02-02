@@ -10,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { ACTIVE_NETWORK } from "@/config/networkConfig";
 
-// ERC20 ABI for balanceOf function
 const ERC20_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
   "function decimals() view returns (uint8)",
@@ -21,9 +20,10 @@ const TURING_TOKEN_ADDRESS = "0x6Ee6e27a965d5566970dCfA347fB75A8C386E2e7";
 type GameHeaderProps = {
   stage: GameStage;
   countdown: number | null;
+  showTimer?: boolean;
 };
 
-const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
+const GameHeader = ({ stage, countdown, showTimer = false }: GameHeaderProps) => {
   const navigate = useNavigate();
   const { logout, user } = usePrivy();
   const { wallets } = useWallets();
@@ -204,7 +204,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
         </div>
       </div>
 
-      <GameStageTimer stage={stage} countdown={countdown} />
+      {showTimer && <GameStageTimer stage={stage} countdown={countdown} />}
     </div>
   );
 };

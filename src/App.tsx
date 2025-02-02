@@ -27,10 +27,17 @@ const AppRoutes = () => {
   const { authenticated } = usePrivy();
   const location = useLocation();
   const showHeader = location.pathname.startsWith('/game/');
+  const showTimer = location.pathname.startsWith('/game/') && location.pathname.length > 6; // Only show timer in active game, not in lobby
   
   return (
     <>
-      {authenticated && showHeader && <GameHeader stage="waiting" countdown={null} />}
+      {authenticated && showHeader && (
+        <GameHeader 
+          stage="waiting" 
+          countdown={null}
+          showTimer={showTimer}
+        />
+      )}
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/game/:gameId" element={<GameLobbyPage />} />
