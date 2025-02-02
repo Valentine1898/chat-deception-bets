@@ -1,6 +1,6 @@
 import {Card, CardContent} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
-import {Check, Info, Copy} from "lucide-react";
+import {Check, Info, Copy, Loader2} from "lucide-react";
 import {useToast} from "@/hooks/use-toast";
 import WalletConnect from "@/components/WalletConnect";
 import { useWallets } from "@privy-io/react-auth";
@@ -32,6 +32,7 @@ const GameLobbyInfo = ({
     const {toast} = useToast();
     const { wallets } = useWallets();
     const userAddress = wallets?.[0]?.address?.toLowerCase();
+    const [isLoading, setIsLoading] = useState(true);
     const [gameData, setGameData] = useState<{
         bet: string;
         creatorAddress: string;
@@ -41,9 +42,8 @@ const GameLobbyInfo = ({
         const fetchGameData = async () => {
             try {
                 if (gameId && wallets?.[0]) {
-                    // Get Ethereum provider using the correct method
+                    setIsLoading(true);
                     const provider = await wallets[0].getEthereumProvider();
-                    // Initialize contract with provider
                     await contractService.init(provider);
                     const data = await contractService.getGameData(parseInt(gameId));
                     if (data) {
@@ -55,6 +55,8 @@ const GameLobbyInfo = ({
                 }
             } catch (err) {
                 console.error("Error fetching game data:", err);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -63,8 +65,6 @@ const GameLobbyInfo = ({
 
     const creatorAddress = gameData?.creatorAddress?.toLowerCase();
     const betAmount = gameData ? parseFloat(gameData.bet) / 1e18 : mockGameData.betAmount;
-    
-    // Determine if the current user is the creator by comparing addresses
     const isActualCreator = userAddress && creatorAddress && userAddress === creatorAddress;
 
     const copyGameUrl = async () => {
@@ -139,6 +139,19 @@ const GameLobbyInfo = ({
                     >
                         Place Bet
                     </Button>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
+                <CardContent className="flex flex-col items-center justify-center p-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                    <h2 className="text-2xl font-bold text-foreground">
+                        Loading game data...
+                    </h2>
                 </CardContent>
             </Card>
         );
