@@ -94,7 +94,7 @@ const GameLobbyPage = () => {
       
       setHasJoined(true);
       // Request topic after successfully joining
-      wsService.requestTopic();
+      handleGameStart()
       
       toast({
         title: "Successfully joined the game!",
@@ -296,7 +296,7 @@ const GameLobbyPage = () => {
               gameId={gameId || ''}
               gameUrl={gameUrl}
               mockGameData={{
-                betAmount: 0.00025
+                betAmount: mockGameData.betAmount
               }}
               onPlaceBet={handleJoinGame}
             />
