@@ -21,9 +21,10 @@ export default function GameChat() {
 
   useEffect(() => {
     if (gameId) {
+      // Load stored messages
       const storedMessages = getStoredMessages(gameId);
       setMessages(storedMessages);
-      storedMessages.forEach(msg => processedMessageIds.current.add(msg.id || ''));
+      storedMessages.forEach(msg => processedMessageIds.current.add(msg.id));
 
       console.log('🎮 Initializing chat for game:', gameId);
 
@@ -73,6 +74,17 @@ export default function GameChat() {
 
       wsService.onSessionInfo(handleSessionInfo);
 
+      wsService.onDisconnect(() => {
+        console.log('📴 Chat disconnected');
+        toast({
+          title: "Chat disconnected",
+          description: "Attempting to reconnect...",
+          variant: "destructive",
+        });
+      });
+
+      wsService.onReconnect(handleReconnect);
+
       return () => {
         console.log('🔄 Cleaning up chat connection');
         unsubscribe();
@@ -102,7 +114,7 @@ export default function GameChat() {
           {messages.map((message, index) => {
             const isCurrentUser = message.playerId === currentPlayerId;
             const avatarVariant = isCurrentUser ? 1 : 
-              ((message.sender?.id || index) % 5 + 2) as 1 | 2 | 3 | 4 | 5 | 6;
+              ((parseInt(message.playerId.replace(/\D/g, '')) % 5) + 2) as 1 | 2 | 3 | 4 | 5 | 6;
 
             return (
               <div

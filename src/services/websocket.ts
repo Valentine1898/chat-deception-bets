@@ -1,23 +1,14 @@
 import { toast } from "sonner";
 
-export type Player = {
-  name: string;
-  id: number;
-};
-
 export type ChatMessage = {
   playerId: string;
   message: string;
   id?: string;
   timestamp?: string;
-  sender?: {
-    name: string;
-    id: number;
-  };
 };
 
 export type SessionInfo = {
-  players: Player[];
+  players: string[];
   you: string;
   session_id: string;
 };
@@ -27,10 +18,7 @@ type MessageType = 'chat' | 'session_info' | 'error' | 'session_pending' | 'sess
 type WebSocketMessage = {
   type: MessageType;
   content: any;
-  sender?: {
-    name: string;
-    id: number;
-  };
+  sender?: string;
 };
 
 export class WebSocketService {
@@ -39,7 +27,6 @@ export class WebSocketService {
   private sessionInfoHandlers: ((info: SessionInfo) => void)[] = [];
   private topicMessageHandlers: ((topic: string) => void)[] = [];
   private sessionStartHandlers: (() => void)[] = [];
-  private sessionFinishHandlers: ((players: Player[]) => void)[] = [];
   private disconnectHandlers: (() => void)[] = [];
   private reconnectHandlers: (() => void)[] = [];
   private processedMessageIds = new Set<string>();
@@ -61,8 +48,8 @@ export class WebSocketService {
         
         switch (data.type) {
           case 'chat':
-            if (typeof data.content === 'object') {
-              const messageId = data.sender ? `${data.sender.id}-${Date.now()}` : `unknown-${Date.now()}`;
+            if (typeof data.content === 'object' && data.content.message) {
+              const messageId = `${data.sender}-${Date.now()}`;
               
               if (this.processedMessageIds.has(messageId)) {
                 console.log('🔄 Skipping duplicate message:', messageId);
@@ -70,11 +57,10 @@ export class WebSocketService {
               }
               
               const chatMessage: ChatMessage = {
-                playerId: data.sender?.name || 'Unknown',
+                playerId: data.sender || 'Unknown',
                 message: data.content.message,
                 id: messageId,
-                timestamp: new Date().toLocaleTimeString(),
-                sender: data.sender
+                timestamp: new Date().toLocaleTimeString()
               };
               
               this.messageHandlers.forEach(handler => handler(chatMessage));
@@ -95,13 +81,6 @@ export class WebSocketService {
           case 'session_started':
             console.log('🎮 Session started');
             this.sessionStartHandlers.forEach(handler => handler());
-            break;
-
-          case 'session_finished':
-            console.log('🏁 Session finished:', data.content);
-            if (data.content?.players) {
-              this.sessionFinishHandlers.forEach(handler => handler(data.content.players));
-            }
             break;
 
           case 'error':
@@ -196,13 +175,6 @@ export class WebSocketService {
     this.sessionStartHandlers.push(handler);
     return () => {
       this.sessionStartHandlers = this.sessionStartHandlers.filter(h => h !== handler);
-    };
-  }
-
-  onSessionFinish(handler: (players: Player[]) => void) {
-    this.sessionFinishHandlers.push(handler);
-    return () => {
-      this.sessionFinishHandlers = this.sessionFinishHandlers.filter(h => h !== handler);
     };
   }
 
