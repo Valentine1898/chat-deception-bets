@@ -8,6 +8,7 @@ import GameTopic from "@/components/GameTopic";
 import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
 import WaitingComponent from "@/components/WaitingComponent";
+import GameResults from "@/components/GameResults";
 import {GAME_TIMINGS} from "@/config/gameConfig";
 import {Player, wsService} from "@/services/websocket";
 import {contractService} from "@/services/contractService.ts";
@@ -39,6 +40,9 @@ const GameLobbyPage = () => {
     // UI states
     const [isVotingVisible, setIsVotingVisible] = useState(false);
     const [hasVoted, setHasVoted] = useState(false);
+    const [showResults, setShowResults] = useState(false);
+    const [isWinner, setIsWinner] = useState(false);
+    const [prizeAmount, setPrizeAmount] = useState("0");
 
     const gameUrl = `${window.location.origin}/game/${gameId}`;
 
@@ -95,14 +99,47 @@ const GameLobbyPage = () => {
                 setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
             });
 
-            const unsubscribeSessionValidated = wsService.onSessionValidated(() => {
-                console.log('Session validated');
+            const unsubscribeSessionValidated = wsService.onSessionValidated(async () => {
+                console.log('Session validated, checking game results');
+                try {
+                    if (wallets?.[0]) {
+                        const provider = await wallets[0].getEthereumProvider();
+                        await contractService.init(provider);
+                        const gameData = await contractService.getGameData(parseInt(gameId));
+                        
+                        // Determine if current user is winner
+                        const currentUserAddress = wallets[0].address.toLowerCase();
+                        const player1Address = gameData.player1.addr.toLowerCase();
+                        const player2Address = gameData.player2.addr.toLowerCase();
+                        
+                        const player1Won = gameData.player1.guessed;
+                        const player2Won = gameData.player2.guessed;
+                        
+                        // Calculate if current user won
+                        const userIsPlayer1 = currentUserAddress === player1Address;
+                        setIsWinner(userIsPlayer1 ? player1Won : player2Won);
+                        
+                        // Set prize amount (total bet amount)
+                        const totalPrize = (parseFloat(gameData.bet.toString()) * 2) / 1e18;
+                        setPrizeAmount(totalPrize.toString());
+                        
+                        setShowResults(true);
+                    }
+                } catch (error) {
+                    console.error('Error checking game results:', error);
+                    toast({
+                        title: "Error checking results",
+                        description: "There was an error checking the game results.",
+                        variant: "destructive"
+                    });
+                }
             });
 
             return () => {
                 unsubscribeSessionInfo();
                 unsubscribeTopicMessage();
                 unsubscribeSessionStart();
+                unsubscribeSessionValidated();
                 wsService.disconnect();
             };
         }
@@ -111,7 +148,6 @@ const GameLobbyPage = () => {
     const handleJoinGame = async () => {
         try {
             setHasJoined(true);
-            //handleGameStart();
             wsService.requestTopic()
 
             toast({
@@ -135,6 +171,9 @@ const GameLobbyPage = () => {
     };
 
     const getCurrentStage = () => {
+        if (showResults) {
+            return "results";
+        }
         if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
             return "topic_discovery";
         }
@@ -264,6 +303,16 @@ const GameLobbyPage = () => {
 
     const stage = getCurrentStage();
     const shouldShowChat = stage === 'discussion' || stage === 'human_detection' || stage === 'awaiting_votes';
+
+    if (stage === "results") {
+        return (
+            <div className="min-h-screen bg-stone-800">
+                <div className="container mx-auto p-6">
+                    <GameResults isWinner={isWinner} prizeAmount={prizeAmount} />
+                </div>
+            </div>
+        );
+    }
 
     if (isGameStarted) {
         return (
