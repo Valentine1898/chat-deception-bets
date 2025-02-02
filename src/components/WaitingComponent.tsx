@@ -8,7 +8,7 @@ const WaitingComponent = () => {
         <div className="flex items-center gap-2">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
           <h2 className="text-2xl font-bold text-foreground">
-            Waiting for game to start...
+            Waiting for game results...
           </h2>
         </div>
       </CardContent>
