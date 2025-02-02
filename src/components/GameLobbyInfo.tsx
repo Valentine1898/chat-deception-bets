@@ -40,9 +40,11 @@ const GameLobbyInfo = ({
     useEffect(() => {
         const fetchGameData = async () => {
             try {
-                if (gameId && wallets?.[0]?.provider) {
+                if (gameId && wallets?.[0]) {
+                    // Get Ethereum provider using the correct method
+                    const provider = await wallets[0].getEthereumProvider();
                     // Initialize contract with provider
-                    await contractService.init(wallets[0].provider);
+                    await contractService.init(provider);
                     const data = await contractService.getGameData(parseInt(gameId));
                     if (data) {
                         setGameData({
