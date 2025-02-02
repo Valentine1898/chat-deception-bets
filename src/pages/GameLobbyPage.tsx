@@ -60,6 +60,7 @@ const GameLobbyPage = () => {
         }));
 
         setPlayers(mappedPlayers);
+        wsService.requestTopic();
       });
 
       const unsubscribeTopicMessage = wsService.onTopicMessage((topic) => {
@@ -69,15 +70,13 @@ const GameLobbyPage = () => {
             title: "Today's Topic",
             description: topic
           });
-          // Start chat countdown after topic is received
-          setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
+          setIsGameStarted(true);
+          setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
         }
       });
 
       const unsubscribeSessionStart = wsService.onSessionStart(() => {
-        console.log('Session started, transitioning to Discussion phase');
-        setIsGameStarted(true);
-        setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
+        console.log('Session started');
       });
 
       return () => {
@@ -112,7 +111,6 @@ const GameLobbyPage = () => {
   const handleGameStart = () => {
     console.log('Starting game...');
     setIsGameStarted(true);
-    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
 
   const getCurrentStage = () => {
@@ -152,15 +150,12 @@ const GameLobbyPage = () => {
     let timer: NodeJS.Timeout;
     
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-      if (topicRevealCountdown === GAME_TIMINGS.TOPIC_REVIEW) {
-        wsService.requestTopic();
-      }
-      
       timer = setTimeout(() => {
         setTopicRevealCountdown(topicRevealCountdown - 1);
       }, 1000);
     } else if (topicRevealCountdown === 0) {
       setTopicRevealCountdown(null);
+      setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
     }
 
     return () => {
