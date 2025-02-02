@@ -12,6 +12,7 @@ import GameResults from "@/components/GameResults";
 import {GAME_TIMINGS} from "@/config/gameConfig";
 import {Player, wsService} from "@/services/websocket";
 import {contractService} from "@/services/contractService.ts";
+import {y} from "@privy-io/react-auth/dist/dts/types-Cj9jWnPs";
 
 const GameLobbyPage = () => {
     const {gameId} = useParams();
@@ -27,7 +28,7 @@ const GameLobbyPage = () => {
         hasJoined: boolean
         address?: string
     }>>([]);
-    const { wallets } = useWallets();
+    const {wallets} = useWallets();
     const [isGameStarted, setIsGameStarted] = useState(false);
     const [hasJoined, setHasJoined] = useState(false);
     const [selectedTopic, setSelectedTopic] = useState<{ title: string; description: string } | null>(null);
@@ -63,17 +64,11 @@ const GameLobbyPage = () => {
 
             const unsubscribeSessionInfo = wsService.onSessionInfo((sessionInfo) => {
                 console.log('Received session info:', sessionInfo);
-                const currentPlayer = {
-                    id: sessionInfo.you,
-                    type: 'human',
-                    alias: "YOU",
-                    address: user?.wallet?.address,
-                    hasJoined: true,
-                };
+                const you = sessionInfo.players.find(player => player.name === sessionInfo.you);
 
-                console.log('currentPlayer', currentPlayer)
+                console.log('currentPlayer', you)
                 const otherPlayers = sessionInfo.players
-                    .filter(player => player.id !== sessionInfo.you)
+                    .filter(player => player.name !== sessionInfo.you)
                     .map(playerId => ({
                         id: playerId.id,
                         type: 'human',
@@ -81,7 +76,9 @@ const GameLobbyPage = () => {
                         hasJoined: true,
                     }));
 
-                setPlayers([currentPlayer, ...otherPlayers]);
+                setPlayers([{
+                    id: you.id, type: 'human', alias: you.name, hasJoined: true, address: user?.wallet?.address,
+                }, ...otherPlayers]);
             });
 
             const unsubscribeTopicMessage = wsService.onTopicMessage((topic) => {
@@ -106,23 +103,23 @@ const GameLobbyPage = () => {
                         const provider = await wallets[0].getEthereumProvider();
                         await contractService.init(provider);
                         const gameData = await contractService.getGameData(parseInt(gameId));
-                        
+
                         // Determine if current user is winner
                         const currentUserAddress = wallets[0].address.toLowerCase();
                         const player1Address = gameData.player1.addr.toLowerCase();
                         const player2Address = gameData.player2.addr.toLowerCase();
-                        
+
                         const player1Won = gameData.player1.guessed;
                         const player2Won = gameData.player2.guessed;
-                        
+
                         // Calculate if current user won
                         const userIsPlayer1 = currentUserAddress === player1Address;
                         setIsWinner(userIsPlayer1 ? player1Won : player2Won);
-                        
+
                         // Set prize amount (total bet amount)
                         const totalPrize = (parseFloat(gameData.bet.toString()) * 2) / 1e18;
                         setPrizeAmount(totalPrize.toString());
-                        
+
                         setShowResults(true);
                     }
                 } catch (error) {
@@ -196,7 +193,7 @@ const GameLobbyPage = () => {
         return null;
     };
 
-    const handleVoteSubmit = async(votes: Record<number, 'human' | 'ai'>) => {
+    const handleVoteSubmit = async (votes: Record<number, 'human' | 'ai'>) => {
         console.log('Submitting votes:', votes);
         const human = votes
         let idToVote = 0;
@@ -308,7 +305,7 @@ const GameLobbyPage = () => {
         return (
             <div className="min-h-screen bg-stone-800">
                 <div className="container mx-auto p-6">
-                    <GameResults isWinner={isWinner} prizeAmount={prizeAmount} />
+                    <GameResults isWinner={isWinner} prizeAmount={prizeAmount}/>
                 </div>
             </div>
         );

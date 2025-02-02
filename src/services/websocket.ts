@@ -18,7 +18,7 @@ export type ChatMessage = {
 
 export type SessionInfo = {
   players: Player[];
-  you: number;
+  you: string;
   session_id: string;
 };
 
