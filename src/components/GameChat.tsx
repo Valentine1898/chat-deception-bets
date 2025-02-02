@@ -21,10 +21,9 @@ export default function GameChat() {
 
   useEffect(() => {
     if (gameId) {
-      // Load stored messages
       const storedMessages = getStoredMessages(gameId);
       setMessages(storedMessages);
-      storedMessages.forEach(msg => processedMessageIds.current.add(msg.id));
+      storedMessages.forEach(msg => processedMessageIds.current.add(msg.id || ''));
 
       console.log('🎮 Initializing chat for game:', gameId);
 
@@ -114,7 +113,7 @@ export default function GameChat() {
           {messages.map((message, index) => {
             const isCurrentUser = message.playerId === currentPlayerId;
             const avatarVariant = isCurrentUser ? 1 : 
-              ((parseInt(message.playerId.replace(/\D/g, '')) % 5) + 2) as 1 | 2 | 3 | 4 | 5 | 6;
+              ((message.sender?.id || index) % 5 + 2) as 1 | 2 | 3 | 4 | 5 | 6;
 
             return (
               <div
@@ -143,7 +142,7 @@ export default function GameChat() {
                       "px-2 py-0.5 rounded-full text-xs font-medium",
                       isCurrentUser ? "bg-accent text-background" : "bg-muted text-foreground"
                     )}>
-                      {isCurrentUser ? "You" : message.playerId}
+                      {isCurrentUser ? "You" : message.sender?.name || message.playerId}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {message.timestamp}
