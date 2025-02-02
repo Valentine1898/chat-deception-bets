@@ -133,7 +133,7 @@ const GameLobbyInfo = ({
         </div>) : (<Card className="max-w-md mx-auto bg-[#1C1917] border-none">
             <CardContent className="p-6 space-y-6">
                 <img
-                    src="/lovable-uploads/c7fd081e-66f7-47b5-8566-0c42b4cc9079.png"
+                    src="/lovable-uploads/f11be65f-04d6-4461-a829-da3a007e9734.png"
                     alt="Turing machine"
                     className="w-full h-48 object-cover rounded-xl"
                 />
