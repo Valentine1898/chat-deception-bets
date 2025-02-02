@@ -81,8 +81,10 @@ const GameLobbyPage = () => {
       });
 
       const unsubscribeSessionStart = wsService.onSessionStart(() => {
+        console.log('Session started, transitioning to Discussion phase');
         setIsGameStarted(true);
-        setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
+        setIsChatVisible(true);
+        setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
       });
 
       return () => {
@@ -119,7 +121,6 @@ const GameLobbyPage = () => {
 
   const handleGameStart = () => {
     console.log('Starting game...');
-    wsService.startSession()
     setIsGameStarted(true);
     setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
@@ -156,6 +157,7 @@ const GameLobbyPage = () => {
     });
   };
 
+  // Topic countdown
   useEffect(() => {
     let timer: NodeJS.Timeout;
     
@@ -169,10 +171,9 @@ const GameLobbyPage = () => {
         setTopicRevealCountdown(topicRevealCountdown - 1);
       }, 1000);
     } else if (topicRevealCountdown === 0) {
-      setIsChatVisible(true);
-      setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
       setTopicRevealCountdown(null);
-      wsService.startSession(); // Start session when topic review ends
+      // Send start_session only when Topic Discovery timer ends
+      wsService.startSession();
     }
 
     return () => {
