@@ -104,10 +104,12 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
           // Fetch ETH balance
           const ethBalance = await provider.getBalance(wallets[0].address);
           setBalance(parseFloat(formatEther(ethBalance)).toFixed(4));
+          console.log('ethBalance', ethBalance)
           
           // Fetch TURING token balance
           const turingContract = new Contract(TURING_TOKEN_ADDRESS, ERC20_ABI, provider);
           const decimals = await turingContract.decimals();
+          console.log('decimals', decimals)
           const turingBalance = await turingContract.balanceOf(wallets[0].address);
           const formattedTuringBalance = (Number(turingBalance) / Math.pow(10, decimals)).toFixed(2);
           setTuringBalance(formattedTuringBalance);
