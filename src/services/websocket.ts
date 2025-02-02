@@ -22,7 +22,7 @@ export type SessionInfo = {
   session_id: string;
 };
 
-type MessageType = 'chat' | 'session_info' | 'error' | 'session_pending' | 'session_started' | 'session_finished' | 'topic';
+type MessageType = 'chat' | 'session_info' | 'error' | 'session_pending' | 'session_started' | 'session_finished' | 'topic' | 'session_validated';
 
 type WebSocketMessage = {
   type: MessageType;
@@ -40,6 +40,7 @@ export class WebSocketService {
   private sessionInfoHandlers: ((info: SessionInfo) => void)[] = [];
   private topicMessageHandlers: ((topic: string) => void)[] = [];
   private sessionStartHandlers: (() => void)[] = [];
+  private sessionValidatedHandlers: (() => void)[] = [];
   private disconnectHandlers: (() => void)[] = [];
   private reconnectHandlers: (() => void)[] = [];
   private processedMessageIds = new Set<string>();
@@ -79,6 +80,11 @@ export class WebSocketService {
               this.messageHandlers.forEach(handler => handler(chatMessage));
               this.processedMessageIds.add(messageId);
             }
+            break;
+
+          case 'session_validated':
+            console.log('📝 Received session_validated:', data.content);
+            this.sessionValidatedHandlers.forEach(handler => handler());
             break;
 
           case 'topic':
@@ -181,6 +187,13 @@ export class WebSocketService {
     this.topicMessageHandlers.push(handler);
     return () => {
       this.topicMessageHandlers = this.topicMessageHandlers.filter(h => h !== handler);
+    };
+  }
+
+  onSessionValidated(handler: () => void) {
+    this.sessionValidatedHandlers.push(handler);
+    return () => {
+      this.sessionValidatedHandlers = this.sessionValidatedHandlers.filter(h => h !== handler);
     };
   }
 

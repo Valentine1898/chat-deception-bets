@@ -95,6 +95,10 @@ const GameLobbyPage = () => {
                 setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
             });
 
+            const unsubscribeSessionValidated = wsService.onSessionValidated(() => {
+                console.log('Session validated');
+            });
+
             return () => {
                 unsubscribeSessionInfo();
                 unsubscribeTopicMessage();
