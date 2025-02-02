@@ -3,11 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
+import { PrivyProvider } from "@privy-io/react-auth";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GameLobbyPage from "./pages/GameLobbyPage";
-import GameHeader from "@/components/GameHeader";
 
 const queryClient = new QueryClient();
 
@@ -22,21 +21,6 @@ if (!PRIVY_APP_ID || PRIVY_APP_ID === "your_privy_app_id_here") {
     "4. Add it to your .env file as VITE_PRIVY_APP_ID=your_app_id"
   );
 }
-
-const AppRoutes = () => {
-  const { authenticated } = usePrivy();
-  
-  return (
-    <>
-      {authenticated && location.pathname === '/' && <GameHeader stage="waiting" countdown={null} />}
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/game/:gameId" element={<GameLobbyPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </>
-  );
-};
 
 const App = () => (
   <PrivyProvider
@@ -54,7 +38,11 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AppRoutes />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/game/:gameId" element={<GameLobbyPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
