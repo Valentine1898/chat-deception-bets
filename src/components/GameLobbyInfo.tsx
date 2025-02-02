@@ -94,12 +94,21 @@ const GameLobbyInfo = ({
         }
 
         try {
+            setIsLoading(true);
             // Initialize contract with current provider
             const provider = await wallets[0].getEthereumProvider();
             await contractService.init(provider);
             
-            // Call onPlaceBet which will handle the contract interaction
+            // Join game on the contract
+            await contractService.joinGame(parseInt(gameId), betAmount.toString());
+            
+            // Call onPlaceBet which will handle any additional UI updates
             onPlaceBet();
+            
+            toast({
+                title: "Successfully joined the game!",
+                description: `Your bet of ${betAmount} ETH has been placed.`,
+            });
         } catch (error) {
             console.error("Error joining game:", error);
             toast({
@@ -107,6 +116,8 @@ const GameLobbyInfo = ({
                 description: "There was an error joining the game. Please try again.",
                 variant: "destructive"
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 
