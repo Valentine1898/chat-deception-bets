@@ -111,7 +111,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
           const decimals = await turingContract.decimals();
           console.log('decimals', decimals)
           const turingBalance = await turingContract.balanceOf(wallets[0].address);
-          const formattedTuringBalance = (Number(turingBalance) / Math.pow(10, decimals)).toFixed(2);
+          const formattedTuringBalance = (Number(turingBalance) / Math.pow(10, decimals.toNumber())).toFixed(2);
           setTuringBalance(formattedTuringBalance);
         } catch (error) {
           console.error("Error fetching balances:", error);
