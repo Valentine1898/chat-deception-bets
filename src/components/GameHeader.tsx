@@ -24,7 +24,7 @@ type GameHeaderProps = {
   showTimer?: boolean;
 };
 
-const GameHeader = ({ stage, countdown, showTimer }: GameHeaderProps) => {
+const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
   const navigate = useNavigate();
   const { logout, user } = usePrivy();
   const { wallets } = useWallets();
@@ -205,7 +205,7 @@ const GameHeader = ({ stage, countdown, showTimer }: GameHeaderProps) => {
         </div>
       </div>
 
-      {showTimer && <GameStageTimer stage={stage} countdown={countdown}/>}
+      <GameStageTimer stage={stage} countdown={countdown} />
     </div>
   );
 };
