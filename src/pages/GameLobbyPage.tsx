@@ -60,10 +60,6 @@ const GameLobbyPage = () => {
         }));
 
         setPlayers(mappedPlayers);
-        setIsGameStarted(true);
-        
-        // Request topic immediately after receiving session info
-        wsService.requestTopic();
       });
 
       const unsubscribeTopicMessage = wsService.onTopicMessage((topic) => {
@@ -93,6 +89,65 @@ const GameLobbyPage = () => {
     }
   }, [gameId, authenticated]);
 
+  const handleJoinGame = async () => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setHasJoined(true);
+      handleGameStart();
+      
+      toast({
+        title: "Successfully joined the game!",
+        description: "Your bet has been placed.",
+      });
+    } catch (error) {
+      console.error("Error joining game:", error);
+      toast({
+        title: "Error joining game",
+        description: "There was an error placing your bet. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleGameStart = () => {
+    console.log('Starting game...');
+    setIsGameStarted(true);
+    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
+  };
+
+  const getCurrentStage = () => {
+    if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
+      return "topic_discovery";
+    }
+    if (chatCountdown !== null && chatCountdown > 0) {
+      return "discussion";
+    }
+    if (votingCountdown !== null && votingCountdown > 0) {
+      return hasVoted ? "awaiting_votes" : "human_detection";
+    }
+    if (votingCountdown === 0) {
+      return "results";
+    }
+    return "waiting";
+  };
+
+  const getCurrentCountdown = () => {
+    if (topicRevealCountdown !== null) return topicRevealCountdown;
+    if (chatCountdown !== null) return chatCountdown;
+    if (votingCountdown !== null) return votingCountdown;
+    return null;
+  };
+
+  const handleVoteSubmit = (votes: Record<string, 'human' | 'ai'>) => {
+    console.log('Submitting votes:', votes);
+    setHasVoted(true);
+    toast({
+      title: "Votes submitted",
+      description: "Your votes have been recorded.",
+    });
+  };
+
+  // Topic countdown
   useEffect(() => {
     let timer: NodeJS.Timeout;
     
@@ -157,64 +212,6 @@ const GameLobbyPage = () => {
     };
   }, [votingCountdown, toast]);
 
-  const handleJoinGame = async () => {
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setHasJoined(true);
-      handleGameStart();
-      
-      toast({
-        title: "Successfully joined the game!",
-        description: "Your bet has been placed.",
-      });
-    } catch (error) {
-      console.error("Error joining game:", error);
-      toast({
-        title: "Error joining game",
-        description: "There was an error placing your bet. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleGameStart = () => {
-    console.log('Starting game...');
-    setIsGameStarted(true);
-    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
-  };
-
-  const getCurrentStage = () => {
-    if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-      return "topic_discovery";
-    }
-    if (chatCountdown !== null && chatCountdown > 0) {
-      return "discussion";
-    }
-    if (votingCountdown !== null && votingCountdown > 0) {
-      return hasVoted ? "awaiting_votes" : "human_detection";
-    }
-    if (votingCountdown === 0) {
-      return "results";
-    }
-    return "waiting";
-  };
-
-  const getCurrentCountdown = () => {
-    if (topicRevealCountdown !== null) return topicRevealCountdown;
-    if (chatCountdown !== null) return chatCountdown;
-    if (votingCountdown !== null) return votingCountdown;
-    return null;
-  };
-
-  const handleVoteSubmit = (votes: Record<string, 'human' | 'ai'>) => {
-    console.log('Submitting votes:', votes);
-    setHasVoted(true);
-    toast({
-      title: "Votes submitted",
-      description: "Your votes have been recorded.",
-    });
-  };
-
   const handleClaimPrize = async () => {
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -236,6 +233,49 @@ const GameLobbyPage = () => {
 
   const stage = getCurrentStage();
   const shouldShowChat = stage === 'discussion' || stage === 'human_detection' || stage === 'awaiting_votes';
+
+  if (isGameStarted) {
+    return (
+      <div className="min-h-screen bg-stone-800">
+        <div className="container mx-auto p-6">
+          <div className="flex gap-6 justify-between">
+            <div className="flex-1">
+              {stage === 'waiting' ? (
+                <WaitingComponent />
+              ) : (
+                <GameTopic 
+                  topic={selectedTopic}
+                  isChatVisible={shouldShowChat}
+                  gameId={gameId}
+                  prizePool="0.0005"
+                />
+              )}
+              
+              {stage === 'results' && (
+                <div className="flex flex-col items-center justify-center mt-8">
+                  <h2 className="text-2xl font-bold mb-4">Game Results</h2>
+                  <Button 
+                    onClick={handleClaimPrize}
+                    className="bg-accent hover:bg-accent/90"
+                  >
+                    Claim Prize
+                  </Button>
+                </div>
+              )}
+            </div>
+            <PlayersList 
+              players={players}
+              currentPlayerAddress={currentPlayer}
+              isInGame={true}
+              showResults={stage === 'results'}
+              stage={stage}
+              onVoteSubmit={handleVoteSubmit}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-stone-800">
@@ -284,9 +324,6 @@ const GameLobbyPage = () => {
             currentPlayerAddress={currentPlayer}
             onGameStart={handleGameStart}
             isInGame={isGameStarted}
-            showResults={stage === 'results'}
-            stage={stage}
-            onVoteSubmit={handleVoteSubmit}
           />
         </div>
       </div>
