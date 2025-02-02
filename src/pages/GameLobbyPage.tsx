@@ -10,7 +10,7 @@ import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
 import WaitingComponent from "@/components/WaitingComponent";
 import { GAME_TIMINGS } from "@/config/gameConfig";
-import { wsService } from "@/services/websocket";
+import { wsService, Player } from "@/services/websocket";
 
 const GameLobbyPage = () => {
   const { gameId } = useParams();
@@ -19,10 +19,11 @@ const GameLobbyPage = () => {
   const { authenticated, user } = usePrivy();
   
   // Game state
-  const [players, setPlayers] = useState<Array<any>>([]);
+  const [players, setPlayers] = useState<Array<Player>>([]);
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState<{ title: string; description: string } | null>(null);
+  const [currentPlayerId, setCurrentPlayerId] = useState<string>("");
   
   // Timer states
   const [topicRevealCountdown, setTopicRevealCountdown] = useState<number | null>(null);
@@ -52,21 +53,18 @@ const GameLobbyPage = () => {
 
       const unsubscribeSessionInfo = wsService.onSessionInfo((sessionInfo) => {
         console.log('Received session info:', sessionInfo);
+        setCurrentPlayerId(sessionInfo.you);
+        
         const currentPlayer = {
-          id: sessionInfo.you,
-          type: 'human',
-          alias: sessionInfo.you,
-          address: user?.wallet?.address,
-          hasJoined: true
+          name: sessionInfo.you,
+          id: players.length + 1
         };
 
         const otherPlayers = sessionInfo.players
-          .filter(playerId => playerId !== sessionInfo.you)
-          .map(playerId => ({
-            id: playerId,
-            type: 'human',
-            alias: playerId,
-            hasJoined: true
+          .filter(player => player.name !== sessionInfo.you)
+          .map(player => ({
+            name: player.name,
+            id: player.id
           }));
 
         setPlayers([currentPlayer, ...otherPlayers]);
