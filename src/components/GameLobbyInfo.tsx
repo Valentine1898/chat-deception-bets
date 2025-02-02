@@ -40,7 +40,9 @@ const GameLobbyInfo = ({
     useEffect(() => {
         const fetchGameData = async () => {
             try {
-                if (gameId) {
+                if (gameId && wallets?.[0]?.provider) {
+                    // Initialize contract with provider
+                    await contractService.init(wallets[0].provider);
                     const data = await contractService.getGameData(parseInt(gameId));
                     if (data) {
                         setGameData({
@@ -55,7 +57,7 @@ const GameLobbyInfo = ({
         };
 
         fetchGameData();
-    }, [gameId]);
+    }, [gameId, wallets]);
 
     const creatorAddress = gameData?.creatorAddress?.toLowerCase();
     const betAmount = gameData ? parseFloat(gameData.bet) / 1e18 : mockGameData.betAmount;
