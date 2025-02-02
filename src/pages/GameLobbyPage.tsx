@@ -30,7 +30,6 @@ const GameLobbyPage = () => {
   const [votingCountdown, setVotingCountdown] = useState<number | null>(null);
   
   // UI states
-  const [isChatVisible, setIsChatVisible] = useState(false);
   const [isVotingVisible, setIsVotingVisible] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
 
@@ -84,7 +83,6 @@ const GameLobbyPage = () => {
       const unsubscribeSessionStart = wsService.onSessionStart(() => {
         console.log('Session started, transitioning to Discussion phase');
         setIsGameStarted(true);
-        setIsChatVisible(true);
         setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
       });
 
@@ -99,11 +97,8 @@ const GameLobbyPage = () => {
 
   const handleJoinGame = async () => {
     try {
-      // Mock smart contract interaction
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
       setHasJoined(true);
-      // Request topic after successfully joining
       handleGameStart();
       
       toast({
@@ -163,7 +158,6 @@ const GameLobbyPage = () => {
     let timer: NodeJS.Timeout;
     
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
-      // Request topic when entering Topic Discovery stage
       if (topicRevealCountdown === GAME_TIMINGS.TOPIC_REVIEW) {
         wsService.requestTopic();
       }
@@ -173,7 +167,6 @@ const GameLobbyPage = () => {
       }, 1000);
     } else if (topicRevealCountdown === 0) {
       setTopicRevealCountdown(null);
-      // Send start_session only when Topic Discovery timer ends
       wsService.startSession();
     }
 
@@ -191,7 +184,6 @@ const GameLobbyPage = () => {
         setChatCountdown(chatCountdown - 1);
       }, 1000);
     } else if (chatCountdown === 0) {
-      setIsChatVisible(false);
       setIsVotingVisible(true);
       setVotingCountdown(GAME_TIMINGS.VOTING);
       setChatCountdown(null);
@@ -246,37 +238,29 @@ const GameLobbyPage = () => {
     }
   };
 
+  const stage = getCurrentStage();
+  const shouldShowChat = stage === 'discussion' || stage === 'human_detection' || stage === 'awaiting_votes';
+
   if (isGameStarted) {
-    const stage = getCurrentStage();
-    
     return (
       <div className="min-h-screen bg-stone-800">
-        <div className="fixed top-0 left-0 right-0 z-50">
-          <GameHeader 
-            stage={stage}
-            countdown={getCurrentCountdown()}
-          />
-        </div>
+        <GameHeader 
+          stage={stage}
+          countdown={getCurrentCountdown()}
+        />
         
-        <div className="container mx-auto p-6 mt-[200px]">
+        <div className="container mx-auto p-6">
           <div className="flex gap-6 justify-between">
             <div className="flex-1">
               {stage === 'waiting' ? (
                 <WaitingComponent />
               ) : (
-                <>
-                  <GameTopic 
-                    topic={selectedTopic}
-                    isChatVisible={stage === 'discussion' || stage === 'human_detection' || stage === 'awaiting_votes'}
-                    gameId={gameId}
-                    prizePool="0.0005"
-                  />
-                  {isChatVisible && stage === 'discussion' && (
-                    <div className="mt-6">
-                      <GameChat />
-                    </div>
-                  )}
-                </>
+                <GameTopic 
+                  topic={selectedTopic}
+                  isChatVisible={shouldShowChat}
+                  gameId={gameId}
+                  prizePool="0.0005"
+                />
               )}
               
               {stage === 'results' && (
@@ -307,13 +291,11 @@ const GameLobbyPage = () => {
 
   return (
     <div className="min-h-screen bg-stone-800">
-      <div className="fixed top-0 left-0 right-0 z-50">
-        <GameHeader 
-          stage="waiting"
-          countdown={null}
-        />
-      </div>
-      <div className="container mx-auto p-6 mt-[200px]">
+      <GameHeader 
+        stage="waiting"
+        countdown={null}
+      />
+      <div className="container mx-auto p-6">
         <div className="flex gap-6 justify-between">
           <div className="flex-1">
             <GameLobbyInfo 
