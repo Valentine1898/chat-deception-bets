@@ -1,7 +1,7 @@
 import { Contract, BrowserProvider, parseEther } from "ethers";
 
 const CONTRACT_ADDRESS = "0x882Ad45B2C1609c93F3d138802f0f557633b00fc";
-const MOCK_MODE = false; // Set to false to enable real contract interactions
+const MOCK_MODE = false;
 
 const CONTRACT_ABI = [
   {
@@ -45,6 +45,11 @@ class ContractService {
       this.contract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI, await this.provider.getSigner());
     }
     console.log('Contract service initialized in', MOCK_MODE ? 'mock' : 'real', 'mode');
+  }
+
+  async getGameData(gameId: number) {
+    if (!this.contract) throw new Error("Contract not initialized");
+    return await this.contract.games(gameId);
   }
 
   async createGame(betAmount: string) {

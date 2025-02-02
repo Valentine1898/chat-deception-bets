@@ -41,7 +41,7 @@ const GameLobbyInfo = ({
         const fetchGameData = async () => {
             try {
                 if (gameId) {
-                    const data = await contractService.contract?.games(parseInt(gameId));
+                    const data = await contractService.getGameData(parseInt(gameId));
                     if (data) {
                         setGameData({
                             bet: data.bet.toString(),
