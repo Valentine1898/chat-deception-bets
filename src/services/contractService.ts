@@ -1,25 +1,25 @@
 import { Contract, BrowserProvider, parseEther } from "ethers";
 
-const CONTRACT_ADDRESS = "0x882Ad45B2C1609c93F3d138802f0f557633b00fc";
+const CONTRACT_ADDRESS = "0x23059985b1Db2b92b984B4eA97b16c1F8C8706A4";
 const MOCK_MODE = false;
 
 const CONTRACT_ABI = [
   {
-    "inputs": [{"name": "bet", "type": "uint256"}],
+    "inputs": [{"internalType": "uint256", "name": "bet", "type": "uint256"}],
     "name": "createGame",
-    "outputs": [{"name": "", "type": "uint32"}],
+    "outputs": [{"internalType": "uint32", "name": "", "type": "uint32"}],
     "stateMutability": "payable",
     "type": "function"
   },
   {
-    "inputs": [{"name": "gameId", "type": "uint32"}],
+    "inputs": [{"internalType": "uint32", "name": "gameId", "type": "uint32"}],
     "name": "joinGame",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
   },
   {
-    "inputs": [{"name": "gameId", "type": "uint32"}, {"name": "guessId", "type": "uint8"}],
+    "inputs": [{"internalType": "uint32", "name": "gameId", "type": "uint32"}, {"internalType": "uint8", "name": "guessId", "type": "uint8"}],
     "name": "vote",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -28,7 +28,41 @@ const CONTRACT_ABI = [
   {
     "inputs": [],
     "name": "MIN_BET",
-    "outputs": [{"name": "", "type": "uint128"}],
+    "outputs": [{"internalType": "uint128", "name": "", "type": "uint128"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint32", "name": "", "type": "uint32"}],
+    "name": "games",
+    "outputs": [
+      {"internalType": "uint32", "name": "id", "type": "uint32"},
+      {"internalType": "uint256", "name": "bet", "type": "uint256"},
+      {"internalType": "uint256", "name": "deadline", "type": "uint256"},
+      {"internalType": "bool", "name": "validated", "type": "bool"},
+      {
+        "components": [
+          {"internalType": "address", "name": "addr", "type": "address"},
+          {"internalType": "bool", "name": "voted", "type": "bool"},
+          {"internalType": "uint8", "name": "guessId", "type": "uint8"},
+          {"internalType": "bool", "name": "guessed", "type": "bool"}
+        ],
+        "internalType": "struct ITuringGame.PlayerData",
+        "name": "player1",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {"internalType": "address", "name": "addr", "type": "address"},
+          {"internalType": "bool", "name": "voted", "type": "bool"},
+          {"internalType": "uint8", "name": "guessId", "type": "uint8"},
+          {"internalType": "bool", "name": "guessed", "type": "bool"}
+        ],
+        "internalType": "struct ITuringGame.PlayerData",
+        "name": "player2",
+        "type": "tuple"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   }
