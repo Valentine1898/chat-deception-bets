@@ -83,6 +83,33 @@ const GameLobbyInfo = ({
         }
     };
 
+    const handleJoinGame = async () => {
+        if (!wallets?.[0]) {
+            toast({
+                title: "Wallet not connected",
+                description: "Please connect your wallet to join the game",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        try {
+            // Initialize contract with current provider
+            const provider = await wallets[0].getEthereumProvider();
+            await contractService.init(provider);
+            
+            // Call onPlaceBet which will handle the contract interaction
+            onPlaceBet();
+        } catch (error) {
+            console.error("Error joining game:", error);
+            toast({
+                title: "Error joining game",
+                description: "There was an error joining the game. Please try again.",
+                variant: "destructive"
+            });
+        }
+    };
+
     if (!authenticated) {
         return (
             <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
@@ -107,7 +134,7 @@ const GameLobbyInfo = ({
                         Required bet amount: {betAmount} ETH
                     </p>
                     <Button
-                        onClick={onPlaceBet}
+                        onClick={handleJoinGame}
                         className="bg-accent hover:bg-accent/90"
                     >
                         Place Bet
@@ -202,7 +229,7 @@ const GameLobbyInfo = ({
 
                     {authenticated ? (
                         <Button
-                            onClick={onPlaceBet}
+                            onClick={handleJoinGame}
                             className="w-full py-6 text-lg bg-[#FD9A00] hover:bg-[#FD9A00]/90 text-black font-serif italic"
                         >
                             Join game for {betAmount} ETH
