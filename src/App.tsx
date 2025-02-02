@@ -7,7 +7,7 @@ import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GameLobbyPage from "./pages/GameLobbyPage";
-import WalletWidget from "@/components/WalletWidget";
+import GameHeader from "@/components/GameHeader";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +28,7 @@ const AppRoutes = () => {
   
   return (
     <>
-      {authenticated && <WalletWidget />}
+      {authenticated && <GameHeader stage="waiting" countdown={null} />}
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/game/:gameId" element={<GameLobbyPage />} />
