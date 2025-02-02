@@ -7,7 +7,6 @@ import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
-import GameJoinScreen from "@/components/GameJoinScreen";
 import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
 
