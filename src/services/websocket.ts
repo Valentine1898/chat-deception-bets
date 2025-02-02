@@ -18,6 +18,7 @@ type MessageType = 'chat' | 'session_info' | 'error' | 'session_pending' | 'sess
 type WebSocketMessage = {
   type: MessageType;
   content: any;
+  sender?: string;
 };
 
 export class WebSocketService {
@@ -47,8 +48,8 @@ export class WebSocketService {
         
         switch (data.type) {
           case 'chat':
-            if (typeof data.content === 'object' && data.content.playerId && data.content.message) {
-              const messageId = `${data.content.playerId}-${Date.now()}`;
+            if (typeof data.content === 'object' && data.content.message) {
+              const messageId = `${data.sender}-${Date.now()}`;
               
               if (this.processedMessageIds.has(messageId)) {
                 console.log('🔄 Skipping duplicate message:', messageId);
@@ -56,7 +57,7 @@ export class WebSocketService {
               }
               
               const chatMessage: ChatMessage = {
-                playerId: data.content.playerId,
+                playerId: data.sender || 'Unknown',
                 message: data.content.message,
                 id: messageId,
                 timestamp: new Date().toLocaleTimeString()
