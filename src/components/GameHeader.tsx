@@ -10,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ACTIVE_NETWORK } from "@/config/networkConfig";
 
-// ERC20 ABI for balanceOf function
 const ERC20_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
   "function decimals() view returns (uint8)",
@@ -146,10 +145,9 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
   };
 
   return (
-    <div className="relative z-50">
-      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-[#1C1917]">
-        <div className="container mx-auto">
-          <div className="flex flex-col items-start px-3 py-6">
+    <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-[#1C1917]">
+      <div className="container mx-auto">
+        <div className="flex flex-col items-start px-3 py-6">
             <div className="flex justify-between items-center w-full">
               <div 
                 className="flex items-center gap-6 cursor-pointer" 
@@ -226,7 +224,6 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                 )}
               </div>
             </div>
-          </div>
         </div>
       </div>
 
