@@ -124,11 +124,6 @@ export default function GameChat() {
                   isCurrentUser ? "flex-row-reverse" : "flex-row"
                 )}
               >
-                <PlayerAvatar 
-                  type="human"
-                  variant={avatarVariant}
-                  className="flex-shrink-0 w-8 h-8"
-                />
                 <div className={cn(
                   "flex flex-col gap-1 max-w-[80%]",
                   isCurrentUser ? "items-end" : "items-start"
