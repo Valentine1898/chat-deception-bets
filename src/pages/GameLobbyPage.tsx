@@ -160,6 +160,11 @@ const GameLobbyPage = () => {
     let timer: NodeJS.Timeout;
     
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
+      // Request topic when entering Topic Discovery stage
+      if (topicRevealCountdown === GAME_TIMINGS.TOPIC_REVIEW) {
+        wsService.requestTopic();
+      }
+      
       timer = setTimeout(() => {
         setTopicRevealCountdown(topicRevealCountdown - 1);
       }, 1000);
