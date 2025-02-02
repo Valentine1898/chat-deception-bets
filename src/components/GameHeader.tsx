@@ -4,10 +4,18 @@ import { GameStage } from "@/config/gameConfig";
 import { Button } from "@/components/ui/button";
 import { LogOut, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
-import { formatEther } from "ethers";
+import { formatEther, Contract } from "ethers";
 import { BrowserProvider } from "ethers";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+
+// ERC20 ABI for balanceOf function
+const ERC20_ABI = [
+  "function balanceOf(address owner) view returns (uint256)",
+  "function decimals() view returns (uint8)",
+];
+
+const TURING_TOKEN_ADDRESS = "0x6Ee6e27a965d5566970dCfA347fB75A8C386E2e7";
 
 type GameHeaderProps = {
   stage: GameStage;
@@ -19,6 +27,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
   const { logout, user } = usePrivy();
   const { wallets } = useWallets();
   const [balance, setBalance] = useState<string>("0.00");
+  const [turingBalance, setTuringBalance] = useState<string>("0");
   const { toast } = useToast();
   const [currentChainId, setCurrentChainId] = useState<string | null>(null);
   
@@ -95,22 +104,32 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
   }, [wallets]);
 
   useEffect(() => {
-    const fetchBalance = async () => {
+    const fetchBalances = async () => {
       if (wallets?.[0] && currentChainId === "0x2105") {
         try {
           const ethProvider = await wallets[0].getEthereumProvider();
           const provider = new BrowserProvider(ethProvider);
-          const balance = await provider.getBalance(wallets[0].address);
-          setBalance(parseFloat(formatEther(balance)).toFixed(4));
+          
+          // Fetch ETH balance
+          const ethBalance = await provider.getBalance(wallets[0].address);
+          setBalance(parseFloat(formatEther(ethBalance)).toFixed(4));
+          
+          // Fetch TURING token balance
+          const turingContract = new Contract(TURING_TOKEN_ADDRESS, ERC20_ABI, provider);
+          const decimals = await turingContract.decimals();
+          const turingBalance = await turingContract.balanceOf(wallets[0].address);
+          const formattedTuringBalance = (Number(turingBalance) / Math.pow(10, decimals)).toFixed(2);
+          setTuringBalance(formattedTuringBalance);
         } catch (error) {
-          console.error("Error fetching balance:", error);
+          console.error("Error fetching balances:", error);
           setBalance("0.00");
+          setTuringBalance("0");
         }
       }
     };
 
-    fetchBalance();
-    const interval = setInterval(fetchBalance, 10000);
+    fetchBalances();
+    const interval = setInterval(fetchBalances, 10000);
     return () => clearInterval(interval);
   }, [wallets, currentChainId]);
 
@@ -164,7 +183,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                     </span>
                     <div className="w-px h-4 bg-[#292524]" />
                     <span className="font-['Chivo_Mono'] text-sm text-white">
-                      1.54M TURING
+                      {turingBalance} TURING
                     </span>
                     <div className="w-px h-4 bg-[#292524]" />
                     <div className="flex items-center gap-2">
