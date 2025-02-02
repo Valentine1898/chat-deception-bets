@@ -146,7 +146,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50">
+    <div className="relative z-50">
       <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-[#1C1917]">
         <div className="container mx-auto">
           <div className="flex flex-col items-start px-3 py-6">
