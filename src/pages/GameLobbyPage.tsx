@@ -48,7 +48,7 @@ const GameLobbyPage = () => {
 
   const handleGameStart = () => {
     setIsGameStarted(true);
-    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVEAL);
+    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
 
   useEffect(() => {
