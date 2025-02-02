@@ -1,23 +1,14 @@
 import { toast } from "sonner";
 
-export type Player = {
-  name: string;
-  id: number;
-};
-
 export type ChatMessage = {
   playerId: string;
   message: string;
   id?: string;
   timestamp?: string;
-  sender?: {
-    name: string;
-    id: number;
-  };
 };
 
 export type SessionInfo = {
-  players: Player[];
+  players: string[];
   you: string;
   session_id: string;
 };
@@ -27,10 +18,7 @@ type MessageType = 'chat' | 'session_info' | 'error' | 'session_pending' | 'sess
 type WebSocketMessage = {
   type: MessageType;
   content: any;
-  sender?: {
-    name: string;
-    id: number;
-  };
+  sender?: string;
 };
 
 export class WebSocketService {
@@ -61,7 +49,7 @@ export class WebSocketService {
         switch (data.type) {
           case 'chat':
             if (typeof data.content === 'object' && data.content.message) {
-              const messageId = `${data.sender?.id}-${Date.now()}`;
+              const messageId = `${data.sender}-${Date.now()}`;
               
               if (this.processedMessageIds.has(messageId)) {
                 console.log('🔄 Skipping duplicate message:', messageId);
@@ -69,11 +57,10 @@ export class WebSocketService {
               }
               
               const chatMessage: ChatMessage = {
-                playerId: data.sender?.name || 'Unknown',
+                playerId: data.sender || 'Unknown',
                 message: data.content.message,
                 id: messageId,
-                timestamp: new Date().toLocaleTimeString(),
-                sender: data.sender
+                timestamp: new Date().toLocaleTimeString()
               };
               
               this.messageHandlers.forEach(handler => handler(chatMessage));
@@ -81,16 +68,9 @@ export class WebSocketService {
             }
             break;
 
-          case 'session_finished':
-            console.log('🏁 Session finished:', data.content);
-            if (data.content.players) {
-              const sessionInfo: SessionInfo = {
-                players: data.content.players,
-                you: data.content.you,
-                session_id: data.content.session_id
-              };
-              this.sessionInfoHandlers.forEach(handler => handler(sessionInfo));
-            }
+          case 'topic':
+            console.log('📝 Received topic:', data.content);
+            this.topicMessageHandlers.forEach(handler => handler(data.content));
             break;
 
           case 'session_info':
@@ -110,14 +90,6 @@ export class WebSocketService {
 
           case 'session_pending':
             toast.info("Waiting for other players to join...");
-            break;
-          case 'topic':
-            console.log('📌 Received topic:', data.content);
-            if (typeof data.content === 'string') {
-              this.topicMessageHandlers.forEach(handler => handler(data.content));
-            } else {
-              console.error('Invalid topic content:', data.content);
-            }
             break;
         }
       } catch (error) {

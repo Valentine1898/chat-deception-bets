@@ -9,20 +9,19 @@ import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
 import WaitingComponent from "@/components/WaitingComponent";
 import { GAME_TIMINGS } from "@/config/gameConfig";
-import { wsService, type Player } from "@/services/websocket";
+import { wsService } from "@/services/websocket";
 
 const GameLobbyPage = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { authenticated } = usePrivy();
+  const { authenticated, user } = usePrivy();
   
   // Game state
   const [players, setPlayers] = useState<Array<any>>([]);
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState<{ title: string; description: string } | null>(null);
-  const [currentPlayer, setCurrentPlayer] = useState<string | null>(null);
   
   // Timer states
   const [topicRevealCountdown, setTopicRevealCountdown] = useState<number | null>(null);
@@ -33,6 +32,8 @@ const GameLobbyPage = () => {
   const [isVotingVisible, setIsVotingVisible] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
 
+  const gameUrl = `${window.location.origin}/game/${gameId}`;
+
   const mockGameData = {
     id: gameId,
     creatorAddress: "0xDC89F9576281e87f78EeF7ddDEBD61f7e7D82f82",
@@ -41,7 +42,7 @@ const GameLobbyPage = () => {
     yourBet: authenticated ? 0.1 : 0,
   };
 
-  const isCreator = Boolean(authenticated && mockGameData.creatorAddress);
+  const isCreator = authenticated && user?.wallet?.address === mockGameData.creatorAddress;
   const hasPlacedBet = mockGameData.yourBet > 0;
 
   useEffect(() => {
@@ -50,32 +51,38 @@ const GameLobbyPage = () => {
 
       const unsubscribeSessionInfo = wsService.onSessionInfo((sessionInfo) => {
         console.log('Received session info:', sessionInfo);
-        setCurrentPlayer(sessionInfo.you);
-        
-        const mappedPlayers = sessionInfo.players.map(player => ({
-          id: player.id.toString(),
+        const currentPlayer = {
+          id: sessionInfo.you,
           type: 'human',
-          alias: player.name,
+          alias: sessionInfo.you,
+          address: user?.wallet?.address,
           hasJoined: true
-        }));
+        };
 
-        setPlayers(mappedPlayers);
+        const otherPlayers = sessionInfo.players
+          .filter(playerId => playerId !== sessionInfo.you)
+          .map(playerId => ({
+            id: playerId,
+            type: 'human',
+            alias: playerId,
+            hasJoined: true
+          }));
+
+        setPlayers([currentPlayer, ...otherPlayers]);
       });
 
       const unsubscribeTopicMessage = wsService.onTopicMessage((topic) => {
         console.log('Received topic:', topic);
-        if (typeof topic === 'string') {
-          setSelectedTopic({
-            title: "Today's Topic",
-            description: topic
-          });
-          setIsGameStarted(true);
-          setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
-        }
+        setSelectedTopic({
+          title: "Today's Topic",
+          description: topic
+        });
       });
 
       const unsubscribeSessionStart = wsService.onSessionStart(() => {
-        console.log('Session started');
+        console.log('Session started, transitioning to Discussion phase');
+        setIsGameStarted(true);
+        setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
       });
 
       return () => {
@@ -85,13 +92,13 @@ const GameLobbyPage = () => {
         wsService.disconnect();
       };
     }
-  }, [gameId, authenticated]);
+  }, [gameId, authenticated, user?.wallet?.address]);
 
   const handleJoinGame = async () => {
     try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
       setHasJoined(true);
-      //await new Promise(resolve => setTimeout(resolve, 2000));
-      wsService.requestTopic();
+      handleGameStart();
       
       toast({
         title: "Successfully joined the game!",
@@ -110,6 +117,7 @@ const GameLobbyPage = () => {
   const handleGameStart = () => {
     console.log('Starting game...');
     setIsGameStarted(true);
+    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
 
   const getCurrentStage = () => {
@@ -149,12 +157,16 @@ const GameLobbyPage = () => {
     let timer: NodeJS.Timeout;
     
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
+      if (topicRevealCountdown === GAME_TIMINGS.TOPIC_REVIEW) {
+        wsService.requestTopic();
+      }
+      
       timer = setTimeout(() => {
         setTopicRevealCountdown(topicRevealCountdown - 1);
       }, 1000);
     } else if (topicRevealCountdown === 0) {
       setTopicRevealCountdown(null);
-      setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
+      wsService.startSession();
     }
 
     return () => {
@@ -259,7 +271,7 @@ const GameLobbyPage = () => {
             </div>
             <PlayersList 
               players={players}
-              currentPlayerAddress={currentPlayer}
+              currentPlayerAddress={user?.wallet?.address}
               isInGame={true}
               showResults={stage === 'results'}
               stage={stage}
@@ -276,46 +288,21 @@ const GameLobbyPage = () => {
       <div className="container mx-auto p-6">
         <div className="flex gap-6 justify-between">
           <div className="flex-1">
-            {isGameStarted ? (
-              stage === 'waiting' ? (
-                <WaitingComponent />
-              ) : (
-                <GameTopic 
-                  topic={selectedTopic}
-                  isChatVisible={shouldShowChat}
-                  gameId={gameId}
-                  prizePool="0.0005"
-                />
-              )
-            ) : (
-              <GameLobbyInfo 
-                authenticated={authenticated}
-                hasPlacedBet={hasPlacedBet}
-                isCreator={isCreator}
-                gameId={gameId || ''}
-                gameUrl={window.location.href}
-                mockGameData={{
-                  betAmount: mockGameData.betAmount
-                }}
-                onPlaceBet={handleJoinGame}
-              />
-            )}
-            
-            {stage === 'results' && (
-              <div className="flex flex-col items-center justify-center mt-8">
-                <h2 className="text-2xl font-bold mb-4">Game Results</h2>
-                <Button 
-                  onClick={handleClaimPrize}
-                  className="bg-accent hover:bg-accent/90"
-                >
-                  Claim Prize
-                </Button>
-              </div>
-            )}
+            <GameLobbyInfo 
+              authenticated={authenticated}
+              hasPlacedBet={hasPlacedBet}
+              isCreator={isCreator}
+              gameId={gameId || ''}
+              gameUrl={gameUrl}
+              mockGameData={{
+                betAmount: mockGameData.betAmount
+              }}
+              onPlaceBet={handleJoinGame}
+            />
           </div>
           <PlayersList 
             players={players}
-            currentPlayerAddress={currentPlayer}
+            currentPlayerAddress={user?.wallet?.address}
             onGameStart={handleGameStart}
             isInGame={isGameStarted}
           />
