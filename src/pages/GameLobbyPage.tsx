@@ -7,6 +7,7 @@ import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
+import GameJoinScreen from "@/components/GameJoinScreen";
 import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
 
@@ -93,6 +94,9 @@ const GameLobbyPage = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setHasJoined(true);
+      // Request topic after successfully joining
+      wsService.requestTopic();
+      
       toast({
         title: "Successfully joined the game!",
         description: "Your bet has been placed.",
