@@ -1,7 +1,7 @@
 import { Contract, BrowserProvider, parseEther } from "ethers";
 
 const CONTRACT_ADDRESS = "0x882Ad45B2C1609c93F3d138802f0f557633b00fc";
-const MOCK_MODE = true; // Toggle this to enable/disable real contract interactions
+const MOCK_MODE = false; // Set to false to enable real contract interactions
 
 const CONTRACT_ABI = [
   {
