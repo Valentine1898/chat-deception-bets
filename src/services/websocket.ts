@@ -52,7 +52,7 @@ export class WebSocketService {
     }
 
     console.log('🌐 Connecting to WebSocket with sessionId:', sessionId);
-    this.ws = new WebSocket(`ws://localhost:8080?sessionId=${sessionId}`);
+    this.ws = new WebSocket(`wss://test-latest-vz6j.onrender.com?sessionId=${sessionId}`);
     
     this.ws.onmessage = (event) => {
       try {
