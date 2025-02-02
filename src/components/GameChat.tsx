@@ -8,6 +8,7 @@ import { wsService, ChatMessage } from "@/services/websocket";
 import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import PlayerAvatar from "./PlayerAvatar";
+import { getStoredMessages, storeMessages } from "@/utils/localStorage";
 
 export default function GameChat() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -20,6 +21,11 @@ export default function GameChat() {
 
   useEffect(() => {
     if (gameId) {
+      // Load stored messages
+      const storedMessages = getStoredMessages(gameId);
+      setMessages(storedMessages);
+      storedMessages.forEach(msg => processedMessageIds.current.add(msg.id));
+
       console.log('🎮 Initializing chat for game:', gameId);
 
       const handleReconnect = () => {
@@ -54,7 +60,11 @@ export default function GameChat() {
           })
         };
         
-        setMessages(prev => [...prev, newMessage]);
+        setMessages(prev => {
+          const updatedMessages = [...prev, newMessage];
+          storeMessages(gameId, updatedMessages);
+          return updatedMessages;
+        });
       });
 
       const handleSessionInfo = (sessionInfo: any) => {

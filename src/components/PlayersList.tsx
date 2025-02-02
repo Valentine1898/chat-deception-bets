@@ -3,6 +3,8 @@ import { useToast } from "@/hooks/use-toast";
 import PlayerAvatar from "./PlayerAvatar";
 import { User, Bot, Info } from "lucide-react";
 import { Button } from "./ui/button";
+import { getStoredPlayers, storePlayers } from "@/utils/localStorage";
+import { useParams } from "react-router-dom";
 
 type Player = {
   id: string;
@@ -24,7 +26,7 @@ type PlayersListProps = {
 };
 
 const PlayersList = ({ 
-  players, 
+  players: initialPlayers, 
   currentPlayerAddress, 
   onGameStart, 
   isInGame = false,
@@ -32,10 +34,28 @@ const PlayersList = ({
   stage = 'topic_discovery',
   onVoteSubmit
 }: PlayersListProps) => {
+  const { gameId } = useParams<{ gameId: string }>();
   const { toast } = useToast();
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [votes, setVotes] = useState<Record<string, 'human' | 'ai'>>({});
+  const [players, setPlayers] = useState<Player[]>(initialPlayers);
+
+  useEffect(() => {
+    if (gameId) {
+      const storedPlayers = getStoredPlayers(gameId);
+      if (storedPlayers.length > 0) {
+        setPlayers(storedPlayers);
+      }
+    }
+  }, [gameId]);
+
+  useEffect(() => {
+    if (gameId && initialPlayers.length > 0) {
+      storePlayers(gameId, initialPlayers);
+      setPlayers(initialPlayers);
+    }
+  }, [gameId, initialPlayers]);
 
   const humanPlayers = players.filter(p => p.type === 'human' && p.hasJoined);
 
