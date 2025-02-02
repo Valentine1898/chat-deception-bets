@@ -79,9 +79,15 @@ const GameLobbyPage = () => {
         });
       });
 
+      const unsubscribeSessionStart = wsService.onSessionStart(() => {
+        setIsGameStarted(true);
+        setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
+      });
+
       return () => {
         unsubscribeSessionInfo();
         unsubscribeTopicMessage();
+        unsubscribeSessionStart();
         wsService.disconnect();
       };
     }

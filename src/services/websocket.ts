@@ -26,6 +26,7 @@ export class WebSocketService {
   private messageHandlers: ((message: ChatMessage) => void)[] = [];
   private sessionInfoHandlers: ((info: SessionInfo) => void)[] = [];
   private topicMessageHandlers: ((topic: string) => void)[] = [];
+  private sessionStartHandlers: (() => void)[] = [];
   private disconnectHandlers: (() => void)[] = [];
   private reconnectHandlers: (() => void)[] = [];
   private processedMessageIds = new Set<string>();
@@ -71,13 +72,17 @@ export class WebSocketService {
             break;
 
           case 'session_info':
-          case 'session_started':
           case 'session_finished':
             const sessionInfo: SessionInfo = data.content;
             console.log('ℹ️ Processing session info:', sessionInfo);
             this.sessionInfoHandlers.forEach(handler => handler(sessionInfo));
             break;
 
+          case 'session_started':
+            console.log('🎮 Session started, requesting topic');
+            this.requestTopic();
+            this.sessionStartHandlers.forEach(handler => handler());
+            // Fall through to process session info
           case 'session_pending':
             toast.info("Waiting for other players to join...");
             break;
@@ -163,6 +168,13 @@ export class WebSocketService {
     this.topicMessageHandlers.push(handler);
     return () => {
       this.topicMessageHandlers = this.topicMessageHandlers.filter(h => h !== handler);
+    };
+  }
+
+  onSessionStart(handler: () => void) {
+    this.sessionStartHandlers.push(handler);
+    return () => {
+      this.sessionStartHandlers = this.sessionStartHandlers.filter(h => h !== handler);
     };
   }
 
