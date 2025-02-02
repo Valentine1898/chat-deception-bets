@@ -9,7 +9,7 @@ import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
 import WaitingComponent from "@/components/WaitingComponent";
 import { GAME_TIMINGS } from "@/config/gameConfig";
-import { wsService } from "@/services/websocket";
+import { wsService, type Player } from "@/services/websocket";
 
 const GameLobbyPage = () => {
   const { gameId } = useParams();
@@ -22,6 +22,7 @@ const GameLobbyPage = () => {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState<{ title: string; description: string } | null>(null);
+  const [currentPlayer, setCurrentPlayer] = useState<string | null>(null);
   
   // Timer states
   const [topicRevealCountdown, setTopicRevealCountdown] = useState<number | null>(null);
@@ -51,24 +52,16 @@ const GameLobbyPage = () => {
 
       const unsubscribeSessionInfo = wsService.onSessionInfo((sessionInfo) => {
         console.log('Received session info:', sessionInfo);
-        const currentPlayer = {
-          id: sessionInfo.you,
+        setCurrentPlayer(sessionInfo.you);
+        
+        const mappedPlayers = sessionInfo.players.map(player => ({
+          id: player.id.toString(),
           type: 'human',
-          alias: sessionInfo.you,
-          address: user?.wallet?.address,
+          alias: player.name,
           hasJoined: true
-        };
+        }));
 
-        const otherPlayers = sessionInfo.players
-          .filter(playerId => playerId !== sessionInfo.you)
-          .map(playerId => ({
-            id: playerId,
-            type: 'human',
-            alias: playerId,
-            hasJoined: true
-          }));
-
-        setPlayers([currentPlayer, ...otherPlayers]);
+        setPlayers(mappedPlayers);
       });
 
       const unsubscribeTopicMessage = wsService.onTopicMessage((topic) => {
@@ -92,7 +85,7 @@ const GameLobbyPage = () => {
         wsService.disconnect();
       };
     }
-  }, [gameId, authenticated, user?.wallet?.address]);
+  }, [gameId, authenticated]);
 
   const handleJoinGame = async () => {
     try {
@@ -271,7 +264,7 @@ const GameLobbyPage = () => {
             </div>
             <PlayersList 
               players={players}
-              currentPlayerAddress={user?.wallet?.address}
+              currentPlayerAddress={currentPlayer}
               isInGame={true}
               showResults={stage === 'results'}
               stage={stage}
@@ -302,7 +295,7 @@ const GameLobbyPage = () => {
           </div>
           <PlayersList 
             players={players}
-            currentPlayerAddress={user?.wallet?.address}
+            currentPlayerAddress={currentPlayer}
             onGameStart={handleGameStart}
             isInGame={isGameStarted}
           />
