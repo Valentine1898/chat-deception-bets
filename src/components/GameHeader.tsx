@@ -27,7 +27,7 @@ type GameHeaderProps = {
 const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, user } = usePrivy();
+  const { logout, user, login } = usePrivy();
   const { wallets } = useWallets();
   const [balance, setBalance] = useState<string>("0.00");
   const [turingBalance, setTuringBalance] = useState<string>("0");
@@ -169,47 +169,59 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex items-center bg-[#1C1917] rounded-xl p-2">
-                  <div className="flex items-center gap-2.5 px-2">
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <mask id="mask0_23_5268" maskUnits="userSpaceOnUse" x="0" y="0" width="12" height="12">
-                        <path d="M0 0H12V12H0V0Z" fill="white"/>
-                      </mask>
-                      <g mask="url(#mask0_23_5268)">
-                        <path d="M5.9895 12C9.309 12 12 9.31369 12 6C12 2.68631 9.309 0 5.9895 0C2.84016 0 0.256594 2.418 0 5.49563H7.94447V6.50437H0C0.256594 9.582 2.84016 12 5.9895 12Z" fill="#3A77F7"/>
-                      </g>
-                    </svg>
-                    <span className="font-['Chivo_Mono'] text-sm text-white">
-                      {balance} ETH
-                    </span>
-                    <div className="w-px h-4 bg-[#292524]" />
-                    <span className="font-['Chivo_Mono'] text-sm text-white">
-                      {turingBalance} TURING
-                    </span>
-                    <div className="w-px h-4 bg-[#292524]" />
-                    <div className="flex items-center gap-2">
-                      <Wallet className="w-3 h-3 text-[#D6D3D1]" />
-                      <span className="font-['Chivo_Mono'] text-sm text-primary">
-                        {user?.wallet?.address ? shortenAddress(user.wallet.address) : "Not connected"}
-                      </span>
-                    </div>
-                  </div>
+                {!user?.wallet?.address ? (
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={logout}
-                    className="ml-2 bg-primary hover:bg-primary/90 h-8 w-8 p-0"
+                    onClick={login}
+                    className="bg-[#FD9A00] hover:bg-[#FD9A00]/90 text-black font-medium px-4 py-2 rounded-xl flex items-center gap-2"
                   >
-                    <LogOut className="h-4 w-4 text-primary-foreground" />
+                    <Wallet className="w-4 h-4" />
+                    Connect Wallet
                   </Button>
-                </div>
+                ) : (
+                  <div className="flex items-center bg-[#1C1917] rounded-xl p-2">
+                    <div className="flex items-center gap-2.5 px-2">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <mask id="mask0_23_5268" maskUnits="userSpaceOnUse" x="0" y="0" width="12" height="12">
+                          <path d="M0 0H12V12H0V0Z" fill="white"/>
+                        </mask>
+                        <g mask="url(#mask0_23_5268)">
+                          <path d="M5.9895 12C9.309 12 12 9.31369 12 6C12 2.68631 9.309 0 5.9895 0C2.84016 0 0.256594 2.418 0 5.49563H7.94447V6.50437H0C0.256594 9.582 2.84016 12 5.9895 12Z" fill="#3A77F7"/>
+                        </g>
+                      </svg>
+                      <span className="font-['Chivo_Mono'] text-sm text-white">
+                        {balance} ETH
+                      </span>
+                      <div className="w-px h-4 bg-[#292524]" />
+                      <span className="font-['Chivo_Mono'] text-sm text-white">
+                        {turingBalance} TURING
+                      </span>
+                      <div className="w-px h-4 bg-[#292524]" />
+                      <div className="flex items-center gap-2">
+                        <Wallet className="w-3 h-3 text-[#D6D3D1]" />
+                        <span className="font-['Chivo_Mono'] text-sm text-primary">
+                          {user?.wallet?.address ? shortenAddress(user.wallet.address) : "Not connected"}
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={logout}
+                      className="ml-2 bg-primary hover:bg-primary/90 h-8 w-8 p-0"
+                    >
+                      <LogOut className="h-4 w-4 text-primary-foreground" />
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {isActiveGamePage && <GameStageTimer stage={stage} countdown={countdown} />}
+      {location.pathname.startsWith('/game/') && location.pathname.length > 6 && (
+        <GameStageTimer stage={stage} countdown={countdown} />
+      )}
     </div>
   );
 };
