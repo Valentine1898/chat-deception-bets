@@ -72,6 +72,10 @@ const GameLobbyPage = () => {
           });
           setIsGameStarted(true);
           setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
+          toast({
+            title: "Game Started!",
+            description: "Topic discovery phase has begun.",
+          });
         }
       });
 
@@ -86,7 +90,7 @@ const GameLobbyPage = () => {
         wsService.disconnect();
       };
     }
-  }, [gameId, authenticated]);
+  }, [gameId, authenticated, toast]);
 
   const handleJoinGame = async () => {
     try {
@@ -156,12 +160,16 @@ const GameLobbyPage = () => {
     } else if (topicRevealCountdown === 0) {
       setTopicRevealCountdown(null);
       setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
+      toast({
+        title: "Topic Discovery Complete",
+        description: "Moving to discussion phase.",
+      });
     }
 
     return () => {
       if (timer) clearTimeout(timer);
     };
-  }, [topicRevealCountdown]);
+  }, [topicRevealCountdown, toast]);
 
   // Chat countdown
   useEffect(() => {
