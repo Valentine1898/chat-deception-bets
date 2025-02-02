@@ -24,4 +24,4 @@ export const NETWORKS = {
 } as const;
 
 // Change this to switch networks
-export const ACTIVE_NETWORK = NETWORKS.SEPOLIA;
+export const ACTIVE_NETWORK = NETWORKS.BASE;

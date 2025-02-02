@@ -15,7 +15,7 @@ const ERC20_ABI = [
   "function decimals() view returns (uint8)",
 ];
 
-const TURING_TOKEN_ADDRESS = "0x6Ee6e27a965d5566970dCfA347fB75A8C386E2e7";
+const TURING_TOKEN_ADDRESS = "0x158DF6e13E7Dd2B45e28168671Bd92990f4d0823";
 
 type GameHeaderProps = {
   stage: GameStage;

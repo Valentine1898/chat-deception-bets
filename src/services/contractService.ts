@@ -1,6 +1,6 @@
 import { Contract, BrowserProvider, parseEther } from "ethers";
 
-const CONTRACT_ADDRESS = "0x803d92FA9c82d533E808E6038A84EBca5E36fC1C";
+const CONTRACT_ADDRESS = "0x87abF22FDbF956cA29D8e1A74228854F377328ba";
 const MOCK_MODE = false;
 
 const CONTRACT_ABI = [
