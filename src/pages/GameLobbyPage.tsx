@@ -94,7 +94,6 @@ const GameLobbyPage = () => {
       
       setHasJoined(true);
       // Request topic after successfully joining
-      wsService.requestTopic()
       handleGameStart()
       
       toast({
@@ -112,6 +111,9 @@ const GameLobbyPage = () => {
   };
 
   const handleGameStart = () => {
+    console.log('Starting game...');
+    wsService.startSession()
+    wsService.requestTopic()
     setIsGameStarted(true);
     setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
