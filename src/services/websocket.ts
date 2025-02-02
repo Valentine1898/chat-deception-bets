@@ -18,7 +18,6 @@ type MessageType = 'chat' | 'session_info' | 'error' | 'session_pending' | 'sess
 type WebSocketMessage = {
   type: MessageType;
   content: any;
-  sender?: string;
 };
 
 export class WebSocketService {
@@ -43,53 +42,53 @@ export class WebSocketService {
     
     this.ws.onmessage = (event) => {
       try {
-        const data: WebSocketMessage = JSON.parse(event.data);
+        const data = JSON.parse(event.data) as WebSocketMessage;
         console.log('📥 Received WebSocket message:', data);
         
         switch (data.type) {
           case 'chat':
-            const messageId = `${data.sender}-${Date.now()}`;
-            
-            if (this.processedMessageIds.has(messageId)) {
-              console.log('🔄 Skipping duplicate message:', messageId);
-              return;
+            if (typeof data.content === 'object' && data.content.playerId && data.content.message) {
+              const messageId = `${data.content.playerId}-${Date.now()}`;
+              
+              if (this.processedMessageIds.has(messageId)) {
+                console.log('🔄 Skipping duplicate message:', messageId);
+                return;
+              }
+              
+              const chatMessage: ChatMessage = {
+                playerId: data.content.playerId,
+                message: data.content.message,
+                id: messageId,
+                timestamp: new Date().toLocaleTimeString()
+              };
+              
+              this.messageHandlers.forEach(handler => handler(chatMessage));
+              this.processedMessageIds.add(messageId);
             }
-            
-            const chatMessage: ChatMessage = {
-              playerId: data.sender || 'unknown',
-              message: data.content.message,
-              id: messageId
-            };
-            
-            console.log('💬 Processing new chat message:', chatMessage);
-            this.processedMessageIds.add(messageId);
-            this.messageHandlers.forEach(handler => handler(chatMessage));
             break;
 
           case 'topic':
-            console.log('📝 Processing topic message:', data.content);
+            console.log('📝 Received topic:', data.content);
             this.topicMessageHandlers.forEach(handler => handler(data.content));
             break;
 
           case 'session_info':
-          case 'session_finished':
-            const sessionInfo: SessionInfo = data.content;
-            console.log('ℹ️ Processing session info:', sessionInfo);
-            this.sessionInfoHandlers.forEach(handler => handler(sessionInfo));
+            console.log('ℹ️ Received session info:', data.content);
+            this.sessionInfoHandlers.forEach(handler => handler(data.content));
             break;
 
           case 'session_started':
-            console.log('🎮 Session started, requesting topic');
-            this.requestTopic();
+            console.log('🎮 Session started');
             this.sessionStartHandlers.forEach(handler => handler());
-            // Fall through to process session info
-          case 'session_pending':
-            toast.info("Waiting for other players to join...");
             break;
 
           case 'error':
-            console.error('❌ WebSocket error message:', data.content.message);
-            toast.error(data.content.message);
+            console.error('❌ WebSocket error message:', data.content);
+            toast.error(data.content);
+            break;
+
+          case 'session_pending':
+            toast.info("Waiting for other players to join...");
             break;
         }
       } catch (error) {
@@ -99,7 +98,7 @@ export class WebSocketService {
 
     this.ws.onerror = (error) => {
       console.error('❌ WebSocket error:', error);
-      toast.error("WebSocket connection error");
+      toast.error("Connection error occurred");
       this.isConnected = false;
     };
 
@@ -125,7 +124,7 @@ export class WebSocketService {
       });
       this.ws.send(payload);
     } else {
-      console.error('❌ Cannot send message - WebSocket not ready. State:', this.ws?.readyState);
+      console.error('❌ Cannot send message - WebSocket not ready');
       toast.error("Connection lost. Please refresh the page to reconnect.");
     }
   }
@@ -204,4 +203,3 @@ export class WebSocketService {
 }
 
 export const wsService = new WebSocketService();
-
