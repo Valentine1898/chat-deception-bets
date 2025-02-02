@@ -112,30 +112,6 @@ const GameLobbyPage = () => {
     setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };
 
-  // Show join screen if user hasn't joined and isn't the creator
-  if (!hasJoined && !isCreator && gameId) {
-    return (
-      <div className="min-h-screen bg-stone-800 pt-24">
-        <GameHeader stage="waiting" countdown={null} />
-        <div className="container mx-auto p-6">
-          <div className="max-w-2xl mx-auto">
-            <div className="relative mb-6">
-              <img 
-                src="/lovable-uploads/ad88a024-3cae-4692-895d-fa5d70188ff9.png"
-                alt="Game created"
-                className="w-full h-48 object-cover rounded-2xl"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent rounded-2xl" />
-              <div className="absolute bottom-4 left-4">
-                <h1 className="text-2xl font-bold text-white">Game successfully created</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const getCurrentStage = () => {
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
       return "topic_discovery";
