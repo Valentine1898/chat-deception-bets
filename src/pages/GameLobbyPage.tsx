@@ -96,7 +96,6 @@ const GameLobbyPage = () => {
 
   const handleJoinGame = async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
       setHasJoined(true);
       handleGameStart();
       
