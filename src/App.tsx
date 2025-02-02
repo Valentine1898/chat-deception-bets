@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -25,10 +25,12 @@ if (!PRIVY_APP_ID || PRIVY_APP_ID === "your_privy_app_id_here") {
 
 const AppRoutes = () => {
   const { authenticated } = usePrivy();
+  const location = useLocation();
+  const showHeader = location.pathname.startsWith('/game/');
   
   return (
     <>
-      {authenticated && <GameHeader stage="waiting" countdown={null} />}
+      {authenticated && showHeader && <GameHeader stage="waiting" countdown={null} />}
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/game/:gameId" element={<GameLobbyPage />} />
