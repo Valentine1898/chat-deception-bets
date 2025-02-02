@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { usePrivy } from "@privy-io/react-auth";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
@@ -15,10 +16,22 @@ const GameLobbyPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { authenticated, user } = usePrivy();
+  
+  // Game state
   const [players, setPlayers] = useState<Array<any>>([]);
   const [isGameStarted, setIsGameStarted] = useState(false);
-  const [isCreator, setIsCreator] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState<{ title: string; description: string } | null>(null);
+  
+  // Timer states
+  const [topicRevealCountdown, setTopicRevealCountdown] = useState<number | null>(null);
+  const [chatCountdown, setChatCountdown] = useState<number | null>(null);
+  const [votingCountdown, setVotingCountdown] = useState<number | null>(null);
+  
+  // UI states
+  const [isChatVisible, setIsChatVisible] = useState(false);
+  const [isVotingVisible, setIsVotingVisible] = useState(false);
+  const [hasVoted, setHasVoted] = useState(false);
 
   const gameUrl = `${window.location.origin}/game/${gameId}`;
 
@@ -32,6 +45,11 @@ const GameLobbyPage = () => {
 
   const isCreator = authenticated && user?.wallet?.address === mockGameData.creatorAddress;
   const hasPlacedBet = mockGameData.yourBet > 0;
+
+  const handleGameStart = () => {
+    setIsGameStarted(true);
+    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVEAL);
+  };
 
   useEffect(() => {
     if (gameId && authenticated) {
@@ -94,23 +112,6 @@ const GameLobbyPage = () => {
       });
     }
   };
-
-  // Show join screen if user hasn't joined and isn't the creator
-  if (!hasJoined && !isCreator && gameId) {
-    return (
-      <div className="min-h-screen bg-stone-800 pt-24">
-        <GameHeader stage="waiting" countdown={null} />
-        <div className="container mx-auto p-6">
-          <GameJoinScreen
-            gameId={gameId}
-            prizePool="0.0005"
-            requiredBet="0.00025"
-            onJoinGame={handleJoinGame}
-          />
-        </div>
-      </div>
-    );
-  }
 
   const getCurrentStage = () => {
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
@@ -226,6 +227,23 @@ const GameLobbyPage = () => {
       });
     }
   };
+
+  // Show join screen if user hasn't joined and isn't the creator
+  if (!hasJoined && !isCreator && gameId) {
+    return (
+      <div className="min-h-screen bg-stone-800 pt-24">
+        <GameHeader stage="waiting" countdown={null} />
+        <div className="container mx-auto p-6">
+          <GameJoinScreen
+            gameId={gameId}
+            prizePool="0.0005"
+            requiredBet="0.00025"
+            onJoinGame={handleJoinGame}
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (isGameStarted) {
     const stage = getCurrentStage();
