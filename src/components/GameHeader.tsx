@@ -96,7 +96,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
 
   useEffect(() => {
     const fetchBalances = async () => {
-      if (wallets?.[0] && currentChainId === "0x2105") {
+      if (wallets?.[0] && currentChainId === ACTIVE_NETWORK.chainId) {
         try {
           const ethProvider = await wallets[0].getEthereumProvider();
           const provider = new BrowserProvider(ethProvider);
