@@ -4,6 +4,8 @@ import {Check, Info, Copy} from "lucide-react";
 import {useToast} from "@/hooks/use-toast";
 import WalletConnect from "@/components/WalletConnect";
 import { useWallets } from "@privy-io/react-auth";
+import { useEffect, useState } from "react";
+import { contractService } from "@/services/contractService";
 
 type GameLobbyInfoProps = {
     authenticated: boolean;
@@ -30,7 +32,33 @@ const GameLobbyInfo = ({
     const {toast} = useToast();
     const { wallets } = useWallets();
     const userAddress = wallets?.[0]?.address?.toLowerCase();
-    const creatorAddress = mockGameData.creatorAddress?.toLowerCase();
+    const [gameData, setGameData] = useState<{
+        bet: string;
+        creatorAddress: string;
+    } | null>(null);
+    
+    useEffect(() => {
+        const fetchGameData = async () => {
+            try {
+                if (gameId) {
+                    const data = await contractService.contract?.games(parseInt(gameId));
+                    if (data) {
+                        setGameData({
+                            bet: data.bet.toString(),
+                            creatorAddress: data.player1.addr.toLowerCase()
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching game data:", err);
+            }
+        };
+
+        fetchGameData();
+    }, [gameId]);
+
+    const creatorAddress = gameData?.creatorAddress?.toLowerCase();
+    const betAmount = gameData ? parseFloat(gameData.bet) / 1e18 : mockGameData.betAmount;
     
     // Determine if the current user is the creator by comparing addresses
     const isActualCreator = userAddress && creatorAddress && userAddress === creatorAddress;
@@ -72,7 +100,7 @@ const GameLobbyInfo = ({
                         Place Your Bet
                     </h2>
                     <p className="text-lg mb-4">
-                        Required bet amount: {mockGameData.betAmount} ETH
+                        Required bet amount: {betAmount} ETH
                     </p>
                     <Button
                         onClick={onPlaceBet}
@@ -105,7 +133,7 @@ const GameLobbyInfo = ({
                     <CardContent className="p-6 space-y-4">
                         <div>
                             <h2 className="text-xl text-white">Chatroom • Prize Pool <span
-                                className="text-primary">{mockGameData.betAmount * 2} ETH</span></h2>
+                                className="text-primary">{betAmount * 2} ETH</span></h2>
                             <p className="text-sm text-muted-foreground">
                                 id: <span className="font-mono">{gameId}</span>
                             </p>
@@ -153,7 +181,7 @@ const GameLobbyInfo = ({
 
                         <div className="space-y-2">
                             <h2 className="text-xl text-white">
-                                Chatroom • Prize Pool <span className="text-[#FD9A00]">{mockGameData.betAmount * 2} ETH</span>
+                                Chatroom • Prize Pool <span className="text-[#FD9A00]">{betAmount * 2} ETH</span>
                             </h2>
                             <p className="text-sm text-[#A8A29E]">
                                 id: <span className="font-mono">{gameId}</span>
@@ -164,7 +192,7 @@ const GameLobbyInfo = ({
                     <div className="flex items-center gap-2 text-[#A8A29E] bg-black/20 p-4 rounded-xl">
                         <Info className="h-5 w-5 text-[#FD9A00]"/>
                         <p className="text-sm">
-                            You will need to have {mockGameData.betAmount} ETH on your wallet to make your bet
+                            You will need to have {betAmount} ETH on your wallet to make your bet
                         </p>
                     </div>
 
@@ -173,7 +201,7 @@ const GameLobbyInfo = ({
                             onClick={onPlaceBet}
                             className="w-full py-6 text-lg bg-[#FD9A00] hover:bg-[#FD9A00]/90 text-black font-serif italic"
                         >
-                            Join game for {mockGameData.betAmount} ETH
+                            Join game for {betAmount} ETH
                         </Button>
                     ) : (
                         <WalletConnect/>
