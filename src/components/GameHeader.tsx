@@ -8,6 +8,7 @@ import { formatEther, Contract } from "ethers";
 import { BrowserProvider } from "ethers";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { ACTIVE_NETWORK } from "@/config/networkConfig";
 
 // ERC20 ABI for balanceOf function
 const ERC20_ABI = [
@@ -42,42 +43,32 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
         const chainId = await provider.request({ method: 'eth_chainId' });
         setCurrentChainId(chainId);
 
-        if (chainId !== "0x2105") {
+        if (chainId !== ACTIVE_NETWORK.chainId) {
           try {
             await provider.request({
               method: 'wallet_switchEthereumChain',
-              params: [{ chainId: "0x2105" }],
+              params: [{ chainId: ACTIVE_NETWORK.chainId }],
             });
             toast({
               title: "Network switched",
-              description: "Successfully switched to Base network",
+              description: `Successfully switched to ${ACTIVE_NETWORK.chainName} network`,
             });
           } catch (switchError: any) {
             if (switchError.code === 4902) {
               try {
                 await provider.request({
                   method: 'wallet_addEthereumChain',
-                  params: [{
-                    chainId: "0x2105",
-                    chainName: "Base",
-                    nativeCurrency: {
-                      name: "ETH",
-                      symbol: "ETH",
-                      decimals: 18,
-                    },
-                    rpcUrls: ["https://mainnet.base.org"],
-                    blockExplorerUrls: ["https://basescan.org"],
-                  }],
+                  params: [ACTIVE_NETWORK],
                 });
                 toast({
                   title: "Network added",
-                  description: "Base network has been added to your wallet",
+                  description: `${ACTIVE_NETWORK.chainName} network has been added to your wallet`,
                 });
               } catch (addError) {
                 console.error("Error adding network:", addError);
                 toast({
                   title: "Error",
-                  description: "Failed to add Base network to your wallet",
+                  description: `Failed to add ${ACTIVE_NETWORK.chainName} network to your wallet`,
                   variant: "destructive",
                 });
               }
@@ -85,7 +76,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
               console.error("Error switching network:", switchError);
               toast({
                 title: "Error",
-                description: "Failed to switch to Base network",
+                description: `Failed to switch to ${ACTIVE_NETWORK.chainName} network`,
                 variant: "destructive",
               });
             }
