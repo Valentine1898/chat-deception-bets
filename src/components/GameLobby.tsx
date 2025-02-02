@@ -170,7 +170,7 @@ const GameLobby = () => {
               <div className="flex items-center gap-2 text-[#A8A29E] bg-black/20 p-4 rounded-xl">
                 <Info className="h-5 w-5 text-[#FD9A00]" />
                 <p className="text-sm">
-                  Your opponent have to bet the same amount in order to start game, so total prize pool will be equal 2 bets
+                  To create game you need to hold 10k $TURING tokens, you can buy it <span className="text-[#FD9A00] cursor-pointer">here</span>
                 </p>
               </div>
 
