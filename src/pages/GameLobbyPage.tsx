@@ -7,7 +7,6 @@ import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
-import GameJoinScreen from "@/components/GameJoinScreen";
 import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
 
@@ -37,7 +36,7 @@ const GameLobbyPage = () => {
 
   const mockGameData = {
     id: gameId,
-    creatorAddress: "0x1234...5678",
+    creatorAddress: "0xDC89F9576281e87f78EeF7ddDEBD61f7e7D82f82",
     betAmount: 0.1,
     status: "waiting_for_opponent",
     yourBet: authenticated ? 0.1 : 0,
@@ -111,39 +110,10 @@ const GameLobbyPage = () => {
     }
   };
 
-  // Show join screen if user hasn't joined and isn't the creator
-  if (!hasJoined && !isCreator && gameId) {
-    return (
-      <div className="min-h-screen bg-stone-800 pt-24">
-        <GameHeader stage="waiting" countdown={null} />
-        <div className="container mx-auto p-6">
-          <GameJoinScreen
-            gameId={gameId}
-            prizePool="0.0005"
-            requiredBet="0.00025"
-            onJoinGame={handleJoinGame}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  // Show topic screen after joining
-  if (hasJoined && selectedTopic && !isGameStarted) {
-    return (
-      <div className="min-h-screen bg-stone-800 pt-24">
-        <GameHeader stage="topic_discovery" countdown={null} />
-        <div className="container mx-auto p-6">
-          <GameTopic 
-            topic={selectedTopic}
-            isChatVisible={false}
-            gameId={gameId}
-            prizePool="0.0005"
-          />
-        </div>
-      </div>
-    );
-  }
+  const handleGameStart = () => {
+    setIsGameStarted(true);
+    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
+  };
 
   const getCurrentStage = () => {
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
@@ -334,7 +304,7 @@ const GameLobbyPage = () => {
           <PlayersList 
             players={players}
             currentPlayerAddress={user?.wallet?.address}
-            onGameStart={() => setIsGameStarted(true)}
+            onGameStart={handleGameStart}
             isInGame={isGameStarted}
           />
         </div>
