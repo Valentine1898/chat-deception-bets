@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { formatEther, Contract } from "ethers";
 import { BrowserProvider } from "ethers";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ACTIVE_NETWORK } from "@/config/networkConfig";
 
 // ERC20 ABI for balanceOf function
@@ -26,12 +26,16 @@ type GameHeaderProps = {
 
 const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout, user } = usePrivy();
   const { wallets } = useWallets();
   const [balance, setBalance] = useState<string>("0.00");
   const [turingBalance, setTuringBalance] = useState<string>("0");
   const { toast } = useToast();
   const [currentChainId, setCurrentChainId] = useState<string | null>(null);
+
+  // Check if we're on an active game page (not the lobby)
+  const isActiveGamePage = location.pathname.startsWith('/game/') && location.pathname.length > 6;
   
   const shortenAddress = (address: string) => {
     return `${address.slice(0, 4)}...${address.slice(-3)}`;
@@ -205,7 +209,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
         </div>
       </div>
 
-      <GameStageTimer stage={stage} countdown={countdown} />
+      {isActiveGamePage && <GameStageTimer stage={stage} countdown={countdown} />}
     </div>
   );
 };
