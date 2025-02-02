@@ -134,6 +134,17 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
     return () => clearInterval(interval);
   }, [wallets, currentChainId]);
 
+  const formatLargeNumber = (num: string): string => {
+    const value = parseFloat(num);
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`;
+    }
+    if (value >= 1000) {
+      return `${(value / 1000).toFixed(1)}K`;
+    }
+    return value.toFixed(2);
+  };
+
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
       <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-[#1C1917]">
@@ -193,7 +204,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                       </span>
                       <div className="w-px h-4 bg-[#292524]" />
                       <span className="font-['Chivo_Mono'] text-sm text-white">
-                        {turingBalance} TURING
+                        {formatLargeNumber(turingBalance)} TURING
                       </span>
                       <div className="w-px h-4 bg-[#292524]" />
                       <div className="flex items-center gap-2">
