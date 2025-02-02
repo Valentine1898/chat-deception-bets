@@ -81,7 +81,7 @@ const GameLobbyInfo = ({
     <div className="space-y-6 w-full max-w-2xl mx-auto">
       <div className="relative">
         <img 
-          src="/lovable-uploads/81b16cf2-a4cf-42a1-adc5-14d12b6fafdb.png"
+          src="/lovable-uploads/f11be65f-04d6-4461-a829-da3a007e9734.png"
           alt="Turing machine"
           className="w-full h-48 object-cover rounded-2xl"
         />
