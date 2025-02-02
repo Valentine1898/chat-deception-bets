@@ -197,17 +197,17 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
                           <path d="M5.9895 12C9.309 12 12 9.31369 12 6C12 2.68631 9.309 0 5.9895 0C2.84016 0 0.256594 2.418 0 5.49563H7.94447V6.50437H0C0.256594 9.582 2.84016 12 5.9895 12Z" fill="#3A77F7"/>
                         </g>
                       </svg>
-                      <span className="font-['Chivo_Mono'] text-sm text-white">
+                      <span className="font-mono text-sm text-white">
                         {balance} ETH
                       </span>
                       <div className="w-px h-4 bg-[#292524]" />
-                      <span className="font-['Chivo_Mono'] text-sm text-white">
+                      <span className="font-mono text-sm text-white">
                         {formatLargeNumber(turingBalance)} TURING
                       </span>
                       <div className="w-px h-4 bg-[#292524]" />
                       <div className="flex items-center gap-2">
                         <Wallet className="w-3 h-3 text-[#D6D3D1]" />
-                        <span className="font-['Chivo_Mono'] text-sm text-primary">
+                        <span className="font-mono text-sm text-primary">
                           {user?.wallet?.address ? shortenAddress(user.wallet.address) : "Not connected"}
                         </span>
                       </div>
