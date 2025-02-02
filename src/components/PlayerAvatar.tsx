@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 type PlayerAvatarProps = {
-  type: 'human' | 'ai';
+  type: string;
   variant?: 1 | 2 | 3 | 4 | 5 | 6;
   className?: string;
 };

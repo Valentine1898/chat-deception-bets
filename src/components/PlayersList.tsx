@@ -16,7 +16,12 @@ type Player = {
 };
 
 type PlayersListProps = {
-  players: Player[];
+  players: {
+    id: number,
+    type: string,
+    alias: string,
+    hasJoined: boolean
+  }[];
   currentPlayerAddress?: string;
   onGameStart?: () => void;
   isInGame?: boolean;
@@ -39,7 +44,13 @@ const PlayersList = ({
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [votes, setVotes] = useState<Record<string, 'human' | 'ai'>>({});
-  const [players, setPlayers] = useState<Player[]>(initialPlayers);
+  const [players, setPlayers] = useState<{
+    id: number,
+    type: string,
+    alias: string,
+    hasJoined: boolean
+    address?: string
+  }[]>(initialPlayers);
 
   useEffect(() => {
     if (gameId) {
@@ -92,7 +103,7 @@ const PlayersList = ({
     };
   }, [countdown, onGameStart]);
 
-  const handleVoteChange = (playerId: string, vote: 'human' | 'ai') => {
+  const handleVoteChange = (playerId: number, vote: 'human' | 'ai') => {
     setVotes(prev => ({
       ...prev,
       [playerId]: vote
@@ -138,7 +149,7 @@ const PlayersList = ({
             >
               <div className="flex items-center gap-2">
                 <PlayerAvatar 
-                  type={player.type} 
+                  type={player.type}
                   variant={(index % 6 + 1) as 1 | 2 | 3 | 4 | 5 | 6}
                   className="w-6 h-6"
                 />

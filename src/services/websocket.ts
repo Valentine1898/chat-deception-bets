@@ -1,15 +1,24 @@
 import { toast } from "sonner";
 
+export type Player = {
+  name: string;
+  id: number;
+};
+
 export type ChatMessage = {
   playerId: string;
   message: string;
   id?: string;
   timestamp?: string;
+  sender?: {
+    name: string;
+    id: number;
+  };
 };
 
 export type SessionInfo = {
-  players: string[];
-  you: string;
+  players: Player[];
+  you: number;
   session_id: string;
 };
 
@@ -18,8 +27,12 @@ type MessageType = 'chat' | 'session_info' | 'error' | 'session_pending' | 'sess
 type WebSocketMessage = {
   type: MessageType;
   content: any;
-  sender?: string;
+  sender?: {
+    name: string;
+    id: number;
+  };
 };
+
 
 export class WebSocketService {
   private ws: WebSocket | null = null;
@@ -57,7 +70,7 @@ export class WebSocketService {
               }
               
               const chatMessage: ChatMessage = {
-                playerId: data.sender || 'Unknown',
+                playerId: data.sender.name || 'Unknown',
                 message: data.content.message,
                 id: messageId,
                 timestamp: new Date().toLocaleTimeString()

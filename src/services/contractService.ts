@@ -130,16 +130,16 @@ class ContractService {
     const tx = await this.contract.createGame(parseEther(betAmount), {
       value: parseEther(betAmount)
     });
-    
+
     const receipt = await tx.wait();
     console.log("Game created:", receipt);
-    
-    const event = receipt.logs.find((log: any) => 
+
+    const event = receipt.logs.find((log: any) =>
       log.topics[0] === "0x48c63a2766cb910ba33c51568f49d86480f13c99942424849a094ff86b2ec461"
     );
-    
+
     if (!event) throw new Error("GameCreated event not found");
-    
+
     const gameId = parseInt(event.topics[1], 16);
     return gameId;
   }
