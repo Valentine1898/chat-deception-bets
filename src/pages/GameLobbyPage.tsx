@@ -7,6 +7,7 @@ import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
+import WaitingComponent from "@/components/WaitingComponent";
 import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
 
@@ -240,7 +241,6 @@ const GameLobbyPage = () => {
 
   if (isGameStarted) {
     const stage = getCurrentStage();
-    console.log('stage', stage)
     
     return (
       <div className="min-h-screen bg-stone-800">
@@ -254,12 +254,16 @@ const GameLobbyPage = () => {
         <div className="container mx-auto p-6 mt-[200px]">
           <div className="flex gap-6 justify-between">
             <div className="flex-1">
-              <GameTopic 
-                topic={selectedTopic}
-                isChatVisible={stage === 'discussion' || stage === 'human_detection' || stage === 'awaiting_votes'}
-                gameId={gameId}
-                prizePool="0.0005"
-              />
+              {stage === 'waiting' ? (
+                <WaitingComponent />
+              ) : (
+                <GameTopic 
+                  topic={selectedTopic}
+                  isChatVisible={stage === 'discussion' || stage === 'human_detection' || stage === 'awaiting_votes'}
+                  gameId={gameId}
+                  prizePool="0.0005"
+                />
+              )}
               
               {stage === 'results' && (
                 <div className="flex flex-col items-center justify-center mt-8">
