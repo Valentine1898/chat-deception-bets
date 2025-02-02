@@ -36,7 +36,7 @@ const GameLobbyPage = () => {
 
   const mockGameData = {
     id: gameId,
-    creatorAddress: "0x1234...5678",
+    creatorAddress: "0xDC89F9576281e87f78EeF7ddDEBD61f7e7D82f82",
     betAmount: 0.1,
     status: "waiting_for_opponent",
     yourBet: authenticated ? 0.1 : 0,
