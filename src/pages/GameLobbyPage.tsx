@@ -94,6 +94,7 @@ const GameLobbyPage = () => {
       
       setHasJoined(true);
       // Request topic after successfully joining
+      wsService.requestTopic()
       handleGameStart()
       
       toast({
