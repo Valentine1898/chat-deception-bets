@@ -117,12 +117,15 @@ export default function GameChat() {
                 <PlayerAvatar 
                   type="human"
                   variant={avatarVariant}
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 w-8 h-8"
                 />
-                <div className="flex flex-col gap-1 max-w-[80%]">
+                <div className={cn(
+                  "flex flex-col gap-1 max-w-[80%]",
+                  isCurrentUser ? "items-end" : "items-start"
+                )}>
                   <div
                     className={cn(
-                      "flex items-center gap-2 text-xs",
+                      "flex items-center gap-2",
                       isCurrentUser ? "flex-row-reverse" : "flex-row"
                     )}
                   >
@@ -132,7 +135,7 @@ export default function GameChat() {
                     )}>
                       {isCurrentUser ? "You" : message.playerId}
                     </span>
-                    <span className="text-muted-foreground">
+                    <span className="text-xs text-muted-foreground">
                       {message.timestamp}
                     </span>
                   </div>
