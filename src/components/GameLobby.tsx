@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Play, Plus, Loader2, Info } from "lucide-react";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
-import { parseEther } from "ethers";
+import { parseEther, formatEther } from "ethers";
 import { v4 as uuidv4 } from 'uuid';
 import { cn } from "@/lib/utils";
+import { contractService } from "@/services/contractService";
 
-const REQUIRED_BET = "0.1"; // ETH
 const ACTIVE_GAME_SESSION_KEY = "activeGameSession";
 
 const BET_OPTIONS = [
@@ -59,19 +59,22 @@ const GameLobby = () => {
     try {
       setIsPlacingBet(true);
       
-      // Mock smart contract interaction
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate blockchain delay
+      // Initialize contract with current provider
+      await contractService.init(await wallets[0].getEthereumProvider());
       
-      const sessionId = uuidv4();
-      localStorage.setItem(ACTIVE_GAME_SESSION_KEY, sessionId);
-      setActiveGameSession(sessionId);
+      // Create game on the contract
+      const gameId = await contractService.createGame(selectedBet.amount);
+      
+      // Store game session
+      localStorage.setItem(ACTIVE_GAME_SESSION_KEY, gameId.toString());
+      setActiveGameSession(gameId.toString());
       
       toast({
-        title: "Bet placed successfully!",
-        description: `Your bet of ${REQUIRED_BET} ETH has been placed.`,
+        title: "Game created successfully!",
+        description: `Your bet of ${selectedBet.amount} ETH has been placed.`,
       });
       
-      navigate(`/game/${sessionId}`);
+      navigate(`/game/${gameId}`);
     } catch (error) {
       console.error("Error creating game:", error);
       toast({
@@ -84,10 +87,40 @@ const GameLobby = () => {
     }
   };
 
-  const joinGame = (sessionId: string) => {
-    localStorage.setItem(ACTIVE_GAME_SESSION_KEY, sessionId);
-    setActiveGameSession(sessionId);
-    navigate(`/game/${sessionId}`);
+  const joinGame = async (sessionId: string) => {
+    if (!wallets?.[0]) {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your wallet to join the game",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Initialize contract with current provider
+      await contractService.init(await wallets[0].getEthereumProvider());
+      
+      // Join game on the contract
+      await contractService.joinGame(parseInt(sessionId), selectedBet.amount);
+      
+      localStorage.setItem(ACTIVE_GAME_SESSION_KEY, sessionId);
+      setActiveGameSession(sessionId);
+      
+      toast({
+        title: "Joined game successfully!",
+        description: `Your bet of ${selectedBet.amount} ETH has been placed.`,
+      });
+      
+      navigate(`/game/${sessionId}`);
+    } catch (error) {
+      console.error("Error joining game:", error);
+      toast({
+        title: "Error joining game",
+        description: "There was an error joining the game. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
