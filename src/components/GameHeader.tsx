@@ -204,7 +204,7 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
         </div>
       </div>
 
-      <GameStageTimer stage={stage} countdown={countdown} />
+      {/*<GameStageTimer stage={stage} countdown={countdown} />*/}
     </div>
   );
 };
