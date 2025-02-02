@@ -7,7 +7,6 @@ import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
-import GameJoinScreen from "@/components/GameJoinScreen";
 import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
 
@@ -131,12 +130,6 @@ const GameLobbyPage = () => {
                 <h1 className="text-2xl font-bold text-white">Game successfully created</h1>
               </div>
             </div>
-            <GameJoinScreen
-              gameId={gameId}
-              prizePool="0.0005"
-              requiredBet="0.00025"
-              onJoinGame={handleJoinGame}
-            />
           </div>
         </div>
       </div>
