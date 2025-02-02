@@ -111,6 +111,14 @@ export class WebSocketService {
           case 'session_pending':
             toast.info("Waiting for other players to join...");
             break;
+          case 'topic':
+            console.log('📌 Received topic:', data.content);
+            if (typeof data.content === 'string') {
+              this.topicMessageHandlers.forEach(handler => handler(data.content));
+            } else {
+              console.error('Invalid topic content:', data.content);
+            }
+            break;
         }
       } catch (error) {
         console.error('❌ Error parsing WebSocket message:', error, 'Raw data:', event.data);
