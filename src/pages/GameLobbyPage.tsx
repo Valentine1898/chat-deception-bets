@@ -6,9 +6,9 @@ import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
+import GameJoinScreen from "@/components/GameJoinScreen";
 import { GAME_TIMINGS } from "@/config/gameConfig";
 import { wsService } from "@/services/websocket";
-import { Button } from "@/components/ui/button";
 
 const GameLobbyPage = () => {
   const { gameId } = useParams();
@@ -17,13 +17,8 @@ const GameLobbyPage = () => {
   const { authenticated, user } = usePrivy();
   const [players, setPlayers] = useState<Array<any>>([]);
   const [isGameStarted, setIsGameStarted] = useState(false);
-  const [topicRevealCountdown, setTopicRevealCountdown] = useState<number | null>(null);
-  const [chatCountdown, setChatCountdown] = useState<number | null>(null);
-  const [votingCountdown, setVotingCountdown] = useState<number | null>(null);
-  const [selectedTopic, setSelectedTopic] = useState<{ title: string; description: string } | null>(null);
-  const [isChatVisible, setIsChatVisible] = useState(false);
-  const [isVotingVisible, setIsVotingVisible] = useState(false);
-  const [hasVoted, setHasVoted] = useState(false);
+  const [isCreator, setIsCreator] = useState(false);
+  const [hasJoined, setHasJoined] = useState(false);
 
   const gameUrl = `${window.location.origin}/game/${gameId}`;
 
@@ -80,11 +75,42 @@ const GameLobbyPage = () => {
     }
   }, [gameId, authenticated, user?.wallet?.address]);
 
-  const handleGameStart = () => {
-    setIsGameStarted(true);
-    wsService.requestTopic();
-    setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
+  const handleJoinGame = async () => {
+    try {
+      // Mock smart contract interaction
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      setHasJoined(true);
+      toast({
+        title: "Successfully joined the game!",
+        description: "Your bet has been placed.",
+      });
+    } catch (error) {
+      console.error("Error joining game:", error);
+      toast({
+        title: "Error joining game",
+        description: "There was an error placing your bet. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
+
+  // Show join screen if user hasn't joined and isn't the creator
+  if (!hasJoined && !isCreator && gameId) {
+    return (
+      <div className="min-h-screen bg-stone-800 pt-24">
+        <GameHeader stage="waiting" countdown={null} />
+        <div className="container mx-auto p-6">
+          <GameJoinScreen
+            gameId={gameId}
+            prizePool="0.0005"
+            requiredBet="0.00025"
+            onJoinGame={handleJoinGame}
+          />
+        </div>
+      </div>
+    );
+  }
 
   const getCurrentStage = () => {
     if (topicRevealCountdown !== null && topicRevealCountdown > 0) {
@@ -266,13 +292,10 @@ const GameLobbyPage = () => {
               isCreator={isCreator}
               gameId={gameId || ''}
               gameUrl={gameUrl}
-              mockGameData={mockGameData}
-              onPlaceBet={() => {
-                toast({
-                  title: "Placing bet...",
-                  description: "This would trigger a smart contract call in production",
-                });
+              mockGameData={{
+                betAmount: 0.00025
               }}
+              onPlaceBet={handleJoinGame}
             />
           </div>
           <PlayersList 
