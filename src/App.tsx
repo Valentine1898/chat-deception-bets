@@ -26,8 +26,8 @@ if (!PRIVY_APP_ID || PRIVY_APP_ID === "your_privy_app_id_here") {
 const AppRoutes = () => {
   const { authenticated } = usePrivy();
   const location = useLocation();
-  const showHeader = location.pathname.startsWith('/game/');
-  const showTimer = location.pathname.startsWith('/game/') && location.pathname.length > 6; // Only show timer in active game, not in lobby
+  const showHeader = location.pathname.startsWith('/game/') && location.pathname.length > 6; // Only show header in active game, not in lobby
+  const showTimer = showHeader; // Timer shows whenever header shows (in active game)
   
   return (
     <>
