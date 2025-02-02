@@ -15,7 +15,7 @@ const GameLobbyPage = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { authenticated, user } = usePrivy();
+  const { authenticated } = usePrivy();
   
   // Game state
   const [players, setPlayers] = useState<Array<any>>([]);
@@ -43,7 +43,7 @@ const GameLobbyPage = () => {
     yourBet: authenticated ? 0.1 : 0,
   };
 
-  const isCreator = authenticated && user?.wallet?.address === mockGameData.creatorAddress;
+  const isCreator = authenticated && mockGameData.creatorAddress;
   const hasPlacedBet = mockGameData.yourBet > 0;
 
   useEffect(() => {
@@ -66,16 +66,20 @@ const GameLobbyPage = () => {
 
       const unsubscribeTopicMessage = wsService.onTopicMessage((topic) => {
         console.log('Received topic:', topic);
-        setSelectedTopic({
-          title: "Today's Topic",
-          description: topic
-        });
+        if (typeof topic === 'string') {
+          setSelectedTopic({
+            title: "Today's Topic",
+            description: topic
+          });
+          // Start chat countdown after topic is received
+          setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
+        }
       });
 
       const unsubscribeSessionStart = wsService.onSessionStart(() => {
         console.log('Session started, transitioning to Discussion phase');
         setIsGameStarted(true);
-        setChatCountdown(GAME_TIMINGS.CHAT_DISCUSSION);
+        setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
       });
 
       return () => {
@@ -159,7 +163,6 @@ const GameLobbyPage = () => {
       }, 1000);
     } else if (topicRevealCountdown === 0) {
       setTopicRevealCountdown(null);
-      wsService.startSession();
     }
 
     return () => {
