@@ -1,6 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import ShareGameButtons from "@/components/ShareGameButtons";
+import { Check, Info, Copy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import WalletConnect from "@/components/WalletConnect";
 
 type GameLobbyInfoProps = {
@@ -24,15 +25,31 @@ const GameLobbyInfo = ({
   mockGameData,
   onPlaceBet
 }: GameLobbyInfoProps) => {
+  const { toast } = useToast();
+
+  const copyGameUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(gameUrl);
+      toast({
+        title: "Link Copied!",
+        description: "The game invitation link has been copied to your clipboard.",
+      });
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Please try copying the link manually.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (!authenticated) {
     return (
       <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-foreground">
+        <CardContent className="flex flex-col items-center justify-center p-8">
+          <h2 className="text-2xl font-bold text-foreground mb-6">
             Connect Your Wallet to Join
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex justify-center">
+          </h2>
           <WalletConnect />
         </CardContent>
       </Card>
@@ -42,56 +59,73 @@ const GameLobbyInfo = ({
   if (!hasPlacedBet) {
     return (
       <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-foreground">
+        <CardContent className="flex flex-col items-center justify-center p-8">
+          <h2 className="text-2xl font-bold text-foreground mb-6">
             Place Your Bet
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-center">
-            <p className="text-lg mb-4">
-              Required bet amount: {mockGameData.betAmount} ETH
-            </p>
-            <Button 
-              onClick={onPlaceBet}
-              className="bg-accent hover:bg-accent/90"
-            >
-              Place Bet
-            </Button>
-          </div>
+          </h2>
+          <p className="text-lg mb-4">
+            Required bet amount: {mockGameData.betAmount} ETH
+          </p>
+          <Button 
+            onClick={onPlaceBet}
+            className="bg-accent hover:bg-accent/90"
+          >
+            Place Bet
+          </Button>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-muted">
-      <CardHeader className="text-center space-y-2">
-        <CardTitle className="text-3xl font-bold text-foreground">
-          Game Lobby
-        </CardTitle>
-        <p className="text-xl text-muted-foreground animate-pulse">
-          {isCreator ? "Waiting for opponent to join..." : "Waiting for game to start..."}
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="rounded-lg bg-muted/50 p-4 text-center border border-muted">
-          <p className="text-sm font-medium text-muted-foreground mb-2">Game ID</p>
-          <p className="text-lg font-mono text-accent">{gameId}</p>
+    <div className="space-y-6 w-full max-w-2xl mx-auto">
+      <div className="relative">
+        <img 
+          src="/lovable-uploads/81b16cf2-a4cf-42a1-adc5-14d12b6fafdb.png"
+          alt="Turing machine"
+          className="w-full h-48 object-cover rounded-2xl"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent rounded-2xl" />
+        <div className="absolute bottom-4 left-4 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-white">Game successfully created</h1>
+          <Check className="w-6 h-6 text-accent" />
         </div>
+      </div>
 
-        <ShareGameButtons gameUrl={gameUrl} />
+      <Card className="bg-[#1C1917] border-[#292524]">
+        <CardContent className="p-6 space-y-4">
+          <div>
+            <h2 className="text-xl text-white">Chatroom • Prize Pool <span className="text-primary">{mockGameData.betAmount * 2} ETH</span></h2>
+            <p className="text-sm text-muted-foreground">
+              id: <span className="font-mono">{gameId}</span>
+            </p>
+          </div>
 
-        <div className="mt-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            {isCreator 
-              ? "The game will start automatically when your opponent joins and places their bet"
-              : "The game will start automatically when both players have placed their bets"
-            }
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex items-start gap-3 bg-black/20 rounded-xl p-4">
+            <Info className="w-5 h-5 text-primary mt-0.5" />
+            <p className="text-sm text-[#A8A29E]">
+              In this version we don't have public lobby, so share it in your chats or friend and try to find opponent there
+            </p>
+          </div>
+
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              value={gameUrl}
+              readOnly
+              className="flex-1 bg-black/20 border border-muted rounded-xl px-4 py-2 text-sm text-muted-foreground"
+            />
+            <Button
+              onClick={copyGameUrl}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              Copy link
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
