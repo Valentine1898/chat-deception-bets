@@ -104,15 +104,18 @@ const GameHeader = ({ stage, countdown }: GameHeaderProps) => {
           // Fetch ETH balance
           const ethBalance = await provider.getBalance(wallets[0].address);
           setBalance(parseFloat(formatEther(ethBalance)).toFixed(4));
-          console.log('ethBalance', ethBalance)
           
           // Fetch TURING token balance
           const turingContract = new Contract(TURING_TOKEN_ADDRESS, ERC20_ABI, provider);
           const decimals = await turingContract.decimals();
-          console.log('decimals', decimals)
           const turingBalance = await turingContract.balanceOf(wallets[0].address);
-          const formattedTuringBalance = (Number(turingBalance) / Math.pow(10, decimals.toNumber())).toFixed(2);
-          setTuringBalance(formattedTuringBalance);
+          
+          // Convert BigInt to string first, then to number
+          const divisor = BigInt(10) ** BigInt(decimals);
+          const formattedBalance = Number(
+            (Number(turingBalance.toString()) / Number(divisor.toString())).toFixed(2)
+          );
+          setTuringBalance(formattedBalance.toString());
         } catch (error) {
           console.error("Error fetching balances:", error);
           setBalance("0.00");
