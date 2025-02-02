@@ -4,7 +4,6 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import PlayersList from "@/components/PlayersList";
-import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
 import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
@@ -244,11 +243,6 @@ const GameLobbyPage = () => {
   if (isGameStarted) {
     return (
       <div className="min-h-screen bg-stone-800">
-        <GameHeader 
-          stage={stage}
-          countdown={getCurrentCountdown()}
-        />
-        
         <div className="container mx-auto p-6">
           <div className="flex gap-6 justify-between">
             <div className="flex-1">
@@ -291,10 +285,6 @@ const GameLobbyPage = () => {
 
   return (
     <div className="min-h-screen bg-stone-800">
-      <GameHeader 
-        stage="waiting"
-        countdown={null}
-      />
       <div className="container mx-auto p-6">
         <div className="flex gap-6 justify-between">
           <div className="flex-1">

@@ -28,7 +28,7 @@ const AppRoutes = () => {
   
   return (
     <>
-      {authenticated && <GameHeader stage="waiting" countdown={null} />}
+      {authenticated && <GameHeader stage="waiting" countdown={null} showTimer={false} />}
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/game/:gameId" element={<GameLobbyPage />} />
