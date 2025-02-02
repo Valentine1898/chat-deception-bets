@@ -331,7 +331,7 @@ const GameLobbyPage = () => {
                                 />
                             )}
 
-                            {stage === 'results' && (
+                            {showResults && (
                                 <div className="flex flex-col items-center justify-center mt-8">
                                     <h2 className="text-2xl font-bold mb-4">Game Results</h2>
                                     <Button
@@ -347,7 +347,7 @@ const GameLobbyPage = () => {
                             players={players}
                             currentPlayerAddress={user?.wallet?.address}
                             isInGame={true}
-                            showResults={stage === 'results'}
+                            showResults={showResults}
                             stage={stage}
                             onVoteSubmit={handleVoteSubmit}
                         />

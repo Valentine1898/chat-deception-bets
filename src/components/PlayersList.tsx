@@ -26,7 +26,7 @@ type PlayersListProps = {
   onGameStart?: () => void;
   isInGame?: boolean;
   showResults?: boolean;
-  stage?: 'topic_discovery' | 'discussion' | 'human_detection' | 'awaiting_votes' | 'results' | 'waiting';
+  stage?: 'topic_discovery' | 'discussion' | 'human_detection' | 'awaiting_votes' | 'results' | 'waiting'
   onVoteSubmit?: (votes: Record<string, 'human' | 'ai'>) => void;
 };
 
