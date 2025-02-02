@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import PlayersList from "@/components/PlayersList";
 import GameHeader from "@/components/GameHeader";
 import GameTopic from "@/components/GameTopic";
+import GameChat from "@/components/GameChat";
 import GameLobbyInfo from "@/components/GameLobbyInfo";
 import WaitingComponent from "@/components/WaitingComponent";
 import { GAME_TIMINGS } from "@/config/gameConfig";
@@ -103,7 +104,7 @@ const GameLobbyPage = () => {
       
       setHasJoined(true);
       // Request topic after successfully joining
-      handleGameStart()
+      handleGameStart();
       
       toast({
         title: "Successfully joined the game!",
@@ -263,12 +264,19 @@ const GameLobbyPage = () => {
               {stage === 'waiting' ? (
                 <WaitingComponent />
               ) : (
-                <GameTopic 
-                  topic={selectedTopic}
-                  isChatVisible={stage === 'discussion' || stage === 'human_detection' || stage === 'awaiting_votes'}
-                  gameId={gameId}
-                  prizePool="0.0005"
-                />
+                <>
+                  <GameTopic 
+                    topic={selectedTopic}
+                    isChatVisible={stage === 'discussion' || stage === 'human_detection' || stage === 'awaiting_votes'}
+                    gameId={gameId}
+                    prizePool="0.0005"
+                  />
+                  {isChatVisible && stage === 'discussion' && (
+                    <div className="mt-6">
+                      <GameChat />
+                    </div>
+                  )}
+                </>
               )}
               
               {stage === 'results' && (
