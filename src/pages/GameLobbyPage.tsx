@@ -60,7 +60,6 @@ const GameLobbyPage = () => {
         }));
 
         setPlayers(mappedPlayers);
-        wsService.requestTopic();
       });
 
       const unsubscribeTopicMessage = wsService.onTopicMessage((topic) => {
@@ -90,9 +89,9 @@ const GameLobbyPage = () => {
 
   const handleJoinGame = async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
       setHasJoined(true);
-      handleGameStart();
+      //await new Promise(resolve => setTimeout(resolve, 2000));
+      wsService.requestTopic();
       
       toast({
         title: "Successfully joined the game!",
