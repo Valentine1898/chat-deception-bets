@@ -240,6 +240,7 @@ const GameLobbyPage = () => {
 
   if (isGameStarted) {
     const stage = getCurrentStage();
+    console.log('stage', stage)
     
     return (
       <div className="min-h-screen bg-stone-800">

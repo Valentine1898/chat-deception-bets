@@ -93,13 +93,6 @@ const PlayersList = ({
     }
   };
 
-  // Only show voting UI during discussion stage
-  const showVoting = stage === 'discussion';
-
-  // Don't render if not in discussion stage
-  if (!showVoting) {
-    return null;
-  }
 
   return (
     <div className="box-border w-[360px] flex flex-col items-start p-3 gap-5 bg-[#1C1917] border border-[#44403B]/50 rounded-2xl">
