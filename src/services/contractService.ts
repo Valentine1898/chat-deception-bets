@@ -82,8 +82,34 @@ class ContractService {
   }
 
   async getGameData(gameId: number) {
+    console.log('Fetching game data for ID:', gameId);
     if (!this.contract) throw new Error("Contract not initialized");
-    return await this.contract.games(gameId);
+    
+    try {
+      const data = await this.contract.games(gameId);
+      console.log('Received game data:', {
+        id: data.id.toString(),
+        bet: data.bet.toString(),
+        deadline: data.deadline.toString(),
+        validated: data.validated,
+        player1: {
+          address: data.player1.addr,
+          voted: data.player1.voted,
+          guessId: data.player1.guessId,
+          guessed: data.player1.guessed
+        },
+        player2: {
+          address: data.player2.addr,
+          voted: data.player2.voted,
+          guessId: data.player2.guessId,
+          guessed: data.player2.guessed
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error('Error fetching game data:', error);
+      throw error;
+    }
   }
 
   async createGame(betAmount: string) {
