@@ -79,9 +79,16 @@ const GameLobbyPage = () => {
         });
       });
 
+      const unsubscribeSessionStarted = wsService.onSessionStarted(() => {
+        setIsGameStarted(true);
+        setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
+        wsService.requestTopic()
+      });
+
       return () => {
         unsubscribeSessionInfo();
         unsubscribeTopicMessage();
+        unsubscribeSessionStarted()
         wsService.disconnect();
       };
     }
@@ -113,7 +120,6 @@ const GameLobbyPage = () => {
   const handleGameStart = () => {
     console.log('Starting game...');
     wsService.startSession()
-    wsService.requestTopic()
     setIsGameStarted(true);
     setTopicRevealCountdown(GAME_TIMINGS.TOPIC_REVIEW);
   };

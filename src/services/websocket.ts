@@ -159,6 +159,13 @@ export class WebSocketService {
     };
   }
 
+  onSessionStarted(handler: (topic: string) => void) {
+    this.topicMessageHandlers.push(handler);
+    return () => {
+      this.topicMessageHandlers = this.topicMessageHandlers.filter(h => h !== handler);
+    };
+  }
+
   onTopicMessage(handler: (topic: string) => void) {
     this.topicMessageHandlers.push(handler);
     return () => {
