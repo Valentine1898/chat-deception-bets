@@ -33,8 +33,6 @@ const GameLobbyPage = () => {
   const [isVotingVisible, setIsVotingVisible] = useState(false);
   const [hasVoted, setHasVoted] = useState(false);
 
-  const gameUrl = `${window.location.origin}/game/${gameId}`;
-
   const mockGameData = {
     id: gameId,
     creatorAddress: "0xDC89F9576281e87f78EeF7ddDEBD61f7e7D82f82",
@@ -43,7 +41,7 @@ const GameLobbyPage = () => {
     yourBet: authenticated ? 0.1 : 0,
   };
 
-  const isCreator = authenticated && mockGameData.creatorAddress;
+  const isCreator = Boolean(authenticated && mockGameData.creatorAddress);
   const hasPlacedBet = mockGameData.yourBet > 0;
 
   useEffect(() => {
@@ -284,17 +282,42 @@ const GameLobbyPage = () => {
       <div className="container mx-auto p-6">
         <div className="flex gap-6 justify-between">
           <div className="flex-1">
-            <GameLobbyInfo 
-              authenticated={authenticated}
-              hasPlacedBet={hasPlacedBet}
-              isCreator={isCreator}
-              gameId={gameId || ''}
-              gameUrl={gameUrl}
-              mockGameData={{
-                betAmount: mockGameData.betAmount
-              }}
-              onPlaceBet={handleJoinGame}
-            />
+            {isGameStarted ? (
+              stage === 'waiting' ? (
+                <WaitingComponent />
+              ) : (
+                <GameTopic 
+                  topic={selectedTopic}
+                  isChatVisible={shouldShowChat}
+                  gameId={gameId}
+                  prizePool="0.0005"
+                />
+              )
+            ) : (
+              <GameLobbyInfo 
+                authenticated={authenticated}
+                hasPlacedBet={hasPlacedBet}
+                isCreator={isCreator}
+                gameId={gameId || ''}
+                gameUrl={window.location.href}
+                mockGameData={{
+                  betAmount: mockGameData.betAmount
+                }}
+                onPlaceBet={handleJoinGame}
+              />
+            )}
+            
+            {stage === 'results' && (
+              <div className="flex flex-col items-center justify-center mt-8">
+                <h2 className="text-2xl font-bold mb-4">Game Results</h2>
+                <Button 
+                  onClick={handleClaimPrize}
+                  className="bg-accent hover:bg-accent/90"
+                >
+                  Claim Prize
+                </Button>
+              </div>
+            )}
           </div>
           <PlayersList 
             players={players}
