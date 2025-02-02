@@ -210,6 +210,7 @@ const GameLobbyPage = () => {
           <GameHeader 
             stage={stage}
             countdown={getCurrentCountdown()}
+            showTimer={true}
           />
         </div>
         
