@@ -70,8 +70,11 @@ export class WebSocketService {
             this.topicMessageHandlers.forEach(handler => handler(data.content));
             break;
 
-          case 'session_info':
           case 'session_started':
+            console.log('🎮 Session started, requesting topic');
+            this.requestTopic();
+            // Fall through to process session info
+          case 'session_info':
           case 'session_finished':
             const sessionInfo: SessionInfo = data.content;
             console.log('ℹ️ Processing session info:', sessionInfo);
@@ -192,4 +195,3 @@ export class WebSocketService {
 }
 
 export const wsService = new WebSocketService();
-
