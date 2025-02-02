@@ -6,20 +6,7 @@ import { useEffect, useState } from "react";
 import { formatEther } from "ethers";
 import { BrowserProvider } from "ethers";
 import { useToast } from "@/hooks/use-toast";
-
-// Base network configuration
-const BASE_CHAIN_ID = "0x2105"; // Chain ID for Base network
-const BASE_NETWORK = {
-  chainId: BASE_CHAIN_ID,
-  chainName: "Base",
-  nativeCurrency: {
-    name: "ETH",
-    symbol: "ETH",
-    decimals: 18,
-  },
-  rpcUrls: ["https://mainnet.base.org"],
-  blockExplorerUrls: ["https://basescan.org"],
-};
+import { ACTIVE_NETWORK } from "@/config/networkConfig";
 
 const WalletWidget = () => {
   const { user, logout } = usePrivy();
@@ -39,32 +26,32 @@ const WalletWidget = () => {
         const chainId = await provider.request({ method: 'eth_chainId' });
         setCurrentChainId(chainId);
 
-        if (chainId !== BASE_CHAIN_ID) {
+        if (chainId !== ACTIVE_NETWORK.chainId) {
           try {
             await provider.request({
               method: 'wallet_switchEthereumChain',
-              params: [{ chainId: BASE_CHAIN_ID }],
+              params: [{ chainId: ACTIVE_NETWORK.chainId }],
             });
             toast({
               title: "Network switched",
-              description: "Successfully switched to Base network",
+              description: `Successfully switched to ${ACTIVE_NETWORK.chainName} network`,
             });
           } catch (switchError: any) {
             if (switchError.code === 4902) {
               try {
                 await provider.request({
                   method: 'wallet_addEthereumChain',
-                  params: [BASE_NETWORK],
+                  params: [ACTIVE_NETWORK],
                 });
                 toast({
                   title: "Network added",
-                  description: "Base network has been added to your wallet",
+                  description: `${ACTIVE_NETWORK.chainName} network has been added to your wallet`,
                 });
               } catch (addError) {
                 console.error("Error adding network:", addError);
                 toast({
                   title: "Error",
-                  description: "Failed to add Base network to your wallet",
+                  description: `Failed to add ${ACTIVE_NETWORK.chainName} network to your wallet`,
                   variant: "destructive",
                 });
               }
@@ -72,7 +59,7 @@ const WalletWidget = () => {
               console.error("Error switching network:", switchError);
               toast({
                 title: "Error",
-                description: "Failed to switch to Base network",
+                description: `Failed to switch to ${ACTIVE_NETWORK.chainName} network`,
                 variant: "destructive",
               });
             }
@@ -92,7 +79,7 @@ const WalletWidget = () => {
 
   useEffect(() => {
     const fetchBalance = async () => {
-      if (wallets?.[0] && currentChainId === BASE_CHAIN_ID) {
+      if (wallets?.[0] && currentChainId === ACTIVE_NETWORK.chainId) {
         try {
           const ethProvider = await wallets[0].getEthereumProvider();
           const provider = new BrowserProvider(ethProvider);
@@ -122,14 +109,14 @@ const WalletWidget = () => {
           </div>
           <div className="text-sm font-mono text-foreground/60">
             {balance} ETH
-            {currentChainId !== BASE_CHAIN_ID && (
+            {currentChainId !== ACTIVE_NETWORK.chainId && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={checkAndSwitchNetwork}
                 className="ml-2 text-xs bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
               >
-                Switch to Base
+                Switch to {ACTIVE_NETWORK.chainName}
               </Button>
             )}
           </div>
