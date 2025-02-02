@@ -1,6 +1,6 @@
 import { Contract, BrowserProvider, parseEther } from "ethers";
 
-const CONTRACT_ADDRESS = "0x23059985b1Db2b92b984B4eA97b16c1F8C8706A4";
+const CONTRACT_ADDRESS = "0x803d92FA9c82d533E808E6038A84EBca5E36fC1C";
 const MOCK_MODE = false;
 
 const CONTRACT_ABI = [
@@ -9,6 +9,45 @@ const CONTRACT_ABI = [
     "name": "createGame",
     "outputs": [{"internalType": "uint32", "name": "", "type": "uint32"}],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint32", "name": "gameId", "type": "uint32"}],
+    "name": "getGame",
+    "outputs": [{
+      "components": [
+        {"internalType": "uint32", "name": "id", "type": "uint32"},
+        {"internalType": "uint256", "name": "bet", "type": "uint256"},
+        {"internalType": "uint256", "name": "deadline", "type": "uint256"},
+        {"internalType": "bool", "name": "validated", "type": "bool"},
+        {
+          "components": [
+            {"internalType": "address", "name": "addr", "type": "address"},
+            {"internalType": "bool", "name": "voted", "type": "bool"},
+            {"internalType": "uint8", "name": "guessId", "type": "uint8"},
+            {"internalType": "bool", "name": "guessed", "type": "bool"}
+          ],
+          "internalType": "struct ITuringGame.PlayerData",
+          "name": "player1",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {"internalType": "address", "name": "addr", "type": "address"},
+            {"internalType": "bool", "name": "voted", "type": "bool"},
+            {"internalType": "uint8", "name": "guessId", "type": "uint8"},
+            {"internalType": "bool", "name": "guessed", "type": "bool"}
+          ],
+          "internalType": "struct ITuringGame.PlayerData",
+          "name": "player2",
+          "type": "tuple"
+        }
+      ],
+      "internalType": "struct ITuringGame.Game",
+      "name": "",
+      "type": "tuple"
+    }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -29,40 +68,6 @@ const CONTRACT_ABI = [
     "inputs": [],
     "name": "MIN_BET",
     "outputs": [{"internalType": "uint128", "name": "", "type": "uint128"}],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{"internalType": "uint32", "name": "", "type": "uint32"}],
-    "name": "games",
-    "outputs": [
-      {"internalType": "uint32", "name": "id", "type": "uint32"},
-      {"internalType": "uint256", "name": "bet", "type": "uint256"},
-      {"internalType": "uint256", "name": "deadline", "type": "uint256"},
-      {"internalType": "bool", "name": "validated", "type": "bool"},
-      {
-        "components": [
-          {"internalType": "address", "name": "addr", "type": "address"},
-          {"internalType": "bool", "name": "voted", "type": "bool"},
-          {"internalType": "uint8", "name": "guessId", "type": "uint8"},
-          {"internalType": "bool", "name": "guessed", "type": "bool"}
-        ],
-        "internalType": "struct ITuringGame.PlayerData",
-        "name": "player1",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {"internalType": "address", "name": "addr", "type": "address"},
-          {"internalType": "bool", "name": "voted", "type": "bool"},
-          {"internalType": "uint8", "name": "guessId", "type": "uint8"},
-          {"internalType": "bool", "name": "guessed", "type": "bool"}
-        ],
-        "internalType": "struct ITuringGame.PlayerData",
-        "name": "player2",
-        "type": "tuple"
-      }
-    ],
     "stateMutability": "view",
     "type": "function"
   }
@@ -86,7 +91,7 @@ class ContractService {
     if (!this.contract) throw new Error("Contract not initialized");
     
     try {
-      const data = await this.contract.games(gameId);
+      const data = await this.contract.getGame(gameId);
       console.log('Received game data:', {
         id: data.id.toString(),
         bet: data.bet.toString(),
